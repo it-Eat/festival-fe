@@ -8,7 +8,7 @@ export default [
         component: boardList,
         children: [
             {
-                path: 'detail',
+                path: '/user/boardList/detail',
                 name: 'detail',
                 component: boardDetail
             }
