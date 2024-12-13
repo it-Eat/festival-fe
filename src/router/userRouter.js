@@ -1,5 +1,6 @@
-import boardList from "@/views/user/board/boardList.vue"
-import boardDetail from "@/views/user/board/boardDetail.vue"
+import boardList from "@/views/user/board/boardList.vue";
+import boardDetail from "@/views/user/board/boardDetail.vue";
+import boardWrite from "@/views/user/board/boardWrite.vue";
 
 export default [
     {
@@ -8,10 +9,15 @@ export default [
         component: boardList,
         children: [
             {
-                path: '/user/boardList/detail',
-                name: 'detail',
+                path: 'detail',       
+                name: 'boardDetail',
                 component: boardDetail
+            },
+            {
+                path: 'write',         
+                name: 'boardWrite',
+                component: boardWrite
             }
         ]
     }
-]
+];
