@@ -1,21 +1,17 @@
-import Common from "@/views/common.vue"
-import Admin from "@/views/admin/adminMain.vue"
-import User from "@/views/user/home.vue"
+// import boardList from "@/views/user/board/boardList.vue"
+// import boardDetail from "@/views/user/board/boardDetail.vue"
 
 export default [
-    {
-        path: '/',
-        name: 'common',
-        component: Common,
-    },
-    {
-        path: '/admin',
-        name: 'admin',
-        component: Admin,
-    },
-    {
-        path: '/user',
-        name: 'user',
-        component: User,
-    }
+    // {
+    //     path: '/user/boardList',
+    //     name: 'boardList',
+    //     component: boardList,
+    //     children: [
+    //         {
+    //             path: '/user/boardList/detail',
+    //             name: 'detail',
+    //             component: boardDetail
+    //         }
+    //     ]
+    // }
 ]
