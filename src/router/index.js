@@ -1,11 +1,13 @@
 import { createRouter, createWebHistory } from "vue-router";
-import commonRouter from "./adminRouter";
-import userRouter from "./userRouter";
 import Common from "@/views/common.vue"
 import Admin from "@/views/admin/adminMain.vue"
 import User from "@/views/user/home.vue"
+import userRouter from "./userRouter";
+import adminRouter from "./adminRouter";
 
 const routes = [
+    ...userRouter,
+    ...adminRouter,
     {
             path: '/',
             name: 'common',
@@ -18,11 +20,9 @@ const routes = [
         },
         {
             path: '/user',
-            name: 'user',
-            component: User,
-        },
-    ...commonRouter,
-    ...userRouter
+            name: User,
+
+        }
 ]
 
 const router = createRouter({
