@@ -20,13 +20,14 @@ const routes = [
         },
         {
             path: '/user',
-            name: User,
+            name: 'user',
+            component: User
 
         }
 ]
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.VITE_VUE_API_URL),
+    history: createWebHistory(),
     routes
 })
 

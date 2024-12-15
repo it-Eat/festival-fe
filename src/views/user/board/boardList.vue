@@ -16,7 +16,7 @@
 .content-area {
     width: 100%;          
     height: 300px;         
-    background-color: #f0f0f0; 
+    background-color: #ffcd00; 
     margin-top: 20px;        
     padding: 20px;          
     border: 1px solid #ccc;  
