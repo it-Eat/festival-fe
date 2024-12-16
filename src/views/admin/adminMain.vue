@@ -18,7 +18,7 @@ import adminBoard from "./board/adminBoard.vue";
     <!-- <button @click="moveList">게시글 이동</button> -->
     <div class="child-container">
       <!-- <router-view></router-view> -->
-      <adminBoard my-msg="메세지" />
+      <adminBoard my-msg="하이" />
     </div>
   </div>
 </template>
