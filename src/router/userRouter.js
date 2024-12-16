@@ -6,6 +6,9 @@ import homeFestInfo from "@/views/user/home/homeFestInfo.vue";
 import homeFood from "@/views/user/home/homeFood.vue";
 import homePlaying from "@/views/user/home/homePlaying.vue";
 import homeComponent from "@/views/user/homeComponent.vue";
+import MyOrderList from "@/views/user/my/myOrderList.vue";
+import { components } from "storybook/internal/components";
+import DeleteId from "@/views/user/my/deleteId.vue";
 
 export default [
   {
@@ -56,5 +59,17 @@ export default [
         component: homePlaying,
       },
     ],
+  },
+
+  {
+    path: "/user/myOrderList",
+    name: "myOrderList",
+    component: MyOrderList,
+  },
+
+  {
+    path: "/user/deleteId",
+    name: "deleteId",
+    component: DeleteId,
   },
 ];
