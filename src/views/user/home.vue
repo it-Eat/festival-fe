@@ -1,5 +1,5 @@
 <script setup>
-import HomeComponent from './homeComponent.vue'; // 중괄호 제거
+import HomeComponent from "./homeComponent.vue"; // 중괄호 제거
 </script>
 
 <template>
@@ -22,5 +22,13 @@ import HomeComponent from './homeComponent.vue'; // 중괄호 제거
   flex-direction: row;
   align-items: center;
   justify-content: center;
+}
+
+html,
+body {
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 </style>

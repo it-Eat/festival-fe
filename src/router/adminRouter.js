@@ -1,17 +1,9 @@
-// import boardList from "@/views/user/board/boardList.vue"
-// import boardDetail from "@/views/user/board/boardDetail.vue"
+import adminBoard from "@/views/admin/board/adminBoard.vue";
 
 export default [
-    // {
-    //     path: '/user/boardList',
-    //     name: 'boardList',
-    //     component: boardList,
-    //     children: [
-    //         {
-    //             path: '/user/boardList/detail',
-    //             name: 'detail',
-    //             component: boardDetail
-    //         }
-    //     ]
-    // }
-]
+  {
+    path: "/admin/adminBoard",
+    name: "adminBoard",
+    component: adminBoard,
+  },
+];

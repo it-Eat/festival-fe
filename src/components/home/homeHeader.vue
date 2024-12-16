@@ -16,12 +16,16 @@ import { Bell } from 'lucide-vue-next';
   display: flex;
   justify-content: space-between; 
   align-items: center; 
+  position: relative;
   width: 100%; 
 }
 
 .header-container h1 {
-  flex-grow: 1; 
-  text-align: center;
+  font-size: 1.2rem;
+  margin: 0; 
+  transform: translateX(-50%);
+  left: 50%;
+  position: absolute;
 }
 
 .left-icon {

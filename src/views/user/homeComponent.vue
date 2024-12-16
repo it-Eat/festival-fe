@@ -1,24 +1,23 @@
 <script setup>
-import HomeMenu from '@/components/home/homeMenu.vue'
-import homeHeader from '@/components/home/homeHeader.vue';
-
+import HomeMenu from "@/components/home/homeMenu.vue";
+import homeHeader from "@/components/home/homeHeader.vue";
+import backHeader from "@/components/common/backHeader.vue";
 </script>
 
 <template>
   <div class="home">
     <div class="head">
-        <homeHeader/>
+      <homeHeader />
     </div>
-    <div class="logo-image">
-        로고이미지부분  
-    </div>
+    <div class="logo-image">로고이미지부분</div>
     <div class="menu-bar">
-        <HomeMenu />
+      <HomeMenu />
     </div>
     <div class="content-area">
       <router-view />
     </div>
   </div>
+  <div class="other"></div>
 </template>
 
 <style scoped>
@@ -30,7 +29,6 @@ import homeHeader from '@/components/home/homeHeader.vue';
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
   width: 600px;
   height: 100vh;
   box-sizing: border-box;
@@ -46,10 +44,13 @@ import homeHeader from '@/components/home/homeHeader.vue';
 .head {
   flex: 0.5;
   background-color: #ff6f61;
-  width: 100%;         
+  width: 100%;
   text-align: center;
   padding: 10px;
   margin-top: -10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .logo-image {
@@ -62,7 +63,7 @@ import homeHeader from '@/components/home/homeHeader.vue';
 
 .menu-bar {
   flex: 0.5;
-  
+
   width: 100%;
   text-align: center;
   padding: 10px;
