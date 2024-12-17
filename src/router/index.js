@@ -4,6 +4,7 @@ import Admin from "@/views/admin/adminMain.vue"
 import User from "@/views/user/home.vue"
 import userRouter from "./userRouter";
 import adminRouter from "./adminRouter";
+import Hamberger from "@/components/modal/hamberger.vue";
 
 const routes = [
     ...userRouter,
@@ -11,7 +12,7 @@ const routes = [
     {
             path: '/',
             name: 'common',
-            component: Common,
+            component: Hamberger,
         },
         {
             path: '/admin',

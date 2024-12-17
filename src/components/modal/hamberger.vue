@@ -9,13 +9,13 @@
         <!-- 나중에 토큰연결후 이름바꾸기 -->
         <div>천세윤 님</div>
          <hr>
-      </div>
+        </div>
         <ul>
           <li>로그아웃</li>
           <li>공통페이지</li>
           <li><router-link to="/user/myOrderList">주문 내역</router-link></li>
-          <li>부스 신청하기</li>
-          <li>작성글 보기</li>
+          <li><router-link to="/user/boothApply">부스 신청하기</router-link></li>
+          <li><router-link to="/user/myPostList">작성글 보기기</router-link></li>
         </ul>
         <div class="delete-account"><router-link to="/user/deleteId">회원탈퇴</router-link></div>
       </div>
