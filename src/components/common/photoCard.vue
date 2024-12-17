@@ -1,19 +1,19 @@
 <script setup>
 defineProps({
-  food: Object,
+  item: Object,
 });
 </script>
 
 <template>
   <div class="photo-card">
-    <img :src="food.img" :alt="food.name" />
-    <p>{{ food.name }}</p>
+    <img :src="item.img" :alt="item.name" />
+    <p>{{ item.name }}</p>
   </div>
 </template>
 
 <style scoped>
 .photo-card {
-  width: 150px;
+  /* flex-basis 계산 제거 */
   text-align: center;
   background-color: #fff;
   padding: 8px;
@@ -23,8 +23,8 @@ defineProps({
 }
 
 .photo-card img {
-  width: 80px;
-  height: 80px;
+  width: 100%; /* 그리드 셀 내에서 반응형 이미지 */
+  aspect-ratio: 1 / 1; /* 정사각형 비율 유지 */
   object-fit: cover;
   border-radius: 8px;
 }
