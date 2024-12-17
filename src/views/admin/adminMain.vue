@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import adminBoard from "./board/adminBoard.vue";
+import adminLogin from "./adminLogin.vue";
 
 // const router = useRouter();
 
@@ -14,11 +15,10 @@ import adminBoard from "./board/adminBoard.vue";
 
 <template>
   <div>
-    <h1>관리자 메인 페이지입니다.</h1>
     <!-- <button @click="moveList">게시글 이동</button> -->
     <div class="child-container">
       <!-- <router-view></router-view> -->
-      <adminBoard my-msg="하이" />
+      <!-- <adminBoard my-msg="하이" /> -->
     </div>
   </div>
 </template>
