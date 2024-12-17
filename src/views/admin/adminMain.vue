@@ -1,35 +1,37 @@
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import adminBoard from "./board/adminBoard.vue";
-import adminLogin from "./adminLogin.vue";
-
-// const router = useRouter();
-
-// const seyoon = ref([1, 2, 3]);
-
-// function moveList() {
-//   router.push({ name: "adminBoard", params: { seyoon: seyoon.value } });
-// }
+import menuComponent from "@/components/admin/menuComponent.vue";
+import adminContent from "./adminContent.vue";
 </script>
 
 <template>
-  <div>
-    <!-- <button @click="moveList">게시글 이동</button> -->
-    <div class="child-container">
-      <!-- <router-view></router-view> -->
-      <!-- <adminBoard my-msg="하이" /> -->
+  <div class="container">
+    <div class="menu">
+      <menuComponent />
+    </div>
+    <div class="content">
+      <adminContent />
     </div>
   </div>
 </template>
 
 <style scoped>
-.child-container {
-  width: 500px;
-  height: 300px;
-  background-color: #ffcd00;
-  margin-top: 20px;
+.container {
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.menu {
+  background-color: #f0f0f0;
   padding: 20px;
-  border: 1px solid #ccc;
+  border-right: 1px solid #ddd;
+  overflow: hidden;
+}
+
+.content {
+  padding: 20px;
+  background-color: #fff;
+  overflow: hidden;
 }
 </style>
