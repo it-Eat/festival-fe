@@ -1,6 +1,7 @@
 <script setup>
 import { ChevronLeft } from 'lucide-vue-next';
 import { useRouter, useRoute } from 'vue-router';
+import { computed } from 'vue';
 
 // Vue Router 사용
 const router = useRouter();
@@ -10,6 +11,15 @@ const route = useRoute();
 const goBack = () => {
   router.back();
 };
+
+const userName = '천세윤';
+
+const pageTitle = computed(() => {
+  if(route.meta.title && route.meta.useUserName){
+    return `${userName}님의 ${route.meta.title}`;
+  }
+  return route.meta.title;
+});
 </script>
 
 <template>
@@ -18,7 +28,7 @@ const goBack = () => {
     <ChevronLeft class="left-icon" @click="goBack" />
 
     <!-- 페이지명은 현재 라우트의 meta.title 또는 props에서 가져옵니다 -->
-    <h1>{{ route.meta.title || '페이지명' }}</h1>
+    <h1>{{ pageTitle }}</h1>
 
     <!-- 메뉴 아이콘 -->
     <AlignJustify class="right-icon" />

@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import BackHeader from '@/components/common/backHeader.vue';
 
 // 데이터 바인딩
@@ -8,22 +9,30 @@ const phoneNumber = ref('');    // 전화번호
 const email = ref('');          // 이메일
 const file = ref(null);         // 신청서 파일
 
+const router = useRouter();
+
 // 파일 업로드 핸들러
 const handleFileUpload = (event) => {
   file.value = event.target.files[0];
 };
+
+const handleSubmit = () => {
+  // 필요한 로직 수행 후 이전 페이지로 이동
+  //console.log('부스 신청 완료:', { storeName: storeName.value, phoneNumber: phoneNumber.value, email: email.value, file: file.value });
+  router.back(); // 이전 페이지로 이동
+};
 </script>
 
 <template>
+  <div class="page">
   <!-- 헤더 -->
-  <div>
+  <div class="header">
     <BackHeader />
   </div>
-
   <!-- 신청 폼 -->
   <div class="container">
     <h1 class="title">부스 신청</h1>
-    <form class="form">
+    <form class="form" @submit.prevent="handleSubmit">
       <!-- 가게 이름 입력 -->
       <div class="form-group">
         <label for="storeName">가게 이름</label>
@@ -74,12 +83,30 @@ const handleFileUpload = (event) => {
       </div>
     </form>
   </div>
+</div>
 </template>
 
 <style scoped>
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* 헤더 스타일 */
+.header {
+  width: 100%;
+  max-width: 600px; /* 컨테이너와 동일한 최대 너비 설정 */
+  margin: auto;
+  display: flex;
+  justify-content: center;
+}
+
 /* 컨테이너 스타일 */
 .container {
-  max-width: 500px;
+  width: 100%;
+  max-width: 560px;
   margin: 20px auto;
   padding: 20px;
   background-color: #f9f9f9;
@@ -130,13 +157,13 @@ input[type="file"] {
   padding: 10px;
   font-size: 1rem;
   color: white;
-  background-color: #007bff;
+  background-color: #ff6f61;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 
 .submit-button:hover {
-  background-color: #0056b3;
+  background-color: #dd5346;
 }
 </style>

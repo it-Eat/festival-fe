@@ -64,7 +64,7 @@
   align-items: center;
   margin-top: auto; /* 아래로 밀기 */
   margin-bottom: 40px;
-  padding: 10px 20px;
+  padding: 8px 16px;
   background-color: #000000; /* 버튼 배경색 */
   color: white;
   font-weight: bold;
@@ -81,7 +81,7 @@
   color: white; /* 텍스트 색상 */
   width: 100%; /* 링크 전체 클릭 가능 */
   display: block; /* 블록 형태로 설정 */
-
+  text-align: center;
 }
 
 .delete-account:hover {

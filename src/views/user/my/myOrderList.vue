@@ -1,10 +1,12 @@
 <script setup>
-
+import BackHeader from '@/components/common/backHeader.vue';
 </script>
 
 <template>
-    <div>
-        주문내역입니다.
+    <div class="page">
+        <div class="header">
+          <BackHeader/>
+        </div>
     </div>
 </template>
 

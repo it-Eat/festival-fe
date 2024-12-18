@@ -66,7 +66,7 @@ export default [
     path: "/user/myOrderList",
     name: "myOrderList",
     component: MyOrderList,
-    meta: {title: ""}
+    meta: {title: "주문내역", useUserName: true}
   },
 
   {
@@ -90,3 +90,4 @@ export default [
   }
 
 ];
+
