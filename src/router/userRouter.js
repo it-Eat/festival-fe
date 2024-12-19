@@ -8,6 +8,12 @@ import homePlaying from "@/views/user/home/homePlaying.vue";
 import homeComponent from "@/views/user/homeComponent.vue";
 import playingList from "@/views/user/playing/playingList.vue";
 import playingDetail from "@/views/user/playing/playingDetail.vue";
+import MyOrderList from "@/views/user/my/myOrderList.vue";
+import DeleteId from "@/views/user/my/deleteId.vue";
+import MyPostList from "@/views/user/my/myPostList.vue";
+import BoothApply from "@/views/user/my/boothApply.vue";
+import MyOrderDetail from "@/views/user/my/myOrderDetail.vue";
+
 
 export default [
   {
@@ -59,7 +65,6 @@ export default [
       },
     ],
   },
-
   {
     path: "/user/playing/playingList",
     name: "playingList",
@@ -71,4 +76,37 @@ export default [
     component: playingDetail,
     props: true,
   },
+    path: "/user/my/myOrderList",
+    name: "myOrderList",
+    component: MyOrderList,
+    meta: {title: "주문내역", useUserName: true},
+    children: [
+      {
+        path: ":id",
+        name: "myOrderDetail",
+        component: MyOrderDetail,
+      }
+    ]
+  },
+
+  {
+    path: "/user/my/deleteId",
+    name: "deleteId",
+    component: DeleteId,
+    meta: {title: "회원탈퇴"}
+  },
+
+  {
+    path: "/user/my/myPostList",
+    name: "myPostList",
+    component: MyPostList,
+
+  },
+  {
+    path: "/user/my/boothApply",
+    name: "boothApply",
+    component: BoothApply,
+    meta: {title: "부스 신청하기"},
+  }
 ];
+

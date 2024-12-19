@@ -1,13 +1,8 @@
-<script setup>
-defineProps({
-  myMsg: String,
-});
-</script>
+<script setup></script>
 
 <template>
   <div>
-    <h1>관리자 보드</h1>
-    {{ myMsg }}
+    <h1>게시판 관리</h1>
   </div>
 </template>
 

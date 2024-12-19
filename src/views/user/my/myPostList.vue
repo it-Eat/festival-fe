@@ -4,7 +4,7 @@
 
 <template>
     <div>
-        
+        작성글보기
     </div>
 </template>
 

@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "axios": "^1.7.9",
+    "jwt-decode": "^4.0.0",
     "lucide-vue-next": "^0.468.0",
     "pinia": "^2.3.0",
     "vue": "^3.5.13",
@@ -31,7 +32,7 @@
     "@vitejs/plugin-vue": "^5.2.1",
     "eslint": "^9.14.0",
     "eslint-plugin-storybook": "^0.11.1",
-    "eslint-plugin-vue": "^9.30.0",
+    "eslint-plugin-vue": "^9.32.0",
     "storybook": "^8.4.7",
     "vite": "^6.0.1",
     "vite-plugin-vue-devtools": "^7.6.5"
