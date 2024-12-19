@@ -6,11 +6,14 @@ import homeFestInfo from "@/views/user/home/homeFestInfo.vue";
 import homeFood from "@/views/user/home/homeFood.vue";
 import homePlaying from "@/views/user/home/homePlaying.vue";
 import homeComponent from "@/views/user/homeComponent.vue";
+import playingList from "@/views/user/playing/playingList.vue";
+import playingDetail from "@/views/user/playing/playingDetail.vue";
 import MyOrderList from "@/views/user/my/myOrderList.vue";
 import DeleteId from "@/views/user/my/deleteId.vue";
 import MyPostList from "@/views/user/my/myPostList.vue";
 import BoothApply from "@/views/user/my/boothApply.vue";
 import MyOrderDetail from "@/views/user/my/myOrderDetail.vue";
+
 
 export default [
   {
@@ -62,8 +65,17 @@ export default [
       },
     ],
   },
-
   {
+    path: "/user/playing/playingList",
+    name: "playingList",
+    component: playingList,
+  },
+  {
+    path: "/user/playing/playingDetail/:playNum",
+    name: "playingDetail",
+    component: playingDetail,
+    props: true,
+  },
     path: "/user/my/myOrderList",
     name: "myOrderList",
     component: MyOrderList,
@@ -90,13 +102,11 @@ export default [
     component: MyPostList,
 
   },
-
   {
     path: "/user/my/boothApply",
     name: "boothApply",
     component: BoothApply,
     meta: {title: "부스 신청하기"},
   }
-
 ];
 

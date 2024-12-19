@@ -30,14 +30,14 @@ import backHeader from "@/components/common/backHeader.vue";
   align-items: center;
   justify-content: center;
   width: 600px;
-  height: 100vh;
+  height: 90%;
   box-sizing: border-box;
   margin: auto;
 }
 
 @media (max-width: 900px) {
   .home {
-    width: 100%;
+    width: 90%;
   }
 }
 
