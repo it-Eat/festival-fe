@@ -110,7 +110,6 @@ const handleSubmit = () => {
 .header {
   width: 100%;
   margin: auto;
-
   margin-bottom: 20px;
 }
 

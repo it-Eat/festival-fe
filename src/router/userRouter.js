@@ -10,6 +10,7 @@ import MyOrderList from "@/views/user/my/myOrderList.vue";
 import DeleteId from "@/views/user/my/deleteId.vue";
 import MyPostList from "@/views/user/my/myPostList.vue";
 import BoothApply from "@/views/user/my/boothApply.vue";
+import MyOrderDetail from "@/views/user/my/myOrderDetail.vue";
 
 export default [
   {
@@ -66,7 +67,14 @@ export default [
     path: "/user/my/myOrderList",
     name: "myOrderList",
     component: MyOrderList,
-    meta: {title: "주문내역", useUserName: true}
+    meta: {title: "주문내역", useUserName: true},
+    children: [
+      {
+        path: ":id",
+        name: "myOrderDetail",
+        component: MyOrderDetail,
+      }
+    ]
   },
 
   {
