@@ -6,6 +6,10 @@ import homeFestInfo from "@/views/user/home/homeFestInfo.vue";
 import homeFood from "@/views/user/home/homeFood.vue";
 import homePlaying from "@/views/user/home/homePlaying.vue";
 import homeComponent from "@/views/user/homeComponent.vue";
+import MyOrderList from "@/views/user/my/myOrderList.vue";
+import DeleteId from "@/views/user/my/deleteId.vue";
+import MyPostList from "@/views/user/my/myPostList.vue";
+import BoothApply from "@/views/user/my/boothApply.vue";
 
 export default [
   {
@@ -57,4 +61,34 @@ export default [
       },
     ],
   },
+
+  {
+    path: "/user/my/myOrderList",
+    name: "myOrderList",
+    component: MyOrderList,
+    meta: {title: "주문내역", useUserName: true}
+  },
+
+  {
+    path: "/user/my/deleteId",
+    name: "deleteId",
+    component: DeleteId,
+    meta: {title: "회원탈퇴"}
+  },
+
+  {
+    path: "/user/my/myPostList",
+    name: "myPostList",
+    component: MyPostList,
+
+  },
+
+  {
+    path: "/user/my/boothApply",
+    name: "boothApply",
+    component: BoothApply,
+    meta: {title: "부스 신청하기"},
+  }
+
 ];
+
