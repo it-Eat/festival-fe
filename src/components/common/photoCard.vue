@@ -1,11 +1,25 @@
 <script setup>
-defineProps({
-  item: Object,
+import { useRouter } from "vue-router";
+
+const props = defineProps({
+  item: {
+    type: Number,
+    required: true,
+  },
 });
+
+const router = useRouter();
+
+const goToDetail = () => {
+  router.push({
+    name: "playingDetail",
+    params: { playNum: props.item.playNum },
+  });
+};
 </script>
 
 <template>
-  <div class="photo-card">
+  <div @click="goToDetail" class="photo-card">
     <img :src="item.img" :alt="item.name" />
     <p>{{ item.name }}</p>
   </div>
@@ -13,6 +27,7 @@ defineProps({
 
 <style scoped>
 .photo-card {
+  width: 100%;
   /* flex-basis 계산 제거 */
   text-align: center;
   background-color: #fff;

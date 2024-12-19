@@ -6,6 +6,8 @@ import homeFestInfo from "@/views/user/home/homeFestInfo.vue";
 import homeFood from "@/views/user/home/homeFood.vue";
 import homePlaying from "@/views/user/home/homePlaying.vue";
 import homeComponent from "@/views/user/homeComponent.vue";
+import playingList from "@/views/user/playing/playingList.vue";
+import playingDetail from "@/views/user/playing/playingDetail.vue";
 
 export default [
   {
@@ -56,5 +58,17 @@ export default [
         component: homePlaying,
       },
     ],
+  },
+
+  {
+    path: "/user/playing/playingList",
+    name: "playingList",
+    component: playingList,
+  },
+  {
+    path: "/user/playing/playingDetail/:playNum",
+    name: "playingDetail",
+    component: playingDetail,
+    props: true,
   },
 ];

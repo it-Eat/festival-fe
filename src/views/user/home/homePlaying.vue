@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import photoCard from "@/components/common/photoCard.vue";
 import facefainting from "@/assets/play/facefainting.jpeg";
 import dartgame from "@/assets/play/dart.png";
@@ -16,6 +17,12 @@ const playList = ref([
   { playNum: 5, img: photo, name: "즉석 사진 촬영" },
   { playNum: 6, img: personal, name: "퍼스널 컬러 진단" },
 ]);
+
+const router = useRouter();
+
+const goToPlayingList = () => {
+  router.push("/user/playing/playingList");
+};
 </script>
 
 <template>
@@ -26,7 +33,7 @@ const playList = ref([
       :item="play"
     ></photoCard>
   </div>
-  <button class="button1">자세히보기</button>
+  <button class="button1" @click="goToPlayingList">자세히보기</button>
 </template>
 
 <style scoped>
