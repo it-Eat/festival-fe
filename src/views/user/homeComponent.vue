@@ -63,7 +63,6 @@ import backHeader from "@/components/common/backHeader.vue";
 
 .menu-bar {
   flex: 0.5;
-
   width: 100%;
   text-align: center;
   padding: 10px;

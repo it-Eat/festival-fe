@@ -1,13 +1,18 @@
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter } from "vue-router"; // router import 추가
 
-const router = useRouter();
+const emit = defineEmits(["login"]); // emit 함수 정의
 const username = ref("");
 const password = ref("");
+const router = useRouter(); // router 인스턴스 생성
 
-function login() {
+function handleLogin() {
+  console.log("로그인 시도:", username.value, password.value); // 로그인 시도 로그
   if (username.value === "admin" && password.value === "1234") {
+    emit("login"); // 부모에게 로그인 이벤트 전달
+    console.log("로그인 성공"); // 로그인 성공 로그
+    // 로그인 성공 시 admin 페이지로 리다이렉트
     router.push({ name: "admin" });
   } else {
     alert("로그인 실패");
@@ -18,7 +23,7 @@ function login() {
 <template>
   <div class="login-container">
     <h2>관리자 로그인</h2>
-    <form @submit.prevent="login" class="login-form">
+    <form @submit.prevent="handleLogin" class="login-form">
       <input
         type="text"
         v-model="username"
