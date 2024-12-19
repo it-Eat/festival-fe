@@ -12,3 +12,4 @@ app.config.globalProperties.axios = axios
 app.use(createPinia())
 app.use(router)
 app.mount('#app')
+

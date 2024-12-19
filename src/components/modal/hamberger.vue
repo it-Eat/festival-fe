@@ -13,11 +13,11 @@
         <ul>
           <li>로그아웃</li>
           <li>공통페이지</li>
-          <li><router-link to="/user/myOrderList">주문 내역</router-link></li>
-          <li><router-link to="/user/boothApply">부스 신청하기</router-link></li>
-          <li><router-link to="/user/myPostList">작성글 보기기</router-link></li>
+          <li><router-link to="/user/my/myOrderList">주문 내역</router-link></li>
+          <li><router-link to="/user/my/boothApply">부스 신청하기</router-link></li>
+          <li><router-link to="/user/my/myPostList">작성글 보기기</router-link></li>
         </ul>
-        <div class="delete-account"><router-link to="/user/deleteId">회원탈퇴</router-link></div>
+        <div class="delete-account"><router-link to="/user/my/deleteId">회원탈퇴</router-link></div>
       </div>
 
     </div>

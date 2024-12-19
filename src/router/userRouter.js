@@ -63,27 +63,28 @@ export default [
   },
 
   {
-    path: "/user/myOrderList",
+    path: "/user/my/myOrderList",
     name: "myOrderList",
     component: MyOrderList,
     meta: {title: "주문내역", useUserName: true}
   },
 
   {
-    path: "/user/deleteId",
+    path: "/user/my/deleteId",
     name: "deleteId",
     component: DeleteId,
+    meta: {title: "회원탈퇴"}
   },
 
   {
-    path: "/user/myPostList",
+    path: "/user/my/myPostList",
     name: "myPostList",
     component: MyPostList,
 
   },
 
   {
-    path: "/user/boothApply",
+    path: "/user/my/boothApply",
     name: "boothApply",
     component: BoothApply,
     meta: {title: "부스 신청하기"},

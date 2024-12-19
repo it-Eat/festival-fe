@@ -26,6 +26,7 @@ const handleSubmit = () => {
 <template>
   <div class="page">
   <!-- 헤더 -->
+   <div class="home">
   <div class="header">
     <BackHeader />
   </div>
@@ -83,37 +84,47 @@ const handleSubmit = () => {
       </div>
     </form>
   </div>
+  </div>
 </div>
 </template>
 
 <style scoped>
 .page {
+  width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.home{
+  flex-direction: column;
   align-items: center;
-  width: 100%;
+  justify-content: flex;
+  width: 600px;
+  height: 100vh;
+  box-sizing: border-box;
+  margin: auto;
 }
 
 /* 헤더 스타일 */
 .header {
   width: 100%;
-  max-width: 600px; /* 컨테이너와 동일한 최대 너비 설정 */
   margin: auto;
-  display: flex;
-  justify-content: center;
+
+  margin-bottom: 20px;
 }
 
 /* 컨테이너 스타일 */
 .container {
+  flex:0.5;
   width: 100%;
-  max-width: 560px;
-  margin: 20px auto;
-  padding: 20px;
+  margin: 0px;
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
 
 /* 제목 스타일 */
 .title {
@@ -126,6 +137,7 @@ const handleSubmit = () => {
 /* 폼 그룹 스타일 */
 .form-group {
   margin-bottom: 15px;
+  margin : 20px;
 }
 
 label {
@@ -165,5 +177,11 @@ input[type="file"] {
 
 .submit-button:hover {
   background-color: #dd5346;
+}
+
+@media (max-width: 900px) {
+  .home {
+    width: 100%;
+  }
 }
 </style>

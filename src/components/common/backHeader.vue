@@ -41,13 +41,14 @@ const pageTitle = computed(() => {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 60px; /* 헤더 높이 */
+  height: 50px; /* 헤더 높이 */
   background-color: #ff6f61; /* 밝은 배경색 */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 하단 그림자 */
   padding: 0 16px; /* 좌우 여백 */
   box-sizing: border-box;
   border-radius: 5px;
   position: relative;
+  margin: 0;
 }
 
 /* 페이지명 스타일 */

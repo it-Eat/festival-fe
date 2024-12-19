@@ -70,6 +70,7 @@ const handleDelete = () => {
   width: 100%;
   max-width: 600px; /* 컨테이너와 동일한 최대 너비 설정 */
   margin: auto;
+  margin-bottom: 20px;
   display: flex;
   justify-content: center;
 }
@@ -78,14 +79,16 @@ const handleDelete = () => {
 .container {
   width: 100%;
   max-width: 600px; /* 헤더와 동일한 최대 너비 설정 */
-  border-radius: 5px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: auto;
+  margin: 20px;
   text-align: center;
-  padding: 20px; /* 내부 여백 추가 */
+  font-size: 22px;
 }
 
 /* 이메일 입력 스타일 */
@@ -110,6 +113,7 @@ const handleDelete = () => {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  margin-bottom: 20px;
 }
 
 .delete-button:hover {
@@ -118,8 +122,8 @@ const handleDelete = () => {
 
 /* 반응형 스타일 */
 @media (max-width: 900px) {
-  .container,
-  .header {
+
+  .header,.container {
     max-width: 90%; /* 모바일에서 화면 너비에 맞춤 */
   }
 }
