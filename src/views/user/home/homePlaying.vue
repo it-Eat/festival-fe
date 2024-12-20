@@ -32,18 +32,25 @@ const goToPlayingList = () => {
       :key="play.playNum"
       :item="play"
     ></photoCard>
+    <button class="button1" @click="goToPlayingList">자세히보기</button>
   </div>
-  <button class="button1" @click="goToPlayingList">자세히보기</button>
 </template>
 
 <style scoped>
 .play-gallery {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-  padding: 20px;
+  row-gap: 20px;
+  column-gap: 20px;
+  padding: 0px;
   border-radius: 12px;
   justify-items: center;
   justify-content: center;
+  overflow: auto;
+}
+
+.button1 {
+  margin-top: 10px;
+  grid-column: 2;
 }
 </style>

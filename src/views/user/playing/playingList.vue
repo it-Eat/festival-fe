@@ -42,8 +42,8 @@ const playList = ref([
 .play-gallery {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-  padding: 20px;
+  gap: 10px;
+  padding: 5px;
   border-radius: 12px;
   justify-items: center;
   justify-content: center;

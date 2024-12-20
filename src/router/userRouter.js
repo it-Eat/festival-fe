@@ -14,7 +14,6 @@ import MyPostList from "@/views/user/my/myPostList.vue";
 import BoothApply from "@/views/user/my/boothApply.vue";
 import MyOrderDetail from "@/views/user/my/myOrderDetail.vue";
 
-
 export default [
   {
     path: "/user/boardList",
@@ -65,6 +64,7 @@ export default [
       },
     ],
   },
+
   {
     path: "/user/playing/playingList",
     name: "playingList",
@@ -76,37 +76,36 @@ export default [
     component: playingDetail,
     props: true,
   },
+  {
     path: "/user/my/myOrderList",
     name: "myOrderList",
     component: MyOrderList,
-    meta: {title: "주문내역", useUserName: true},
+    meta: { title: "주문내역", useUserName: true },
     children: [
       {
         path: ":id",
         name: "myOrderDetail",
         component: MyOrderDetail,
-      }
-    ]
+      },
+    ],
   },
 
   {
     path: "/user/my/deleteId",
     name: "deleteId",
     component: DeleteId,
-    meta: {title: "회원탈퇴"}
+    meta: { title: "회원탈퇴" },
   },
 
   {
     path: "/user/my/myPostList",
     name: "myPostList",
     component: MyPostList,
-
   },
   {
     path: "/user/my/boothApply",
     name: "boothApply",
     component: BoothApply,
-    meta: {title: "부스 신청하기"},
-  }
+    meta: { title: "부스 신청하기" },
+  },
 ];
-
