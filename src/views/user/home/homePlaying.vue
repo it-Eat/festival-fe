@@ -26,7 +26,7 @@ const goToPlayingList = () => {
 </script>
 
 <template>
-  <div class="play-gallery">
+  <div>
     <photoCard
       v-for="play in playList"
       :key="play.playNum"
@@ -37,20 +37,8 @@ const goToPlayingList = () => {
 </template>
 
 <style scoped>
-.play-gallery {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  row-gap: 20px;
-  column-gap: 20px;
-  padding: 0px;
-  border-radius: 12px;
-  justify-items: center;
-  justify-content: center;
-  overflow: auto;
-}
-
 .button1 {
-  margin-top: 10px;
-  grid-column: 2;
+  grid-column: 1 / -1; /* 버튼이 전체 너비를 차지하도록 */
+  justify-self: center;
 }
 </style>

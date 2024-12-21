@@ -1,13 +1,7 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
-    <div>
-        
-    </div>
+  <div>{{ name }} 소형 리스트</div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -3,7 +3,7 @@ import { useRouter } from "vue-router";
 
 const props = defineProps({
   item: {
-    type: Number,
+    type: Object,
     required: true,
   },
 });
