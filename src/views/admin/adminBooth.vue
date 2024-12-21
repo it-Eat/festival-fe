@@ -2,7 +2,7 @@
 
 <template>
   <div>
-    <h1>리뷰 확인 페이지</h1>
+    <h1>상점관리</h1>
   </div>
 </template>
 

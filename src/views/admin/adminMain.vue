@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import menuComponent from "@/components/admin/menuComponent.vue";
-import adminContent from "./adminContent.vue";
 import { useRouter } from "vue-router"; // router import 추가
 
 const logOk = ref(false); // 로그인 상태 변수
@@ -27,7 +26,6 @@ function logout() {
       <button @click="logout">로그아웃</button>
     </div>
     <div class="content">
-      <!-- <adminContent /> -->
       <router-view />
     </div>
   </div>
