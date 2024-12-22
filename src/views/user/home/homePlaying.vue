@@ -26,24 +26,19 @@ const goToPlayingList = () => {
 </script>
 
 <template>
-  <div class="play-gallery">
+  <div>
     <photoCard
       v-for="play in playList"
       :key="play.playNum"
       :item="play"
     ></photoCard>
+    <button class="button1" @click="goToPlayingList">자세히보기</button>
   </div>
-  <button class="button1" @click="goToPlayingList">자세히보기</button>
 </template>
 
 <style scoped>
-.play-gallery {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-  padding: 20px;
-  border-radius: 12px;
-  justify-items: center;
-  justify-content: center;
+.button1 {
+  grid-column: 1 / -1; /* 버튼이 전체 너비를 차지하도록 */
+  justify-self: center;
 }
 </style>

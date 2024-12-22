@@ -13,7 +13,9 @@ import DeleteId from "@/views/user/my/deleteId.vue";
 import MyPostList from "@/views/user/my/myPostList.vue";
 import BoothApply from "@/views/user/my/boothApply.vue";
 import MyOrderDetail from "@/views/user/my/myOrderDetail.vue";
-
+import LostItemDetail from "@/views/user/lostItem/lostItemDetail.vue";
+import LostItemList from "@/views/user/lostItem/lostItemList.vue";
+import BoardList from "@/views/user/board/boardList.vue";
 
 export default [
   {
@@ -65,6 +67,7 @@ export default [
       },
     ],
   },
+
   {
     path: "/user/playing/playingList",
     name: "playingList",
@@ -76,37 +79,51 @@ export default [
     component: playingDetail,
     props: true,
   },
+  {
     path: "/user/my/myOrderList",
     name: "myOrderList",
     component: MyOrderList,
-    meta: {title: "주문내역", useUserName: true},
+    meta: { title: "주문내역", useUserName: true },
     children: [
       {
         path: ":id",
         name: "myOrderDetail",
         component: MyOrderDetail,
-      }
-    ]
+      },
+    ],
   },
 
   {
     path: "/user/my/deleteId",
     name: "deleteId",
     component: DeleteId,
-    meta: {title: "회원탈퇴"}
+    meta: { title: "회원탈퇴" },
   },
 
   {
     path: "/user/my/myPostList",
     name: "myPostList",
     component: MyPostList,
-
   },
   {
     path: "/user/my/boothApply",
     name: "boothApply",
     component: BoothApply,
-    meta: {title: "부스 신청하기"},
-  }
+    meta: { title: "부스 신청하기" },
+  },
+  {
+    path: "/user/lostItem/detail",
+    name: "lostItemDetail",
+    component: LostItemDetail,
+  },
+  {
+    path: "/user/lostItem/list",
+    name: "lostItemList",
+    component: LostItemList,
+  },
+  {
+    path: "/user/board/list",
+    name: "boardList",
+    component: BoardList,
+  },
 ];
-

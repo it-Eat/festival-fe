@@ -3,7 +3,7 @@ import { useRouter } from "vue-router";
 
 const props = defineProps({
   item: {
-    type: Number,
+    type: Object,
     required: true,
   },
 });
@@ -21,13 +21,16 @@ const goToDetail = () => {
 <template>
   <div @click="goToDetail" class="photo-card">
     <img :src="item.img" :alt="item.name" />
-    <p>{{ item.name }}</p>
+    <div class="card-name">{{ item.name }}</div>
   </div>
 </template>
 
 <style scoped>
 .photo-card {
-  width: 100%;
+  width: 60px;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
   /* flex-basis 계산 제거 */
   text-align: center;
   background-color: #fff;
@@ -44,10 +47,13 @@ const goToDetail = () => {
   border-radius: 8px;
 }
 
-.photo-card p {
+.photo-card div {
   margin-top: 8px;
-  font-size: 14px;
   color: #333;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .photo-card:hover {
