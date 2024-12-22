@@ -16,6 +16,7 @@ import MyOrderDetail from "@/views/user/my/myOrderDetail.vue";
 import LostItemDetail from "@/views/user/lostItem/lostItemDetail.vue";
 import LostItemList from "@/views/user/lostItem/lostItemList.vue";
 import BoardList from "@/views/user/board/boardList.vue";
+import MyWriteReview from "@/views/user/my/myWriteReview.vue";
 
 export default [
   {
@@ -89,6 +90,7 @@ export default [
         path: ":id",
         name: "myOrderDetail",
         component: MyOrderDetail,
+        meta: { title: " "},
       },
     ],
   },
@@ -126,4 +128,9 @@ export default [
     name: "boardList",
     component: BoardList,
   },
+  {
+    path: "/user/my/myWriteReview",
+    name: "writeReview",
+    component: MyWriteReview,
+  }
 ];
