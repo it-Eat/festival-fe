@@ -88,24 +88,40 @@ const listItemList = ref([
     <div>
       <div class="menu">분실물</div>
       <hr style="border: 0; height: 1px; background-color: black" />
-      <div class="list">
-        <SmallList
-          class="list-item"
-          v-for="lostitem in lostItemList"
-          :key="lostitem.id"
-          :lost="lostitem"
-        />
+      <SmallList
+        class="list-item"
+        v-for="lostitem in lostItemList"
+        :key="lostitem.id"
+        :lost="lostitem"
+      />
+      <div style="display: flex; justify-content: center">
+        <button
+          style="margin: auto; padding: 2px 4px; background-color: #2fffff"
+        >
+          <router-link style="text-decoration: none" to="/user/lostItem/list"
+            >더보기</router-link
+          >
+        </button>
       </div>
     </div>
+
     <div>
       <div class="menu">게시판</div>
-      <div class="list">
-        <SmallList
-          class="list-item"
-          v-for="listitem in listItemList"
-          :key="listitem.id"
-          :board="listitem"
-        />
+      <hr style="border: 0; height: 1px; background-color: black" />
+      <SmallList
+        class="list-item"
+        v-for="listitem in listItemList"
+        :key="listitem.id"
+        :board="listitem"
+      />
+      <div style="display: flex; justify-content: center">
+        <button
+          style="margin: auto; padding: 2px 4px; background-color: #2fffff"
+        >
+          <router-link style="text-decoration: none" to="/user/board/list"
+            >더보기</router-link
+          >
+        </button>
       </div>
     </div>
   </div>

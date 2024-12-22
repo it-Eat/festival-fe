@@ -23,7 +23,7 @@ import backHeader from "@/components/common/backHeader.vue";
 }
 
 .content-area {
-  background-color: #ffcd00;
+  background-color: #ffffff;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;

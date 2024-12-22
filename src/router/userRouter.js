@@ -13,6 +13,9 @@ import DeleteId from "@/views/user/my/deleteId.vue";
 import MyPostList from "@/views/user/my/myPostList.vue";
 import BoothApply from "@/views/user/my/boothApply.vue";
 import MyOrderDetail from "@/views/user/my/myOrderDetail.vue";
+import LostItemDetail from "@/views/user/lostItem/lostItemDetail.vue";
+import LostItemList from "@/views/user/lostItem/lostItemList.vue";
+import BoardList from "@/views/user/board/boardList.vue";
 
 export default [
   {
@@ -107,5 +110,20 @@ export default [
     name: "boothApply",
     component: BoothApply,
     meta: { title: "부스 신청하기" },
+  },
+  {
+    path: "/user/lostItem/detail",
+    name: "lostItemDetail",
+    component: LostItemDetail,
+  },
+  {
+    path: "/user/lostItem/list",
+    name: "lostItemList",
+    component: LostItemList,
+  },
+  {
+    path: "/user/board/list",
+    name: "boardList",
+    component: BoardList,
   },
 ];
