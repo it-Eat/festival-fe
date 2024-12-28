@@ -1,6 +1,6 @@
 <script>
-import BackHeader from '@/components/common/backHeader.vue';
-import Pagination from '@/components/common/pagination.vue';
+import BackHeader from "@/components/common/backHeader.vue";
+import Pagination from "@/components/common/pagination.vue";
 export default {
   components: { Pagination, BackHeader },
   data() {
@@ -25,7 +25,7 @@ export default {
       return this.items.slice(start, end);
     },
     isChildRouteActive() {
-      return this.$route.name === 'myOrderDetail';
+      return this.$route.name === "myOrderDetail";
     },
   },
   methods: {
@@ -39,8 +39,6 @@ export default {
 <template>
   <div class="page">
     <div class="home">
-
-
       <!-- 리스트 -->
       <div class="content" v-if="!isChildRouteActive">
         <!-- 헤더 -->
@@ -62,11 +60,10 @@ export default {
             query: {
               name: item.name,
               price: item.price,
-
             },
             params: {
               id: item.id,
-            }
+            },
           }"
           class="list-item-link"
         >

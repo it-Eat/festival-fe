@@ -1,12 +1,13 @@
 <script setup>
-import { ChevronLeft } from 'lucide-vue-next';
-import { useRouter, useRoute } from 'vue-router';
-import { computed } from 'vue';
+import { ChevronLeft, AlignJustify } from "lucide-vue-next";
+import { useRouter, useRoute } from "vue-router";
+import { computed, ref } from "vue";
+import Hamberger from "../modal/hamberger.vue";
 
 // props로 전달된 값을 받음
 const props = defineProps({
   title: String, // 페이지 제목
-  useUserName: Boolean // 사용자 이름을 포함할지 여부
+  useUserName: Boolean, // 사용자 이름을 포함할지 여부
 });
 
 // Vue Router 사용
@@ -18,7 +19,7 @@ const goBack = () => {
   router.back();
 };
 
-const userName = '천세윤';
+const userName = "천세윤";
 
 // 페이지 제목 계산
 const pageTitle = computed(() => {
@@ -34,9 +35,22 @@ const pageTitle = computed(() => {
     if (route.meta.title && route.meta.useUserName) {
       return `${userName}님의 ${route.meta.title}`;
     }
-    return route.meta.title || '기본 페이지 제목';
+    return route.meta.title || "기본 페이지 제목";
   }
 });
+
+const isHambergerOpen = ref(false);
+
+const toggleMenu = () => {
+  isHambergerOpen.value = !isHambergerOpen.value;
+};
+
+const closeMenu = (e) => {
+  // 클릭된 영역이 메뉴 외부라면 메뉴를 닫음
+  if (e.target === e.currentTarget) {
+    isHambergerOpen.value = false;
+  }
+};
 </script>
 
 <template>
@@ -48,7 +62,14 @@ const pageTitle = computed(() => {
     <h1>{{ pageTitle }}</h1>
 
     <!-- 메뉴 아이콘 -->
-    <AlignJustify class="right-icon" />
+    <AlignJustify class="right-icon" @click="toggleMenu" />
+
+    <div
+      :class="{ 'menu-overlay': true, open: isHambergerOpen }"
+      @click="closeMenu"
+    >
+      <Hamberger />
+    </div>
   </header>
 </template>
 
@@ -74,9 +95,6 @@ const pageTitle = computed(() => {
   font-weight: bold;
   color: #ffffff; /* 진한 글자 색상 */
   margin: 0;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   text-align: center; /* 중앙 정렬 */
   overflow: hidden;
   text-overflow: ellipsis;
@@ -90,14 +108,6 @@ const pageTitle = computed(() => {
   height: 24px;
   cursor: pointer;
   transition: color 0.3s ease; /* 부드러운 색상 전환 */
-  position: absolute;
-  left: 16px; /* 왼쪽 여백 */
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.left-icon:hover {
-  color: #bcb4b3; /* 호버 시 색상 변경 */
 }
 
 /* 오른쪽 아이콘 스타일 */
@@ -109,7 +119,54 @@ const pageTitle = computed(() => {
   transition: color 0.3s ease;
 }
 
-.right-icon:hover {
+/* 왼쪽과 오른쪽 아이콘을 각각 배치하기 위한 설정 */
+.header-container > div {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* 왼쪽 아이콘 스타일 */
+.left-icon {
+  margin-right: auto; /* 왼쪽 끝에 배치 */
+}
+
+/* 오른쪽 아이콘 스타일 */
+.right-icon {
+  margin-left: auto; /* 오른쪽 끝에 배치 */
+}
+
+.right-icon:hover,
+.left-icon:hover {
   color: #bcb4b3; /* 호버 시 색상 변경 */
+}
+
+/* 메뉴 오버레이 (햄버거 메뉴가 열리면 배경을 덮음) */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  right: 0; /* 오른쪽 끝에 고정 */
+  width: 50%; /* 메뉴 폭 */
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  z-index: 1000; /* 햄버거 메뉴가 최상위로 오도록 */
+  transform: translateX(100%); /* 초기 상태에서 오른쪽으로 밀어놓기 */
+  transition: transform 0.3s ease-in-out;
+}
+
+/* 메뉴가 열리면 오른쪽에서 슬라이드로 들어옴 */
+.menu-overlay.open {
+  transform: translateX(0);
+}
+
+/* 햄버거 메뉴의 컨테이너 스타일 */
+.hamburger-container {
+  background-color: #ffffff; /* 배경색을 흰색으로 설정 */
+  height: 100%;
+  width: 100%;
+  overflow: auto;
 }
 </style>

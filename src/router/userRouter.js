@@ -17,6 +17,10 @@ import LostItemDetail from "@/views/user/lostItem/lostItemDetail.vue";
 import LostItemList from "@/views/user/lostItem/lostItemList.vue";
 import BoardList from "@/views/user/board/boardList.vue";
 import MyWriteReview from "@/views/user/my/myWriteReview.vue";
+import SalesList from "@/views/merchant/salesList.vue";
+import BasicMessage from "@/views/merchant/basicMessage.vue";
+import MerchantHome from "@/views/merchant/merchantHome.vue";
+import Modify from "@/views/merchant/modify.vue";
 
 export default [
   {
@@ -90,7 +94,7 @@ export default [
         path: ":id",
         name: "myOrderDetail",
         component: MyOrderDetail,
-        meta: { title: " "},
+        meta: { title: " " },
       },
     ],
   },
@@ -132,5 +136,28 @@ export default [
     path: "/user/my/myWriteReview",
     name: "writeReview",
     component: MyWriteReview,
-  }
+  },
+
+  // 상인
+
+  {
+    path: "/merchant/merchantHome",
+    name: "merchantHome",
+    component: MerchantHome,
+  },
+  {
+    path: "/merchant/salesList",
+    name: "salesList",
+    component: SalesList,
+  },
+  {
+    path: "/merchant/basicMessage",
+    name: "basicMessage",
+    component: BasicMessage,
+  },
+  {
+    path: "/merchant/modify",
+    name: "modify",
+    component: Modify,
+  },
 ];

@@ -1,34 +1,79 @@
 <script setup>
+import { ref } from "vue";
 
+const isLoggedIn = ref(true); // 로그인 상태를 나타내는 변수
+const userType = ref("merchant"); // 로그인된 사용자 유형 (예: 'user', 'merchant')
+
+function handleLogin() {
+  isLoggedIn.value = true;
+  userType.value = "user"; // 일반 사용자로 로그인
+}
+
+function handleMerchantLogin() {
+  isLoggedIn.value = true;
+  userType.value = "merchant"; // 상인으로 로그인
+}
+
+function handleLogout() {
+  isLoggedIn.value = false;
+  userType.value = "user"; // 로그아웃 처리
+}
 </script>
 
 <template>
-    <div class="hamberger">
-      <div class="menu-content">
-        <div>
-        <!-- 나중에 토큰연결후 이름바꾸기 -->
-        <div>천세윤 님</div>
-         <hr>
+  <div class="hamberger">
+    <div class="menu-content">
+      <div>
+        <!-- 사용자 이름과 로그인 상태에 따라 다르게 표시 -->
+        <div v-if="isLoggedIn">
+          <div>천세윤 님</div>
+          <hr />
         </div>
-        <ul>
-          <li>로그아웃</li>
-          <li>공통페이지</li>
-          <li><router-link to="/user/my/myOrderList">주문 내역</router-link></li>
-          <li><router-link to="/user/my/boothApply">부스 신청하기</router-link></li>
-          <li><router-link to="/user/my/myPostList">작성글 보기기</router-link></li>
-        </ul>
-        <div class="delete-account"><router-link to="/user/my/deleteId">회원탈퇴</router-link></div>
-      </div>
 
+        <ul>
+          <!-- 로그인 여부에 따라 항목 변경 -->
+          <li v-if="!isLoggedIn">
+            <router-link to="/login">로그인</router-link>
+          </li>
+          <li v-if="isLoggedIn && userType === 'user'">
+            <router-link to="/user/my/myOrderList">주문 내역</router-link>
+          </li>
+          <li v-if="isLoggedIn && userType === 'user'">
+            <router-link to="/user/my/boothApply">부스 신청하기</router-link>
+          </li>
+          <li v-if="isLoggedIn && userType === 'user'">
+            <router-link to="/user/my/myPostList">작성글 보기</router-link>
+          </li>
+          <li v-if="isLoggedIn && userType === 'merchant'">
+            <router-link to="/merchant/salesList">매출 확인</router-link>
+          </li>
+          <li v-if="isLoggedIn && userType === 'merchant'">
+            <router-link to="/merchant/basicMessage"
+              >기본 메시지 지정하기</router-link
+            >
+          </li>
+          <li v-if="isLoggedIn">
+            <a href="#" @click="handleLogout">로그아웃</a>
+          </li>
+          <li v-if="!isLoggedIn">
+            <router-link to="/common">공통페이지</router-link>
+          </li>
+        </ul>
+
+        <div v-if="isLoggedIn" class="delete-account">
+          <router-link to="/user/my/deleteId">회원탈퇴</router-link>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <style scoped>
-  .menu-content {
+.menu-content {
   position: fixed;
   top: 0;
   right: 0;
-  width: 40%;
+  width: 30%;
   height: 100vh;
   background: #ffffff;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
@@ -53,10 +98,9 @@
   color: #ff6f61;
 }
 
-.menu-content ul a:hover{
+.menu-content ul a:hover {
   color: #c15248;
 }
-
 
 .delete-account {
   display: flex;
@@ -86,5 +130,11 @@
 
 .delete-account:hover {
   background-color: #474241; /* 호버 시 버튼 색상 */
+}
+
+@media (max-width: 900px) {
+  .menu-content {
+    width: 100%;
+  }
 }
 </style>
