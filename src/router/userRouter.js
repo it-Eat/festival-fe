@@ -154,6 +154,7 @@ export default [
     path: "/merchant/basicMessage",
     name: "basicMessage",
     component: BasicMessage,
+    meta: { title: "기본 메시지 지정하기" },
   },
   {
     path: "/merchant/modify",

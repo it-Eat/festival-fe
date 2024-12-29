@@ -2,7 +2,7 @@
   <div class="page">
     <div class="home">
       <div class="header">
-        <BackHeader />
+        <BackHeader :title="storeInfo.name" />
       </div>
       <div class="content">
         <div class="main-image-container">
