@@ -16,6 +16,8 @@ import MyOrderDetail from "@/views/user/my/myOrderDetail.vue";
 import LostItemDetail from "@/views/user/lostItem/lostItemDetail.vue";
 import LostItemList from "@/views/user/lostItem/lostItemList.vue";
 import BoardList from "@/views/user/board/boardList.vue";
+import FoodList from "@/views/user/food/foodList.vue";
+import FoodDetail from "@/views/user/food/foodDetail.vue";
 
 export default [
   {
@@ -69,12 +71,25 @@ export default [
   },
 
   {
+    path: "/user/food/foodList",
+    name: "foodList",
+    component: FoodList,
+    meta: { title: "먹거리 리스트" },
+  },
+  {
+    path: "/user/food/foodDetail/:id",
+    name: "foodDetail",
+    component: FoodDetail,
+    props: true,
+  },
+  {
     path: "/user/playing/playingList",
     name: "playingList",
     component: playingList,
+    meta: { title: "놀거리 리스트" },
   },
   {
-    path: "/user/playing/playingDetail/:playNum",
+    path: "/user/playing/playingDetail/:id",
     name: "playingDetail",
     component: playingDetail,
     props: true,

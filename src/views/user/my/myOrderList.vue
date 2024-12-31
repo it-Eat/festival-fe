@@ -1,6 +1,6 @@
 <script>
-import BackHeader from '@/components/common/backHeader.vue';
-import Pagination from '@/components/common/pagination.vue';
+import BackHeader from "@/components/common/backHeader.vue";
+import Pagination from "@/components/common/pagination.vue";
 export default {
   components: { Pagination, BackHeader },
   data() {
@@ -34,7 +34,7 @@ export default {
     },
     isChildRouteActive() {
       // 현재 라우트가 자식 라우트인지 확인
-      return this.$route.name === 'myOrderDetail'; // 자식 라우트의 name과 비교
+      return this.$route.name === "myOrderDetail"; // 자식 라우트의 name과 비교
     },
   },
   methods: {
@@ -60,9 +60,9 @@ export default {
           :key="item.id"
           :to="`/user/my/myOrderList/${item.id}`"
           class="list-item-link"
-          >
+        >
           <li>
-          {{ item.name }}
+            {{ item.name }}
           </li>
         </router-link>
       </ul>
@@ -80,8 +80,6 @@ export default {
     </div>
   </div>
 </template>
-
-
 
 <style scoped>
 .page {
@@ -154,5 +152,4 @@ export default {
   position: fixed;
   bottom: 0;
 }
-
 </style>

@@ -1,21 +1,33 @@
 <script setup>
-import { ChevronLeft } from 'lucide-vue-next';
-import { useRouter, useRoute } from 'vue-router';
-import { computed } from 'vue';
+import { ChevronLeft } from "lucide-vue-next";
+import { useRouter, useRoute } from "vue-router";
+import { ref, computed, onMounted } from "vue";
 
 // Vue Router 사용
 const router = useRouter();
 const route = useRoute();
+const dynamicTitle = ref("");
 
 // 이전 페이지로 이동
 const goBack = () => {
   router.back();
 };
 
-const userName = '천세윤';
+const userName = "천세윤";
+
+// title이 함수인 경우를 처리
+onMounted(async () => {
+  if (typeof route.meta.title === "function") {
+    dynamicTitle.value = await route.meta.title(route);
+  }
+});
 
 const pageTitle = computed(() => {
-  if(route.meta.title && route.meta.useUserName){
+  if (dynamicTitle.value) {
+    return dynamicTitle.value;
+  }
+
+  if (route.meta.title && route.meta.useUserName) {
     return `${userName}님의 ${route.meta.title}`;
   }
   return route.meta.title;
