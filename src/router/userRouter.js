@@ -21,6 +21,7 @@ import SalesList from "@/views/merchant/salesList.vue";
 import BasicMessage from "@/views/merchant/basicMessage.vue";
 import MerchantHome from "@/views/merchant/merchantHome.vue";
 import Modify from "@/views/merchant/modify.vue";
+import MenuManage from "@/views/merchant/menuManage.vue";
 
 export default [
   {
@@ -160,5 +161,10 @@ export default [
     path: "/merchant/modify",
     name: "modify",
     component: Modify,
+  },
+  {
+    path: "/merchant/menuManage",
+    name: "menuManage",
+    component: MenuManage,
   },
 ];
