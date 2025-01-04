@@ -166,5 +166,6 @@ export default [
     path: "/merchant/menuManage",
     name: "menuManage",
     component: MenuManage,
+    meta: { title: "메뉴 관리" },
   },
 ];

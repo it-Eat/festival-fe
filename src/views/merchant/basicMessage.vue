@@ -1,7 +1,7 @@
 <script setup>
 import BackHeader from "@/components/common/backHeader.vue";
 import { ref } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter} from "vue-router";
 
 const selectedMessage = ref(null);
 const minTime = ref(5);

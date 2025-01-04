@@ -38,11 +38,13 @@
 import BackHeader from "@/components/common/backHeader.vue";
 import MenuItem from "@/components/common/menuItem.vue";
 import { Wrench } from "lucide-vue-next";
+import { useMerchantStore } from "@/stores/merchant";
 
 export default {
   components: { BackHeader, MenuItem, Wrench },
   data() {
     return {
+      merchantStore : useMerchantStore(),
       storeInfo: {
         name: "지코바",
         location: "A-23",
@@ -86,6 +88,7 @@ export default {
   },
   methods: {
     goToModify() {
+      this.merchantStore.setStoreName(this.storeInfo.name)
       this.$router.push("/merchant/modify");
     },
   },

@@ -2,7 +2,7 @@
   <div class="page">
     <div class="home">
       <div class="header">
-        <BackHeader />
+        <BackHeader :title="storeName"/>
       </div>
       <div class="content">
         <div class="main-image-container">
@@ -54,15 +54,17 @@
 import BackHeader from "@/components/common/backHeader.vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useMerchantStore } from "@/stores/merchant";
 
 export default {
   components: { BackHeader },
   setup() {
     const imageUrl = ref("https://via.placeholder.com/600x300");
-    const storeName = ref("");
     const location = ref("");
     const description = ref("");
     const router = useRouter();
+    const merchantStore = useMerchantStore();
+    const storeName = merchantStore.storeName;
 
     const onFileChange = (event) => {
       const file = event.target.files[0];
@@ -84,6 +86,7 @@ export default {
         description.value,
         imageUrl.value
       );
+      router.back();
     };
 
     return {
