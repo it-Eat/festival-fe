@@ -1,15 +1,6 @@
 <script setup>
 import backHeader from "@/components/common/backHeader.vue";
 import photoCard from "@/components/common/photoCard.vue";
-import { ref } from "vue";
-
-// import facefainting from "@/assets/play/facefainting.jpeg";
-// import dartgame from "@/assets/play/dart.png";
-// import necklace from "@/assets/play/necklace.jpeg";
-// import photo from "@/assets/play/photo.jpeg";
-// import ceramic from "@/assets/play/ceramic.jpeg";
-// import personal from "@/assets/play/personalcolor.jpeg";
-
 import { usePlayingStore } from "@/stores/playing";
 
 const playStore = usePlayingStore();
@@ -19,7 +10,7 @@ const playStore = usePlayingStore();
   <backHeader></backHeader>
   <div class="play-gallery">
     <photoCard
-      v-for="play in playStore.playList"
+      v-for="play in playStore.playingList"
       :key="play.id"
       :item="play"
     ></photoCard>

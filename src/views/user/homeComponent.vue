@@ -1,7 +1,6 @@
 <script setup>
 import HomeMenu from "@/components/home/homeMenu.vue";
 import homeHeader from "@/components/home/homeHeader.vue";
-import backHeader from "@/components/common/backHeader.vue";
 </script>
 
 <template>

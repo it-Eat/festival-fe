@@ -22,7 +22,7 @@ const props = defineProps({
   },
 });
 
-console.log("Received props:", props.item, props.cardType);
+// console.log("Received props:", props.item, props.cardType);
 
 const router = useRouter();
 
