@@ -137,6 +137,7 @@ export default [
     path: "/user/my/myWriteReview",
     name: "writeReview",
     component: MyWriteReview,
+    meta: { title: "리뷰 작성하기" },
   },
 
   // 상인
@@ -150,6 +151,7 @@ export default [
     path: "/merchant/salesList",
     name: "salesList",
     component: SalesList,
+    meta: { title: "매출 확인" },
   },
   {
     path: "/merchant/basicMessage",
