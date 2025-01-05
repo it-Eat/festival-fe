@@ -22,6 +22,7 @@ import BasicMessage from "@/views/merchant/basicMessage.vue";
 import MerchantHome from "@/views/merchant/merchantHome.vue";
 import Modify from "@/views/merchant/modify.vue";
 import MenuManage from "@/views/merchant/menuManage.vue";
+import OrderCheck from "@/components/modal/orderCheck.vue";
 
 export default [
   {
@@ -169,5 +170,10 @@ export default [
     name: "menuManage",
     component: MenuManage,
     meta: { title: "메뉴 관리" },
+  },
+  {
+    path: "/modal/orderCheck",
+    name: "orderCheck",
+    component: OrderCheck,
   },
 ];
