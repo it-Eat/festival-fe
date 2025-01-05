@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
 
-const isLoggedIn = ref(true); // 로그인 상태를 나타내는 변수
+const isLoggedIn = ref(false); // 로그인 상태를 나타내는 변수
 const userType = ref("user"); // 로그인된 사용자 유형 (예: 'user', 'merchant')
 
 function handleLogin() {
@@ -33,7 +33,7 @@ function handleLogout() {
         <ul>
           <!-- 로그인 여부에 따라 항목 변경 -->
           <li v-if="!isLoggedIn">
-            <router-link to="/login">로그인</router-link>
+            <router-link to="/user/login">로그인</router-link>
           </li>
           <li v-if="isLoggedIn && userType === 'user'">
             <router-link to="/user/my/myOrderList">주문 내역</router-link>

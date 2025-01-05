@@ -23,6 +23,8 @@ import MerchantHome from "@/views/merchant/merchantHome.vue";
 import Modify from "@/views/merchant/modify.vue";
 import MenuManage from "@/views/merchant/menuManage.vue";
 import OrderCheck from "@/components/modal/orderCheck.vue";
+import OrderComplete from "@/components/modal/orderComplete.vue";
+import Login from "@/views/user/my/login.vue";
 
 export default [
   {
@@ -100,7 +102,11 @@ export default [
       },
     ],
   },
-
+  {
+    path: "/user/login",
+    name: "login",
+    component: Login,
+  },
   {
     path: "/user/my/deleteId",
     name: "deleteId",
@@ -175,5 +181,10 @@ export default [
     path: "/modal/orderCheck",
     name: "orderCheck",
     component: OrderCheck,
+  },
+  {
+    path: "/modal/orderComplete",
+    name: "orderComplete",
+    component: OrderComplete,
   },
 ];
