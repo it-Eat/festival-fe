@@ -2,6 +2,9 @@
 import searchBar from "@/components/admin/common/searchBar.vue";
 import selectBar from "@/components/admin/common/selectBar.vue";
 import adminList from "@/components/admin/common/adminList.vue";
+import pagination from "@/components/common/pagination.vue";
+import { allListBooth } from "@/api/admin";
+import adminCalendar from "@/components/admin/common/adminCalendar.vue";
 import { ref } from "vue";
 
 // 분실 선택옵션
@@ -9,6 +12,30 @@ const lostOption = ref([
   { value: "lost", text: "분실" },
   { value: "found", text: "습득" },
 ]);
+
+const booths = ref([]);
+
+// const getBooths = async () => {
+//   try {
+//     const festivalId = 1;
+//     const query = {
+//       page: 1,
+//       pageSize: 5,
+//       orderBy: "recent",
+//       keyword: "",
+//       type: "",
+//     };
+
+//     const response = await allListBooth(festivalId, query);
+//     booths.value = response;
+//   } catch (error) {
+//     console.error("API 호출 실패:", error);
+//   }
+// };
+
+// onMounted(() => {
+//   getBooths();
+// });
 </script>
 
 <template>
@@ -16,6 +43,7 @@ const lostOption = ref([
     <h1>분실물 관리</h1>
     <div class="container-search">
       <selectBar :items="lostOption" />
+      <adminCalendar />
       <searchBar />
     </div>
     <div class="container-list">
@@ -31,8 +59,9 @@ const lostOption = ref([
         </thead>
       </table>
       <hr style="border: solid 0.5px" />
-      <adminList />
+      <adminList :booths="items" />
     </div>
+    <pagination></pagination>
   </div>
 </template>
 
@@ -55,8 +84,8 @@ h1 {
 
 .container-list {
   margin-left: 30px;
-  width: 1200px;
-  height: 550px;
+  width: 1300px;
+  height: 650px;
   background-color: rgb(198, 238, 238);
 }
 

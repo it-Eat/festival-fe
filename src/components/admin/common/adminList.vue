@@ -1,8 +1,22 @@
-<script setup></script>
+<script setup>
+import { defineProps } from "vue";
+import adminListItem from "./adminListItem.vue";
+
+const props = defineProps({
+  items: {
+    type: Array,
+    required: true,
+  },
+});
+</script>
 
 <template>
   <div>
-    <h1>리스트 공간</h1>
+    <!-- <adminListItem
+      v-for="item in items"
+      :key="item.id"
+      :item="item"
+    ></adminListItem> -->
   </div>
 </template>
 

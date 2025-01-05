@@ -1,22 +1,42 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import axios from "axios";
 
 const emit = defineEmits(["login"]);
-const username = ref("");
+const festivalCode = ref("");
 const password = ref("");
 const router = useRouter();
 
-function handleLogin() {
-  console.log("로그인 시도:", username.value, password.value); // 로그인 시도 로그
-  if (username.value === "admin" && password.value === "1234") {
-    emit("login"); // 부모에게 로그인 이벤트 전달
-    // 로그인 성공 시 admin 페이지로 리다이렉트
-    router.push({ name: "admin" });
-  } else {
+const handleLogin = async () => {
+  const loginUser = {
+    festivalCode: festivalCode.value,
+    password: password.value,
+  };
+
+  try {
+    const response = await axios.post(
+      "https://festival-be.onrender.com/user/admin",
+      loginUser,
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    if (response.status === 200) {
+      console.log("로그인 성공");
+      console.log("로그인 시도:", festivalCode.value, password.value);
+      emit("login");
+
+      router.push({ name: "admin" });
+    } else {
+      alert("아이디 또는 비밀번호가 잘못되었습니다.");
+    }
+  } catch (error) {
+    console.error("API 요청 오류", error);
     alert("로그인 실패");
   }
-}
+};
 </script>
 
 <template>
@@ -25,8 +45,8 @@ function handleLogin() {
     <form @submit.prevent="handleLogin" class="login-form">
       <input
         type="text"
-        v-model="username"
-        placeholder="사용자 이름"
+        v-model="festivalCode"
+        placeholder="축제 코드"
         required
         class="input-field"
       />
