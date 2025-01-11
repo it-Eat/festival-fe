@@ -1,14 +1,35 @@
 <script setup>
-
+import HomeComponent from "./homeComponent.vue"; // 중괄호 제거
 </script>
 
 <template>
-    <div>
-        <h1>사용자 메인 화면입니다.</h1>
-        <RouterLink to="/user/boardList" class="router-link">게시글리스트</RouterLink><br />
-    </div>
+  <div class="container">
+    <HomeComponent />
+  </div>
 </template>
 
 <style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
+.container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+
+html,
+body {
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 </style>

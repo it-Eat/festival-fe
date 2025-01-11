@@ -1,14 +1,57 @@
 <script setup>
+import SmallList from "@/components/common/smallList.vue";
+import pagination from "@/components/common/pagination.vue";
+import { useBoardStore } from "@/stores/board";
+import backHeader from "@/components/common/backHeader.vue";
 
+const boardStore = useBoardStore();
+
+// for (let i = 1; i < 5; i++) {
+//   const lostItem = boardStore.getLostById(i);
+//   console.log(lostItem);
+// }
 </script>
 
 <template>
-    <div>
-        <h1>게시글 리스트입니다.</h1>
-        <RouterLink to="/user/boardList/detail" class="router-link">게시글 디테일</RouterLink><br />
+  <div>
+    <div class="container">
+      <div>
+        <backHeader />
+        <div class="menu">게시판</div>
+        <hr style="border: 0; height: 1px; background-color: black" />
+        <SmallList
+          class="list-item"
+          v-for="boardItem in boardStore.boardList"
+          :key="boardItem.id"
+          :board="boardItem"
+          style="max-width: 300px"
+        />
+      </div>
     </div>
+    <pagination />
+  </div>
 </template>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 360px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
 
+.list-item {
+  background-color: gray;
+  border-radius: 8px;
+  padding: 2px 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.menu {
+  margin-bottom: 10px;
+}
 </style>
