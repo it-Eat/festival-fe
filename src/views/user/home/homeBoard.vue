@@ -1,86 +1,10 @@
 <script setup>
 import SmallList from "@/components/common/smallList.vue";
+import { useLostStore } from "@/stores/lost";
+import { useBoardStore } from "@/stores/board";
 
-import { ref } from "vue";
-
-import phone1 from "@/assets/lost/phone1.jpeg";
-
-const lostItemList = ref([
-  {
-    id: 1,
-    name: "phone1",
-    img: phone1,
-    title: "아이폰 11프로 맥스 찾아요",
-    contents: "XX 구역에서 아이폰 11프로 맥스 보신분 계신가요?",
-    date: "2024.11.01",
-    found: true,
-  },
-  {
-    id: 2,
-    name: "phone2",
-    img: phone1,
-    title: "아이폰 12프로 맥스 찾아요",
-    contents: "XX 구역에서 아이폰 12프로 맥스 보신분 계신가요?",
-    date: "2024.11.01",
-    found: false,
-  },
-  {
-    id: 3,
-    name: "phone3",
-    img: phone1,
-    title: "아이폰 13프로 맥스 찾아요",
-    contents: "XX 구역에서 아이폰 13프로 맥스 보신분 계신가요?",
-    date: "2024.11.01",
-    found: true,
-  },
-  {
-    id: 4,
-    name: "phone4",
-    img: phone1,
-    title: "아이폰 14프로 맥스 찾아요",
-    contents: "XX 구역에서 아이폰 14프로 맥스 보신분 계신가요?",
-    date: "2024.11.01",
-    found: true,
-  },
-]);
-const listItemList = ref([
-  {
-    id: 1,
-    name: "phone5",
-    img: phone1,
-    title: "아이폰 15프로 맥스 찾아요",
-    contents: "XX 구역에서 아이폰 11프로 맥스 보신분 계신가요?",
-    date: "2024.11.01",
-    found: true,
-  },
-  {
-    id: 2,
-    name: "phone6",
-    img: phone1,
-    title: "아이폰 16프로 맥스 찾아요",
-    contents: "XX 구역에서 아이폰 12프로 맥스 보신분 계신가요?",
-    date: "2024.11.01",
-    found: false,
-  },
-  {
-    id: 3,
-    name: "phone7",
-    img: phone1,
-    title: "아이폰 17프로 맥스 찾아요",
-    contents: "XX 구역에서 아이폰 13프로 맥스 보신분 계신가요?",
-    date: "2024.11.01",
-    found: true,
-  },
-  {
-    id: 4,
-    name: "phone8",
-    img: phone1,
-    title: "아이폰 18프로 맥스 찾아요",
-    contents: "XX 구역에서 아이폰 14프로 맥스 보신분 계신가요?",
-    date: "2024.11.01",
-    found: true,
-  },
-]);
+const lostStore = useLostStore();
+const boardStore = useBoardStore();
 </script>
 
 <template>
@@ -90,9 +14,9 @@ const listItemList = ref([
       <hr style="border: 0; height: 1px; background-color: black" />
       <SmallList
         class="list-item"
-        v-for="lostitem in lostItemList"
-        :key="lostitem.id"
-        :lost="lostitem"
+        v-for="lostItem in lostStore.lostList.slice(0, 4)"
+        :key="lostItem.id"
+        :lost="lostItem"
       />
       <div style="display: flex; justify-content: center">
         <button
@@ -110,9 +34,9 @@ const listItemList = ref([
       <hr style="border: 0; height: 1px; background-color: black" />
       <SmallList
         class="list-item"
-        v-for="listitem in listItemList"
-        :key="listitem.id"
-        :board="listitem"
+        v-for="boardItem in boardStore.boardList.slice(0, 4)"
+        :key="boardItem.id"
+        :board="boardItem"
       />
       <div style="display: flex; justify-content: center">
         <button

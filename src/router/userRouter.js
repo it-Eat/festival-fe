@@ -18,6 +18,7 @@ import LostItemList from "@/views/user/lostItem/lostItemList.vue";
 import BoardList from "@/views/user/board/boardList.vue";
 import FoodList from "@/views/user/food/foodList.vue";
 import FoodDetail from "@/views/user/food/foodDetail.vue";
+import BoardDetail from "@/views/user/board/boardDetail.vue";
 
 export default [
   {
@@ -127,9 +128,16 @@ export default [
     meta: { title: "부스 신청하기" },
   },
   {
-    path: "/user/lostItem/detail",
+    path: "/user/lostItem/detail/:id",
     name: "lostItemDetail",
     component: LostItemDetail,
+    props: true,
+  },
+  {
+    path: "/user/board/detail/:id",
+    name: "boardDetail",
+    component: BoardDetail,
+    props: true,
   },
   {
     path: "/user/lostItem/list",

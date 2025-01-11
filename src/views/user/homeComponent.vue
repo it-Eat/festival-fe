@@ -30,6 +30,7 @@ import homeHeader from "@/components/home/homeHeader.vue";
   border-radius: 12px;
   justify-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .menu-button {
