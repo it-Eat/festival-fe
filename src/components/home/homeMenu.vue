@@ -1,9 +1,9 @@
 <script setup>
 const menuItems = [
-  { name: '먹거리', path: '/user/userHome/homeFood' },
-  { name: '놀거리', path: '/user/userHome/homePlaying' },
-  { name: '게시판', path: '/user/userHome/homeBoard' },
-  { name: '축제 정보', path: '/user/userHome/homeFestInfo' }
+  { name: "먹거리", path: "/user/userHome/homeFood" },
+  { name: "놀거리", path: "/user/userHome/homePlaying" },
+  { name: "게시판", path: "/user/userHome/homeBoard" },
+  { name: "축제 정보", path: "/user/userHome/homeFestInfo" },
 ];
 </script>
 
@@ -35,19 +35,17 @@ const menuItems = [
 }
 
 .menu-button {
-  flex: 1;  
-  height: 50px;               
-  background-color: #f5985e; 
-  color: #fff;             
-  border: 1px solid #8b8b8b;   
-  text-align: center;      
-  cursor: pointer;          
-  outline: none;           
-  margin: 0;                
+  flex: 1;
+  height: 50px;
+  color: #fff;
+  border: 1px solid #8b8b8b;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  margin: 0;
 }
 
 .menu-button:hover {
   background-color: #f47142;
 }
-
 </style>

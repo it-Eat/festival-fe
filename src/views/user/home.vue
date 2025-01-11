@@ -22,6 +22,7 @@ import HomeComponent from "./homeComponent.vue"; // 중괄호 제거
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  padding: 5px;
 }
 
 html,

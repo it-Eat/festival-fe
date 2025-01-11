@@ -1,19 +1,56 @@
 <script setup>
-defineProps({
-  food: Object,
+import { useRouter } from "vue-router";
+
+const props = defineProps({
+  item: {
+    type: Object,
+    required: true,
+    default: () => ({}),
+    validator(value) {
+      return ["id", "img", "name", "position", "description"].every(
+        (key) => key in value
+      );
+    },
+  },
+  // 카드 타입을 구분하기 위한 prop 추가
+  cardType: {
+    type: String,
+    required: true,
+    validator(value) {
+      return ["playing", "food"].includes(value);
+    },
+  },
 });
+
+// console.log("Received props:", props.item, props.cardType);
+
+const router = useRouter();
+
+const goToDetail = () => {
+  // cardType에 따라 라우팅 대상을 분기처리
+  const routeName =
+    props.cardType === "playing" ? "playingDetail" : "foodDetail";
+
+  router.push({
+    name: routeName,
+    params: { id: props.item.id },
+  });
+};
 </script>
 
 <template>
-  <div class="photo-card">
-    <img :src="food.img" :alt="food.name" />
-    <p>{{ food.name }}</p>
+  <div @click="goToDetail" class="photo-card">
+    <img :src="item.img" :alt="item.name" />
+    <div class="card-name">{{ item.name }}</div>
   </div>
 </template>
 
 <style scoped>
 .photo-card {
-  width: 150px;
+  width: 60px;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
   text-align: center;
   background-color: #fff;
   padding: 8px;
@@ -23,16 +60,19 @@ defineProps({
 }
 
 .photo-card img {
-  width: 80px;
-  height: 80px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 8px;
 }
 
-.photo-card p {
+.photo-card div {
   margin-top: 8px;
-  font-size: 14px;
   color: #333;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .photo-card:hover {

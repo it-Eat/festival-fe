@@ -1,13 +1,32 @@
 <script setup>
+import { useRouter } from "vue-router";
+import photoCard from "@/components/common/photoCard.vue";
+import { usePlayingStore } from "@/stores/playing";
 
+const router = useRouter();
+
+const playingStore = usePlayingStore();
+
+const goToPlayingList = () => {
+  router.push("/user/playing/playingList");
+};
 </script>
 
 <template>
-    <div>
-        <h1>홈놀거리뷰</h1>
-    </div>
+  <div>
+    <photoCard
+      v-for="play in playingStore.playingList.slice(0, 6)"
+      :key="play.id"
+      :item="play"
+      card-type="playing"
+    ></photoCard>
+    <button class="button1" @click="goToPlayingList">더보기</button>
+  </div>
 </template>
 
 <style scoped>
-
+.button1 {
+  grid-column: 1 / -1; /* 버튼이 전체 너비를 차지하도록 */
+  justify-self: center;
+}
 </style>

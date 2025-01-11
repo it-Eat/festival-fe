@@ -1,6 +1,9 @@
 <template>
   <nav class="pagination">
     <button :disabled="currentPage === 1" @click="changePage(currentPage - 1)">
+    <button
+      :disabled="currentPage === 1"
+      @click="changePage(currentPage - 1)">
       이전
     </button>
 
@@ -8,15 +11,13 @@
       v-for="page in visiblePages"
       :key="page"
       :class="{ active: page === currentPage }"
-      @click="changePage(page)"
-    >
+      @click="changePage(page)">
       {{ page }}
     </button>
 
     <button
       :disabled="currentPage === totalPages"
-      @click="changePage(currentPage + 1)"
-    >
+      @click="changePage(currentPage + 1)">
       다음
     </button>
   </nav>

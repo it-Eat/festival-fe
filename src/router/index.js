@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Common from "@/views/common.vue";
-
+import adminLogin from "@/views/admin/adminLogin.vue";
+import Admin from "@/views/admin/adminMain.vue";
 import User from "@/views/user/home.vue";
 import userRouter from "./userRouter";
 import adminRouter from "./adminRouter";
-import adminLogin from "@/views/admin/adminLogin.vue";
 
 const routes = [
   ...userRouter,
@@ -13,6 +13,11 @@ const routes = [
     path: "/",
     name: "common",
     component: Common,
+  },
+  {
+    path: "/admin",
+    name: "admin",
+    component: Admin,
   },
   {
     path: "/user",
