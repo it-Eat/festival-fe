@@ -1,7 +1,6 @@
 <script setup>
 import HomeMenu from "@/components/home/homeMenu.vue";
 import homeHeader from "@/components/home/homeHeader.vue";
-import backHeader from "@/components/common/backHeader.vue";
 </script>
 
 <template>
@@ -31,6 +30,7 @@ import backHeader from "@/components/common/backHeader.vue";
   border-radius: 12px;
   justify-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .menu-button {

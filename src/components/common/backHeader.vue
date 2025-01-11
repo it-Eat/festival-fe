@@ -1,4 +1,5 @@
 <script setup>
+
 import { ChevronLeft, AlignJustify } from "lucide-vue-next";
 import { useRouter, useRoute } from "vue-router";
 import { computed, ref } from "vue";
@@ -13,6 +14,7 @@ const props = defineProps({
 // Vue Router 사용
 const router = useRouter();
 const route = useRoute();
+const dynamicTitle = ref("");
 
 // 이전 페이지로 이동
 const goBack = () => {
@@ -23,6 +25,7 @@ const userName = "천세윤";
 
 // 페이지 제목 계산
 const pageTitle = computed(() => {
+
   // props가 있으면 props 값 사용, 없으면 라우트의 meta 정보를 사용
   if (props.title) {
     // props.title과 props.useUserName을 기준으로 페이지 제목 설정

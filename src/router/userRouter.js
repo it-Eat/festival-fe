@@ -16,6 +16,9 @@ import MyOrderDetail from "@/views/user/my/myOrderDetail.vue";
 import LostItemDetail from "@/views/user/lostItem/lostItemDetail.vue";
 import LostItemList from "@/views/user/lostItem/lostItemList.vue";
 import BoardList from "@/views/user/board/boardList.vue";
+import FoodList from "@/views/user/food/foodList.vue";
+import FoodDetail from "@/views/user/food/foodDetail.vue";
+import BoardDetail from "@/views/user/board/boardDetail.vue";
 import MyWriteReview from "@/views/user/my/myWriteReview.vue";
 import SalesList from "@/views/merchant/salesList.vue";
 import BasicMessage from "@/views/merchant/basicMessage.vue";
@@ -78,12 +81,25 @@ export default [
   },
 
   {
+    path: "/user/food/foodList",
+    name: "foodList",
+    component: FoodList,
+    meta: { title: "먹거리 리스트" },
+  },
+  {
+    path: "/user/food/foodDetail/:id",
+    name: "foodDetail",
+    component: FoodDetail,
+    props: true,
+  },
+  {
     path: "/user/playing/playingList",
     name: "playingList",
     component: playingList,
+    meta: { title: "놀거리 리스트" },
   },
   {
-    path: "/user/playing/playingDetail/:playNum",
+    path: "/user/playing/playingDetail/:id",
     name: "playingDetail",
     component: playingDetail,
     props: true,
@@ -126,9 +142,16 @@ export default [
     meta: { title: "부스 신청하기" },
   },
   {
-    path: "/user/lostItem/detail",
+    path: "/user/lostItem/detail/:id",
     name: "lostItemDetail",
     component: LostItemDetail,
+    props: true,
+  },
+  {
+    path: "/user/board/detail/:id",
+    name: "boardDetail",
+    component: BoardDetail,
+    props: true,
   },
   {
     path: "/user/lostItem/list",

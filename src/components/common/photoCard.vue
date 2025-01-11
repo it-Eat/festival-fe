@@ -5,15 +5,35 @@ const props = defineProps({
   item: {
     type: Object,
     required: true,
+    default: () => ({}),
+    validator(value) {
+      return ["id", "img", "name", "position", "description"].every(
+        (key) => key in value
+      );
+    },
+  },
+  // 카드 타입을 구분하기 위한 prop 추가
+  cardType: {
+    type: String,
+    required: true,
+    validator(value) {
+      return ["playing", "food"].includes(value);
+    },
   },
 });
+
+// console.log("Received props:", props.item, props.cardType);
 
 const router = useRouter();
 
 const goToDetail = () => {
+  // cardType에 따라 라우팅 대상을 분기처리
+  const routeName =
+    props.cardType === "playing" ? "playingDetail" : "foodDetail";
+
   router.push({
-    name: "playingDetail",
-    params: { playNum: props.item.playNum },
+    name: routeName,
+    params: { id: props.item.id },
   });
 };
 </script>
@@ -31,7 +51,6 @@ const goToDetail = () => {
   height: 90%;
   display: flex;
   flex-direction: column;
-  /* flex-basis 계산 제거 */
   text-align: center;
   background-color: #fff;
   padding: 8px;
@@ -41,8 +60,8 @@ const goToDetail = () => {
 }
 
 .photo-card img {
-  width: 100%; /* 그리드 셀 내에서 반응형 이미지 */
-  aspect-ratio: 1 / 1; /* 정사각형 비율 유지 */
+  width: 100%;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 8px;
 }

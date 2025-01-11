@@ -1,7 +1,53 @@
-<script setup></script>
+<script setup>
+import SmallList from "@/components/common/smallList.vue";
+import pagination from "@/components/common/pagination.vue";
+import { useLostStore } from "@/stores/lost";
+import backHeader from "@/components/common/backHeader.vue";
+
+const lostStore = useLostStore();
+
+for (let i = 1; i < 5; i++) {
+  const lostItem = lostStore.getLostById(i);
+  console.log(lostItem);
+}
+</script>
 
 <template>
-  <div>분실물 리스트 입니다.</div>
+  <div class="container">
+    <div>
+      <backHeader />
+      <div class="menu">분실물</div>
+      <hr style="border: 0; height: 1px; background-color: black" />
+      <SmallList
+        class="list-item"
+        v-for="lostItem in lostStore.lostList"
+        :key="lostItem.id"
+        :lost="lostItem"
+      />
+    </div>
+    <pagination />
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.list-item {
+  background-color: gray;
+  border-radius: 8px;
+  padding: 2px 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.menu {
+  margin-bottom: 10px;
+}
+</style>

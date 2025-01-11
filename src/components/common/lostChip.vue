@@ -6,7 +6,6 @@ const props = defineProps({
   },
 });
 </script>
-
 <template>
   <!-- lostChip -->
   <div class="status">

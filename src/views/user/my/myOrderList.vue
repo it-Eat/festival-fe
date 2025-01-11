@@ -25,7 +25,9 @@ export default {
       return this.items.slice(start, end);
     },
     isChildRouteActive() {
-      return this.$route.name === "myOrderDetail";
+      // 현재 라우트가 자식 라우트인지 확인
+      return this.$route.name === "myOrderDetail"; // 자식 라우트의 name과 비교
+
     },
   },
   methods: {
@@ -67,6 +69,7 @@ export default {
           }"
           class="list-item-link"
         >
+
           <li class="list-item">
             <span class="item-name">{{ item.name }}</span>
             <span class="item-price">{{ item.price }}</span>
