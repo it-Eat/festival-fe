@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Common from "@/views/common.vue";
+import adminLogin from "@/views/admin/adminLogin.vue";
 import Admin from "@/views/admin/adminMain.vue";
 import User from "@/views/user/home.vue";
 import userRouter from "./userRouter";
 import adminRouter from "./adminRouter";
-import merchantHome from "@/views/merchant/merchantHome.vue";
 
 const routes = [
   ...userRouter,
@@ -12,7 +12,7 @@ const routes = [
   {
     path: "/",
     name: "common",
-    component: merchantHome,
+    component: Common,
   },
   {
     path: "/admin",
@@ -23,6 +23,11 @@ const routes = [
     path: "/user",
     name: "user",
     component: User,
+  },
+  {
+    path: "/adminLogin",
+    name: "adminLogin",
+    component: adminLogin,
   },
 ];
 

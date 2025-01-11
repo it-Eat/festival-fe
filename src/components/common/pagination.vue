@@ -1,5 +1,6 @@
 <template>
   <nav class="pagination">
+    <button :disabled="currentPage === 1" @click="changePage(currentPage - 1)">
     <button
       :disabled="currentPage === 1"
       @click="changePage(currentPage - 1)">

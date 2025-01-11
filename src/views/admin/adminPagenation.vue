@@ -1,9 +1,7 @@
 <script setup></script>
 
 <template>
-  <div>
-    <h1>리뷰 확인 페이지</h1>
-  </div>
+  <div></div>
 </template>
 
 <style scoped></style>

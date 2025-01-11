@@ -1,13 +1,9 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
-    <div>
-        
-    </div>
+  <div>
+    <h1>사용자 관리</h1>
+  </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

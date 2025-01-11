@@ -1,13 +1,9 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
-    <div>
-        
-    </div>
+  <div>
+    <h3>분실물 페이지</h3>
+  </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
