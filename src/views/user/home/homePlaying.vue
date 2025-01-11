@@ -4,7 +4,7 @@
 
 <template>
     <div>
-        
+        <h1>홈놀거리뷰</h1>
     </div>
 </template>
 

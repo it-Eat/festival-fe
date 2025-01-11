@@ -1,15 +1,34 @@
 import { createRouter, createWebHistory } from "vue-router";
-import commonRouter from "./adminRouter";
+import Common from "@/views/common.vue";
+
+import User from "@/views/user/home.vue";
 import userRouter from "./userRouter";
+import adminRouter from "./adminRouter";
+import adminLogin from "@/views/admin/adminLogin.vue";
 
 const routes = [
-    ...commonRouter,
-    ...userRouter
-]
+  ...userRouter,
+  ...adminRouter,
+  {
+    path: "/",
+    name: "common",
+    component: Common,
+  },
+  {
+    path: "/user",
+    name: "user",
+    component: User,
+  },
+  {
+    path: "/adminLogin",
+    name: "adminLogin",
+    component: adminLogin,
+  },
+];
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.VITE_VUE_API_URL),
-    routes
-})
+  history: createWebHistory(),
+  routes,
+});
 
-export default router
+export default router;
