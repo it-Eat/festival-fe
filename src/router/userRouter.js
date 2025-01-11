@@ -19,6 +19,15 @@ import BoardList from "@/views/user/board/boardList.vue";
 import FoodList from "@/views/user/food/foodList.vue";
 import FoodDetail from "@/views/user/food/foodDetail.vue";
 import BoardDetail from "@/views/user/board/boardDetail.vue";
+import MyWriteReview from "@/views/user/my/myWriteReview.vue";
+import SalesList from "@/views/merchant/salesList.vue";
+import BasicMessage from "@/views/merchant/basicMessage.vue";
+import MerchantHome from "@/views/merchant/merchantHome.vue";
+import Modify from "@/views/merchant/modify.vue";
+import MenuManage from "@/views/merchant/menuManage.vue";
+import OrderCheck from "@/components/modal/orderCheck.vue";
+import OrderComplete from "@/components/modal/orderComplete.vue";
+import Login from "@/views/user/my/login.vue";
 
 export default [
   {
@@ -105,10 +114,15 @@ export default [
         path: ":id",
         name: "myOrderDetail",
         component: MyOrderDetail,
+        meta: { title: " " },
       },
     ],
   },
-
+  {
+    path: "/user/login",
+    name: "login",
+    component: Login,
+  },
   {
     path: "/user/my/deleteId",
     name: "deleteId",
@@ -148,5 +162,52 @@ export default [
     path: "/user/board/list",
     name: "boardList",
     component: BoardList,
+  },
+  {
+    path: "/user/my/myWriteReview",
+    name: "writeReview",
+    component: MyWriteReview,
+    meta: { title: "리뷰 작성하기" },
+  },
+
+  // 상인
+
+  {
+    path: "/merchant/merchantHome",
+    name: "merchantHome",
+    component: MerchantHome,
+  },
+  {
+    path: "/merchant/salesList",
+    name: "salesList",
+    component: SalesList,
+    meta: { title: "매출 확인" },
+  },
+  {
+    path: "/merchant/basicMessage",
+    name: "basicMessage",
+    component: BasicMessage,
+    meta: { title: "기본 메시지 지정하기" },
+  },
+  {
+    path: "/merchant/modify",
+    name: "modify",
+    component: Modify,
+  },
+  {
+    path: "/merchant/menuManage",
+    name: "menuManage",
+    component: MenuManage,
+    meta: { title: "메뉴 관리" },
+  },
+  {
+    path: "/modal/orderCheck",
+    name: "orderCheck",
+    component: OrderCheck,
+  },
+  {
+    path: "/modal/orderComplete",
+    name: "orderComplete",
+    component: OrderComplete,
   },
 ];
