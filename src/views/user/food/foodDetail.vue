@@ -1,95 +1,83 @@
-<script setup>
-import backHeader from "@/components/common/backHeader.vue";
-import { useRoute } from "vue-router";
-import { useFoodStore } from "@/stores/food";
-
-const route = useRoute();
-const foodStore = useFoodStore();
-const currentId = Number(route.params.id);
-const currentItem = foodStore.getFoodById(currentId);
-
-console.log("Received item.id: ", currentItem.id);
-console.log("Received item.name: ", currentItem.name);
-console.log("Received item.position: ", currentItem.position);
-console.log("Received item.description: ", currentItem.description);
-</script>
-
 <template>
-  <div class="container">
-    <backHeader></backHeader>
-    <div class="sub-container" v-if="currentItem">
-      <div>
-        <div class="logo-image">
-          <img :src="currentItem.img" :alt="currentItem.name" />
-        </div>
+  <div class="page">
+    <div class="home">
+      <div class="header">
+        <BackHeader :title="storeInfo.name" :category="ctg" :cartCount="cartItemCount" />
       </div>
-
-      <div class="main">
-        <div class="booth">
-          <div>
-            [선택된 놀거리 번호]: <strong>{{ currentItem.id }}</strong>
-          </div>
-          <div>
-            [부스 위치]: <strong>{{ currentItem.position }}</strong>
-          </div>
+      <div class="content">
+        <div class="main-image-container">
+          <img src="https://via.placeholder.com/600x300" alt="대표 이미지" class="mainImg" />
         </div>
-        <div class="description">
-          <div class="contents">{{ currentItem.description }}</div>
+        <div class="store-info">
+          <h2 class="store-name">{{ storeInfo.name }}</h2>
+          <div class="store-details">
+            <div class="location-category">
+              <span class="store-location">{{ storeInfo.location }}</span>
+              <span class="store-category">{{ storeInfo.category }}</span>
+            </div>
+            <div class="store-rating">
+              <span>★{{ storeInfo.rating }}</span>
+              <span @click="goToReview">리뷰 {{ storeInfo.reviewCount }}개></span>
+            </div>
+          </div>
+          <br>
+          <div>{{ storeInfo.information }}</div>
+        </div>
+        <div class="menu-list">
+          <MenuItem v-for="menu in menus" :key="menu.id" :menu="menu" :showButton="isFoodDetail" @add-to-cart="addToCart" />
         </div>
       </div>
     </div>
   </div>
 </template>
 
+<script setup>
+import BackHeader from '@/components/common/backHeader.vue';
+import MenuItem from '@/components/common/menuItem.vue';
+import { useRouter } from 'vue-router';
+import { ref, computed } from 'vue';
+
+const cartItems = ref([]);
+const router = useRouter();
+
+const goToReview = () => {
+  router.push("/user/food/review");
+}
+
+const ctg = "foodDetail";
+
+const storeInfo = {
+  name: "지코바",
+  location: "A-23",
+  category: "",
+  rating: 4.5,
+  reviewCount: 4,
+  information: "안녕하세요, 지코바입니다."
+};
+const menus = [
+  { id: 1, image: "https://via.placeholder.com/80", name: "떡볶이", price: "5000원" },
+  { id: 2, image: "https://via.placeholder.com/80", name: "마라탕", price: "12500원" },
+  { id: 3, image: "https://via.placeholder.com/80", name: "마라탕", price: "12500원" },
+  { id: 4, image: "https://via.placeholder.com/80", name: "마라탕", price: "12500원" },
+  { id: 5, image: "https://via.placeholder.com/80", name: "마라탕", price: "12500원" },
+];
+
+const addToCart = (menu) => {
+  cartItems.value.push(menu);
+};
+
+const isFoodDetail = true;
+const cartItemCount = computed(() => cartItems.value.length);
+</script>
+
 <style scoped>
-.logo-image {
-  background-color: #6b5b95;
-  width: 100vw;
-  height: 200px;
-  margin: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden; /* 이미지가 컨테이너를 넘지 않도록 */
-}
-
-.logo-image img {
-  width: 100%; /* 컨테이너에 맞게 이미지 넓이 조정 */
-  height: auto; /* 컨테이너 높이에 맞게 조정 */
-  object-fit: contain; /* 비율 유지하면서 전체를 보이도록 */
-}
-
-.container {
-  height: 95vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.sub-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-}
-
-.main {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  width: 100%;
-}
-
-.description {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #a999d4;
-  flex: 1;
-  margin: 40px 10px;
-  border-radius: 15%;
-}
-
-.contents {
-  background-color: aliceblue;
-}
+/* foodDetail.vue 스타일 */
+.page { display: flex; justify-content: center; }
+.home { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; width: 600px; height: 95vh; box-sizing: border-box; margin: auto; }
+@media (max-width: 900px) { .home { width: 100%; } }
+.header { width: 100%; margin-bottom: 20px; }
+.content { width: 100%; }
+.store-rating { display: flex; align-items: center; }
+.store-rating span { margin-right: 5px; }
+.store-rating span:hover { cursor: pointer; text-decoration: underline; }
 </style>

@@ -28,6 +28,8 @@ import MenuManage from "@/views/merchant/menuManage.vue";
 import OrderCheck from "@/components/modal/orderCheck.vue";
 import OrderComplete from "@/components/modal/orderComplete.vue";
 import Login from "@/views/user/my/login.vue";
+import FoodReview from "@/views/user/food/foodReview.vue";
+import FoodCart from "@/views/user/food/foodCart.vue";
 
 export default [
   {
@@ -119,6 +121,16 @@ export default [
     ],
   },
   {
+    path: "/user/food/review",
+    name: "review",
+    component: FoodReview,
+  },
+  {
+    path: "/user/food/foodCart",
+    name: "foodCart",
+    component: FoodCart,
+  },
+  {
     path: "/user/login",
     name: "login",
     component: Login,
@@ -169,6 +181,7 @@ export default [
     component: MyWriteReview,
     meta: { title: "리뷰 작성하기" },
   },
+
 
   // 상인
 

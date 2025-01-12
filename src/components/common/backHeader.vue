@@ -1,40 +1,32 @@
 <script setup>
-
-import { ChevronLeft, AlignJustify } from "lucide-vue-next";
+import { ChevronLeft, AlignJustify, ShoppingCart } from "lucide-vue-next";
 import { useRouter, useRoute } from "vue-router";
 import { computed, ref } from "vue";
 import Hamberger from "../modal/hamberger.vue";
 
-// props로 전달된 값을 받음
 const props = defineProps({
-  title: String, // 페이지 제목
-  useUserName: Boolean, // 사용자 이름을 포함할지 여부
+  title: String,
+  useUserName: Boolean,
+  category: String,
+  cartCount: Number, // cartCount prop 추가
 });
 
-// Vue Router 사용
 const router = useRouter();
 const route = useRoute();
-const dynamicTitle = ref("");
 
-// 이전 페이지로 이동
 const goBack = () => {
   router.back();
 };
 
 const userName = "천세윤";
 
-// 페이지 제목 계산
 const pageTitle = computed(() => {
-
-  // props가 있으면 props 값 사용, 없으면 라우트의 meta 정보를 사용
   if (props.title) {
-    // props.title과 props.useUserName을 기준으로 페이지 제목 설정
     if (props.useUserName) {
       return `${userName}님의 ${props.title}`;
     }
     return props.title;
   } else {
-    // props가 없으면 meta.title과 meta.useUserName을 기준으로 제목 설정
     if (route.meta.title && route.meta.useUserName) {
       return `${userName}님의 ${route.meta.title}`;
     }
@@ -48,8 +40,11 @@ const toggleMenu = () => {
   isHambergerOpen.value = !isHambergerOpen.value;
 };
 
+const goShoppingList = () => {
+  router.push("/user/food/foodCart");
+};
+
 const closeMenu = (e) => {
-  // 클릭된 영역이 메뉴 외부라면 메뉴를 닫음
   if (e.target === e.currentTarget) {
     isHambergerOpen.value = false;
   }
@@ -58,19 +53,13 @@ const closeMenu = (e) => {
 
 <template>
   <header class="header-container">
-    <!-- 이전 페이지로 이동하는 버튼 -->
     <ChevronLeft class="left-icon" @click="goBack" />
-
-    <!-- 페이지명은 props 또는 meta의 정보에 따라 동적으로 변경 -->
     <h1>{{ pageTitle }}</h1>
-
-    <!-- 메뉴 아이콘 -->
-    <AlignJustify class="right-icon" @click="toggleMenu" />
-
-    <div
-      :class="{ 'menu-overlay': true, open: isHambergerOpen }"
-      @click="closeMenu"
-    >
+    <ShoppingCart v-if="props.category === 'foodDetail'" class="right-icon" @click="goShoppingList">
+      <span v-if="props.cartCount > 0" class="cart-badge">{{ props.cartCount }}</span>
+    </ShoppingCart>
+    <AlignJustify v-else class="right-icon" @click="toggleMenu" />
+    <div v-if="props.category !== 'foodDetail'" :class="{ 'menu-overlay': true, open: isHambergerOpen }" @click="closeMenu">
       <Hamberger />
     </div>
   </header>
@@ -171,5 +160,15 @@ const closeMenu = (e) => {
   height: 100%;
   width: 100%;
   overflow: auto;
+}
+.cart-badge {
+    background-color: red;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 50%;
+    font-size: 12px;
+    position: absolute;
+    top: 0;
+    right: -5px;
 }
 </style>
