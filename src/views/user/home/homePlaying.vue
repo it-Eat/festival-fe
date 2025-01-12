@@ -25,6 +25,10 @@ const goToPlayingList = () => {
 </template>
 
 <style scoped>
+.container {
+  max-height: 450px;
+}
+
 .button1 {
   grid-column: 1 / -1; /* 버튼이 전체 너비를 차지하도록 */
   justify-self: center;

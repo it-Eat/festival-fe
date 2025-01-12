@@ -57,6 +57,7 @@ const boardStore = useBoardStore();
   flex-direction: column;
   align-items: center;
   max-width: 800px;
+  max-height: 450px;
   margin: 0 auto;
 }
 

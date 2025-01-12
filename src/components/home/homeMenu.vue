@@ -24,6 +24,8 @@ const menuItems = [
 .menu-component {
   display: flex;
   width: 100%;
+  height: 10px; /* 원하는 높이로 설정 */
+  box-sizing: border-box;
 }
 
 .rounded-left {
@@ -36,7 +38,7 @@ const menuItems = [
 
 .menu-button {
   flex: 1;
-  height: 50px;
+  height: auto;
   color: #fff;
   border: 1px solid #8b8b8b;
   text-align: center;
