@@ -41,6 +41,9 @@ export default {
 .menu-image {
   width: 80px;
   height: 80px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  padding: 3px;
 }
 
 .menu-ps {
