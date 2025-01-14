@@ -26,7 +26,7 @@ import homeHeader from "@/components/home/homeHeader.vue";
   width: 100%;
   text-align: center;
   padding: 10px;
-  
+}
 .content-area {
   background-color: #ffffff;
   display: grid;

@@ -2,9 +2,11 @@
 import { ref, onMounted } from "vue";
 import menuComponent from "@/components/admin/menuComponent.vue";
 import { useRouter } from "vue-router"; // router import 추가
+import { useAuthStore } from "@/stores/auth"; // Pinia 상태 관리
 
 const logOk = ref(false); // 로그인 상태 변수
 const router = useRouter(); // router 인스턴스 생성
+const authStore = useAuthStore(); // Pinia 상태 사용
 
 // 페이지 로드 시 로그인 상태 확인
 onMounted(() => {
@@ -12,9 +14,21 @@ onMounted(() => {
   logOk.value = isLoggedIn === "true"; // localStorage에서 로그인 상태 가져오기
 });
 
+// 로그아웃 함수
 function logout() {
   logOk.value = false; // 로그아웃 시 false로 설정
   localStorage.removeItem("isLoggedIn"); // localStorage에서 로그인 상태 삭제
+
+  // Pinia 상태 초기화
+  authStore.setUserData(null); // 사용자 데이터 초기화
+  // authStore.setAccessToken(null); // 액세스 토큰 초기화
+
+  // 쿠키에서 토큰 삭제 (필요한 경우)
+  // document.cookie =
+  //   "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+  // document.cookie =
+  //   "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+
   router.push({ name: "adminLogin" }); // 로그아웃 후 로그인 페이지로 이동
 }
 </script>

@@ -2,11 +2,13 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import { useAuthStore } from "@/stores/auth";
 
 const emit = defineEmits(["login"]);
 const festivalCode = ref("");
 const password = ref("");
 const router = useRouter();
+const authStore = useAuthStore();
 
 const handleLogin = async () => {
   const loginUser = {
@@ -20,14 +22,24 @@ const handleLogin = async () => {
       loginUser,
       {
         headers: { "Content-Type": "application/json" },
+        withCredentials: true, // 쿠키 전송 허용
       }
     );
 
+    console.log("응답 데이터:", response.data); // 응답 바디
+
     if (response.status === 200) {
       console.log("로그인 성공");
-      console.log("로그인 시도:", festivalCode.value, password.value);
-      emit("login");
 
+      const { id, userName, nickname, role, createdAt, updatedAt } =
+        response.data;
+
+      const user = { id, userName, nickname, role, createdAt, updatedAt };
+
+      // Pinia 사용자 데이터 저장
+      authStore.setUserData(user);
+
+      emit("login");
       router.push({ name: "admin" });
     } else {
       alert("아이디 또는 비밀번호가 잘못되었습니다.");

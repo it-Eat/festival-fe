@@ -15,27 +15,27 @@ const lostOption = ref([
 
 const booths = ref([]);
 
-// const getBooths = async () => {
-//   try {
-//     const festivalId = 1;
-//     const query = {
-//       page: 1,
-//       pageSize: 5,
-//       orderBy: "recent",
-//       keyword: "",
-//       type: "",
-//     };
+const getBooths = async () => {
+  try {
+    const festivalId = 1;
+    const query = {
+      page: 1,
+      pageSize: 5,
+      orderBy: "recent",
+      keyword: "",
+      type: "",
+    };
 
-//     const response = await allListBooth(festivalId, query);
-//     booths.value = response;
-//   } catch (error) {
-//     console.error("API 호출 실패:", error);
-//   }
-// };
+    const response = await allListBooth(festivalId, query);
+    booths.value = response;
+  } catch (error) {
+    console.error("API 호출 실패:", error);
+  }
+};
 
-// onMounted(() => {
-//   getBooths();
-// });
+onMounted(() => {
+  getBooths();
+});
 </script>
 
 <template>
