@@ -35,6 +35,9 @@ import MenuManage from "@/views/merchant/menuManage.vue";
 import OrderCheck from "@/components/modal/orderCheck.vue";
 import OrderComplete from "@/components/modal/orderComplete.vue";
 import Login from "@/views/user/my/login.vue";
+import FoodReview from "@/views/user/food/foodReview.vue";
+import FoodCart from "@/views/user/food/foodCart.vue";
+import FoodOrder from "@/views/user/food/foodOrder.vue";
 
 export default [
   {
@@ -129,6 +132,21 @@ export default [
     ],
   },
   {
+    path: "/user/food/review",
+    name: "review",
+    component: FoodReview,
+  },
+  {
+    path: "/user/food/foodCart",
+    name: "foodCart",
+    component: FoodCart,
+  },
+  {
+    path: "/user/food/foodOrder",
+    name: "foodOrder",
+    component: FoodOrder,
+  },
+  {
     path: "/user/login",
     name: "login",
     component: Login,
@@ -137,13 +155,14 @@ export default [
     path: "/user/my/deleteId",
     name: "deleteId",
     component: DeleteId,
-    meta: { title: "회원탈퇴" },
+    meta: { title: "회원탈퇴"},
   },
 
   {
     path: "/user/my/myPostList",
     name: "myPostList",
     component: MyPostList,
+    meta: {title: "게시글보기", useUserName: true}
   },
   {
     path: "/user/my/boothApply",
@@ -179,6 +198,7 @@ export default [
     component: MyWriteReview,
     meta: { title: "리뷰 작성하기" },
   },
+
 
   // 상인
 

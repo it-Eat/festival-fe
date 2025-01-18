@@ -25,7 +25,6 @@ import homeHeader from "@/components/home/homeHeader.vue";
   flex-direction: column;
   height: 100vh; /* 전체 화면 높이로 설정 */
 }
-
 .content-area {
   flex-grow: 1; /* 남은 공간을 차지하도록 설정 */
   display: grid;
