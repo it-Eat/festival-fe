@@ -58,6 +58,12 @@ const totalPrice = computed(() => {
   box-sizing: border-box;
 }
 
+@media (max-width: 900px) {
+  .home {
+    width: 100%;
+  }
+}
+
 .header {
   width: 100%;
   margin-bottom: 20px;

@@ -2,7 +2,7 @@
 import { ref } from "vue";
 
 const isLoggedIn = ref(true); // 로그인 상태를 나타내는 변수
-const userType = ref("merchant"); // 로그인된 사용자 유형 (예: 'user', 'merchant')
+const userType = ref("user"); // 로그인된 사용자 유형 (예: 'user', 'merchant')
 
 function handleLogin() {
   isLoggedIn.value = true;

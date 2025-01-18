@@ -145,13 +145,14 @@ export default [
     path: "/user/my/deleteId",
     name: "deleteId",
     component: DeleteId,
-    meta: { title: "회원탈퇴" },
+    meta: { title: "회원탈퇴"},
   },
 
   {
     path: "/user/my/myPostList",
     name: "myPostList",
     component: MyPostList,
+    meta: {title: "게시글보기", useUserName: true}
   },
   {
     path: "/user/my/boothApply",

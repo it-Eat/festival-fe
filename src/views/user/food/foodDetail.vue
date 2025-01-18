@@ -106,6 +106,8 @@ const cartCount = computed(() => cartStore.totalCount);
 }
 .content {
   width: 100%;
+  margin-bottom: 20px;
+  padding: 0;
 }
 .store-rating {
   display: flex;
