@@ -5,14 +5,8 @@
         <BackHeader />
       </div>
       <div class="content">
-        <h1>매출확인</h1>
-
         <div class="search-bar">
-          <input type="text" placeholder="Search" v-model="searchQuery">
-          <button @click="searchSales">
-            <Search/>
-            <!-- 달력 구현해야함 -->
-          </button>
+          <Calender @selected-date-range="handleDateRangeChange" v-model:start-date="calendarStartDate" v-model:end-date="calendarEndDate"/>
         </div>
 
         <div class="sales-table">
@@ -27,8 +21,11 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="displayedSales[0]?.noResults">
+              <tr v-if="displayedSales.length === 0 && searchQuery !== '' && !filteredByDate">
                 <td colspan="5" style="text-align: center;">검색 결과가 없습니다.</td>
+              </tr>
+              <tr v-else-if="displayedSales.length === 0 && filteredByDate">
+                <td colspan="5" style="text-align: center;">해당 날짜에 매출 기록이 없습니다.</td>
               </tr>
               <tr v-else v-for="sale in displayedSales" :key="sale.orderId">
                 <td>{{ sale.customerName }}</td>
@@ -42,7 +39,7 @@
         </div>
 
         <Pagination
-          :total-items="searchedSales.length"
+          :total-items="filteredSales.length"
           :items-per-page="itemsPerPage"
           :current-page="currentPage"
           @page-changed="handlePageChange"
@@ -56,18 +53,22 @@
 import { ref, computed, onMounted } from 'vue';
 import BackHeader from '@/components/common/backHeader.vue';
 import Pagination from '@/components/common/pagination.vue';
+import Calender from '@/components/modal/calender.vue';
 import { Search } from 'lucide-vue-next';
 
 const salesData = ref([]);
 const searchQuery = ref('');
 const currentPage = ref(1);
 const itemsPerPage = 10;
+const selectedDateRange = ref({ startDate: '', endDate: '' });
+const calendarStartDate = ref('');
+const calendarEndDate = ref('');
+const filteredByDate = ref(false);
+
 const sampleSales = [
     { customerName: '천*윤', orderId: 'A-05', menu: '순대1/떡볶이5', amount: 24500, orderDate: '2024-10-25 17:58:26' },
-    // ... 더 많은 데이터
     { customerName: '김*수', orderId: 'B-12', menu: '치킨/맥주', amount: 35000, orderDate: '2024-10-26 12:30:00' },
     { customerName: '이*진', orderId: 'C-01', menu: '피자/콜라', amount: 28000, orderDate: '2024-10-27 19:00:00' },
-    // 총 50개 데이터 추가
     ...Array.from({ length: 47 }, (_, i) => ({
         customerName: `고객${i+3}`,
         orderId: `D-${i+3}`,
@@ -75,36 +76,53 @@ const sampleSales = [
         amount: (i+3)*1000,
         orderDate: `2024-10-${i+3} 10:00:00`
     }))
-
 ];
 
 onMounted(() => {
     salesData.value = sampleSales;
 });
 
-const searchedSales = computed(() => {
-    if (!searchQuery.value) {
-        return salesData.value;
+const filteredSales = computed(() => {
+    let filtered = salesData.value;
+
+    if (selectedDateRange.value.startDate && selectedDateRange.value.endDate) {
+        filteredByDate.value = true;
+        const startDate = new Date(selectedDateRange.value.startDate);
+        const endDate = new Date(selectedDateRange.value.endDate);
+
+        filtered = filtered.filter(sale => {
+            const saleDate = new Date(sale.orderDate.split(" ")[0]);
+            return saleDate >= startDate && saleDate <= endDate;
+        });
+    } else {
+        filteredByDate.value = false; // 날짜 범위가 없으면 필터링 해제
     }
-    return salesData.value.filter(sale => {
-        return Object.values(sale).some(value => String(value).toLowerCase().includes(searchQuery.value.toLowerCase()));
-    });
+
+    if (searchQuery.value) {
+        filtered = filtered.filter(sale =>
+            Object.values(sale).some(value =>
+                String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
+            )
+        );
+    }
+    return filtered;
 });
 
 const displayedSales = computed(() => {
-  if (searchedSales.value.length === 0) {
-    return [{ noResults: true }];
-  }
-  const startIndex = (currentPage.value - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  return searchedSales.value.slice(startIndex, endIndex);
+    const startIndex = (currentPage.value - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredSales.value.slice(startIndex, endIndex);
 });
 
 const handlePageChange = (page) => {
-  currentPage.value = page;
+    currentPage.value = page;
 };
 
-const searchSales = () => {
+const handleDateRangeChange = (dateRange) => {
+    selectedDateRange.value = dateRange;
+    if (!dateRange.startDate || !dateRange.endDate) {
+        filteredByDate.value = false; // 날짜가 지워진 경우 filteredByDate를 false로 설정
+    }
     currentPage.value = 1;
 };
 </script>
@@ -151,23 +169,14 @@ const searchSales = () => {
     margin-bottom: 20px;
 }
 
-.search-bar input {
-    flex-grow: 1;
-    padding: 8px;
-    border: 1px solid #ccc;
-}
-
-.search-bar button {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    cursor: pointer;
-}
-
 .sales-table {
-    width: 100%; /* 테이블 너비 100% */
     border: 1px solid #ccc;
     border-collapse: collapse;
     margin-bottom: 20px;
+}
+
+.sales-table table{
+  width: 100%;
 }
 
 .sales-table th,
