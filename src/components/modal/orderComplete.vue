@@ -1,11 +1,13 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const isModalVisible = ref(true); // 모달 표시 여부
-
+const router = useRouter();
 
 const closeModal = () => {
   isModalVisible.value = false;
+  router.push('/user');
 };
 
 const customerNumber = 'A-24'; // 고객 번호

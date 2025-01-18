@@ -30,6 +30,7 @@ import OrderComplete from "@/components/modal/orderComplete.vue";
 import Login from "@/views/user/my/login.vue";
 import FoodReview from "@/views/user/food/foodReview.vue";
 import FoodCart from "@/views/user/food/foodCart.vue";
+import FoodOrder from "@/views/user/food/foodOrder.vue";
 
 export default [
   {
@@ -129,6 +130,11 @@ export default [
     path: "/user/food/foodCart",
     name: "foodCart",
     component: FoodCart,
+  },
+  {
+    path: "/user/food/foodOrder",
+    name: "foodOrder",
+    component: FoodOrder,
   },
   {
     path: "/user/login",
