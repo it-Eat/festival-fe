@@ -1,35 +1,39 @@
 import adminBoard from "@/views/admin/board/adminBoard.vue";
-import adminLogin from "@/views/admin/adminLogin.vue";
-import adminContent from "@/views/admin/adminContent.vue";
 import adminLost from "@/views/admin/lost/adminLost.vue";
+import adminMain from "@/views/admin/adminMain.vue";
+import adminUserManage from "@/views/admin/adminUserManage.vue";
+import adminBooth from "@/views/admin/adminBooth.vue";
 
 export default [
   {
-    path: "/admin/adminLogin",
-    name: "adminLogin",
-    component: adminLogin,
-  },
-  {
     path: "/admin",
-    redirect: { name: "adminLogin" },
-  },
-  {
-    path: "/admin/adminContent",
-    name: "adminContent",
-    component: adminContent,
+    name: "admin",
+    component: adminMain, // 기본 컴포넌트
     children: [
       {
-        // 관리자 게시판 관리 페이지
-        path: "adminBoard",
+        path: "adminBoard", // 자식 경로
         name: "adminBoard",
         component: adminBoard,
       },
       {
-        // 관리자 분실물 관리 페이지
-        path: "adminLost",
+        path: "adminLost", // 자식 경로
         name: "adminLost",
         component: adminLost,
       },
+      {
+        path: "adminUserManage",
+        name: "adminUserManage",
+        component: adminUserManage,
+      },
+      {
+        path: "adminBooth",
+        name: "adminBooth",
+        component: adminBooth,
+      },
+      // {
+      //   path: "", // 기본 경로 (예: /admin)
+      //   redirect: { name: "adminBoard" }, // 기본적으로 adminBoard로 리다이렉트
+      // },
     ],
   },
 ];

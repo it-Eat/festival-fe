@@ -21,6 +21,12 @@ import homeHeader from "@/components/home/homeHeader.vue";
   background-color: #ff6f61;
 }
 
+.menu-bar {
+  flex: 0.5;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+}
 .content-area {
   background-color: #ffffff;
   display: grid;
