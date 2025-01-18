@@ -31,10 +31,9 @@ const handleLogin = async () => {
     if (response.status === 200) {
       console.log("로그인 성공");
 
-      const { id, userName, nickname, role, createdAt, updatedAt } =
-        response.data;
+      const { id, userName, nickname, role, participation } = response.data;
 
-      const user = { id, userName, nickname, role, createdAt, updatedAt };
+      const user = { id, userName, nickname, role, participation };
 
       // Pinia 사용자 데이터 저장
       authStore.setUserData(user);

@@ -8,8 +8,11 @@ export const useAuthStore = defineStore("auth", {
       userName: "",
       nickname: null,
       role: "",
-      createdAt: "",
-      updatedAt: "",
+      participation: [
+        {
+          festivalId: "",
+        },
+      ],
     },
   }),
   actions: {
@@ -25,8 +28,11 @@ export const useAuthStore = defineStore("auth", {
         userName: "",
         nickname: null,
         role: "",
-        createdAt: "",
-        updatedAt: "",
+        participation: [
+          {
+            festivalId: "",
+          },
+        ],
       };
     },
   },

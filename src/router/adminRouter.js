@@ -9,15 +9,15 @@ export default [
   {
     path: "/admin",
     name: "admin",
-    component: adminMain, // 기본 컴포넌트
+    component: adminMain,
     children: [
       {
-        path: "adminBoard", // 자식 경로
+        path: "adminBoard",
         name: "adminBoard",
         component: adminBoard,
       },
       {
-        path: "adminLost", // 자식 경로
+        path: "adminLost",
         name: "adminLost",
         component: adminLost,
       },
