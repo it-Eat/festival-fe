@@ -2,7 +2,7 @@
   <div class="page">
     <div class="home">
       <div class="header">
-        <BackHeader :title="storeInfo.name" :category="ctg" :cartCount="cartItemCount" />
+        <BackHeader :title="storeInfo.name" :category="ctg" :cartCount="cartCount" />
       </div>
       <div class="content">
         <div class="main-image-container">
@@ -32,6 +32,7 @@
 </template>
 
 <script setup>
+import { useCartStore } from '@/stores/cartStores'
 import BackHeader from '@/components/common/backHeader.vue';
 import MenuItem from '@/components/common/menuItem.vue';
 import { useRouter } from 'vue-router';
@@ -67,7 +68,9 @@ const addToCart = (menu) => {
 };
 
 const isFoodDetail = true;
-const cartItemCount = computed(() => cartItems.value.length);
+
+const cartStore = useCartStore();
+const cartCount = computed(() => cartStore.totalCount);
 </script>
 
 <style scoped>

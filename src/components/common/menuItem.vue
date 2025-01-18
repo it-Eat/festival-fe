@@ -6,19 +6,36 @@
       <span class="menu-price">{{ menu.price }}</span>
     </div>
     <div class="button" v-if="showButton">
-      <UpdownButton />
+      <UpdownButton
+        ref="updownRef"
+        :initialValue="initialQuantity"
+        @update:modelValue="updateCart"
+      />
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue';
 import UpdownButton from './updownButton.vue';
-export default {
-  components: { UpdownButton },
-  props: {
-    menu: { type: Object, required: true },
-    showButton: { type: Boolean, default: false },
-  },
+import { useCartStore } from '@/stores/cartStores';
+
+const props = defineProps({
+  menu: { type: Object, required: true },
+  showButton: { type: Boolean, default: false },
+});
+
+const cartStore = useCartStore();
+const updownRef = ref(null);
+
+// 장바구니에서 현재 메뉴의 수량을 가져옴
+const initialQuantity = computed(() => {
+  const cartItem = cartStore.cartItems.find(item => item.id === props.menu.id);
+  return cartItem ? cartItem.quantity : 0;
+});
+
+const updateCart = (quantity) => {
+  cartStore.addToCart(props.menu, quantity);
 };
 </script>
 
