@@ -39,6 +39,7 @@ import homeHeader from "@/components/home/homeHeader.vue";
 }
 
 .menu-button {
+  box-sizing: border-box;
   background-color: #f5985e;
 }
 </style>
