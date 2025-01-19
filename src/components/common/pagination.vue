@@ -10,13 +10,15 @@
       v-for="page in visiblePages"
       :key="page"
       :class="{ active: page === currentPage }"
-      @click="changePage(page)">
+      @click="changePage(page)"
+    >
       {{ page }}
     </button>
 
     <button
       :disabled="currentPage === totalPages"
-      @click="changePage(currentPage + 1)">
+      @click="changePage(currentPage + 1)"
+    >
       다음
     </button>
   </nav>
