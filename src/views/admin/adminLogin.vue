@@ -45,6 +45,7 @@ const handleLogin = async () => {
     }
   } catch (error) {
     console.error("API 요청 오류", error);
+    console.log("API 요청 오류", error.message);
     alert("로그인 실패");
   }
 };

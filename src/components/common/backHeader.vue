@@ -1,40 +1,35 @@
 <script setup>
-
-import { ChevronLeft, AlignJustify } from "lucide-vue-next";
+import { ChevronLeft, AlignJustify, ShoppingCart } from "lucide-vue-next";
 import { useRouter, useRoute } from "vue-router";
 import { computed, ref } from "vue";
 import Hamberger from "../modal/hamberger.vue";
+import { useCartStore } from '@/stores/cartStores'; // store import 추가
 
-// props로 전달된 값을 받음
 const props = defineProps({
-  title: String, // 페이지 제목
-  useUserName: Boolean, // 사용자 이름을 포함할지 여부
+  title: String,
+  useUserName: Boolean,
+  category: String,
 });
 
-// Vue Router 사용
+const cartStore = useCartStore(); // store 사용
+const cartTotalCount = computed(() => cartStore.totalCount); // 총 수량 계산
+
 const router = useRouter();
 const route = useRoute();
-const dynamicTitle = ref("");
 
-// 이전 페이지로 이동
 const goBack = () => {
   router.back();
 };
 
 const userName = "천세윤";
 
-// 페이지 제목 계산
 const pageTitle = computed(() => {
-
-  // props가 있으면 props 값 사용, 없으면 라우트의 meta 정보를 사용
   if (props.title) {
-    // props.title과 props.useUserName을 기준으로 페이지 제목 설정
     if (props.useUserName) {
       return `${userName}님의 ${props.title}`;
     }
     return props.title;
   } else {
-    // props가 없으면 meta.title과 meta.useUserName을 기준으로 제목 설정
     if (route.meta.title && route.meta.useUserName) {
       return `${userName}님의 ${route.meta.title}`;
     }
@@ -48,8 +43,11 @@ const toggleMenu = () => {
   isHambergerOpen.value = !isHambergerOpen.value;
 };
 
+const goShoppingList = () => {
+  router.push("/user/food/foodCart");
+};
+
 const closeMenu = (e) => {
-  // 클릭된 영역이 메뉴 외부라면 메뉴를 닫음
   if (e.target === e.currentTarget) {
     isHambergerOpen.value = false;
   }
@@ -58,20 +56,31 @@ const closeMenu = (e) => {
 
 <template>
   <header class="header-container">
-    <!-- 이전 페이지로 이동하는 버튼 -->
     <ChevronLeft class="left-icon" @click="goBack" />
-
-    <!-- 페이지명은 props 또는 meta의 정보에 따라 동적으로 변경 -->
     <h1>{{ pageTitle }}</h1>
-
-    <!-- 메뉴 아이콘 -->
-    <AlignJustify class="right-icon" @click="toggleMenu" />
-
-    <div
-      :class="{ 'menu-overlay': true, open: isHambergerOpen }"
-      @click="closeMenu"
-    >
-      <Hamberger />
+    <div class="right-icon-container">
+      <!-- foodDetail 페이지일 때는 ShoppingCart -->
+      <ShoppingCart
+        v-if="props.category === 'foodDetail'"
+        class="right-icon"
+        @click="goShoppingList"
+      />
+      <span
+        v-if="props.category === 'foodDetail' && cartTotalCount > 0"
+        class="cart-badge"
+      >
+        {{ cartTotalCount }}
+      </span>
+      <!-- foodDetail 페이지가 아닐 때만 햄버거 메뉴 표시 -->
+      <template v-if="props.category !== 'foodDetail'">
+        <AlignJustify class="right-icon" @click="toggleMenu" />
+        <div
+          :class="{ 'menu-overlay': true, open: isHambergerOpen }"
+          @click="closeMenu"
+        >
+          <Hamberger />
+        </div>
+      </template>
     </div>
   </header>
 </template>
@@ -79,38 +88,66 @@ const closeMenu = (e) => {
 <style scoped>
 .header-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center; /* 변경: space-between에서 center로 */
   align-items: center;
   width: 100%;
-  height: 50px; /* 헤더 높이 */
-  background-color: #ff6f61; /* 밝은 배경색 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 하단 그림자 */
-  padding: 0 16px; /* 좌우 여백 */
+  height: 50px;
+  background-color: #ff6f61;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 0 16px;
   box-sizing: border-box;
   border-radius: 5px;
   position: relative;
   margin: 0;
 }
 
+
+.right-icon-container {
+  position: absolute; /* 변경: 절대 위치로 */
+  right: 16px; /* 오른쪽 패딩만큼 */
+  display: flex;
+  align-items: center;
+}
+
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 8px;
+  min-width: 8px;
+  height: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* 페이지명 스타일 */
 .header-container h1 {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #ffffff; /* 진한 글자 색상 */
+  color: #ffffff;
   margin: 0;
-  text-align: center; /* 중앙 정렬 */
+  text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: 60%; /* 추가: 제목이 너무 길 경우를 대비 */
 }
 
 /* 왼쪽 아이콘 스타일 */
 .left-icon {
+  position: absolute; /* 변경: 절대 위치로 */
+  left: 16px; /* 왼쪽 패딩만큼 */
   color: #ffffff;
   width: 24px;
   height: 24px;
   cursor: pointer;
-  transition: color 0.3s ease; /* 부드러운 색상 전환 */
+  transition: color 0.3s ease;
 }
 
 /* 오른쪽 아이콘 스타일 */
@@ -126,7 +163,6 @@ const closeMenu = (e) => {
 .header-container > div {
   display: flex;
   justify-content: space-between;
-  width: 100%;
 }
 
 /* 왼쪽 아이콘 스타일 */
@@ -171,5 +207,15 @@ const closeMenu = (e) => {
   height: 100%;
   width: 100%;
   overflow: auto;
+}
+.cart-badge {
+    background-color: red;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 50%;
+    font-size: 12px;
+    position: absolute;
+    top: 0;
+    right: -5px;
 }
 </style>
