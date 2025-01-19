@@ -2,7 +2,7 @@
 import { defineProps } from "vue";
 import adminListItem from "./adminListItem.vue";
 
-const props = defineProps({
+defineProps({
   items: {
     type: Array,
     required: true,
@@ -12,11 +12,11 @@ const props = defineProps({
 
 <template>
   <div>
-    <!-- <adminListItem
+    <adminListItem
       v-for="item in items"
       :key="item.id"
       :item="item"
-    ></adminListItem> -->
+    ></adminListItem>
   </div>
 </template>
 

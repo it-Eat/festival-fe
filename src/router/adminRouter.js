@@ -3,20 +3,21 @@ import adminLost from "@/views/admin/lost/adminLost.vue";
 import adminMain from "@/views/admin/adminMain.vue";
 import adminUserManage from "@/views/admin/adminUserManage.vue";
 import adminBooth from "@/views/admin/adminBooth.vue";
+import adminNotice from "@/views/admin/notice/adminNotice.vue";
 
 export default [
   {
     path: "/admin",
     name: "admin",
-    component: adminMain, // 기본 컴포넌트
+    component: adminMain,
     children: [
       {
-        path: "adminBoard", // 자식 경로
+        path: "adminBoard",
         name: "adminBoard",
         component: adminBoard,
       },
       {
-        path: "adminLost", // 자식 경로
+        path: "adminLost",
         name: "adminLost",
         component: adminLost,
       },
@@ -29,6 +30,11 @@ export default [
         path: "adminBooth",
         name: "adminBooth",
         component: adminBooth,
+      },
+      {
+        path: "adminNotice",
+        name: "adminNotice",
+        component: adminNotice,
       },
       // {
       //   path: "", // 기본 경로 (예: /admin)

@@ -3,9 +3,9 @@ import searchBar from "@/components/admin/common/searchBar.vue";
 import selectBar from "@/components/admin/common/selectBar.vue";
 import adminList from "@/components/admin/common/adminList.vue";
 import pagination from "@/components/common/pagination.vue";
-import { allListBooth } from "@/api/admin";
+import { getLostBoards } from "@/api/admin";
 import adminCalendar from "@/components/admin/common/adminCalendar.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 // 분실 선택옵션
 const lostOption = ref([
@@ -15,27 +15,28 @@ const lostOption = ref([
 
 const booths = ref([]);
 
-// const getBooths = async () => {
-//   try {
-//     const festivalId = 1;
-//     const query = {
-//       page: 1,
-//       pageSize: 5,
-//       orderBy: "recent",
-//       keyword: "",
-//       type: "",
-//     };
+const getBooths = async () => {
+  try {
+    const festivalId = 1;
+    const query = {
+      page: 1,
+      pageSize: 5,
+      orderBy: "recent",
+      keyword: "",
+      type: "",
+    };
 
-//     const response = await allListBooth(festivalId, query);
-//     booths.value = response;
-//   } catch (error) {
-//     console.error("API 호출 실패:", error);
-//   }
-// };
+    const response = await getLostBoards(festivalId, query);
+    console.log("API 응답 데이터:", response); // API 응답 전체 확인
+    booths.value = response;
+  } catch (error) {
+    console.error("API 호출 실패:", error);
+  }
+};
 
-// onMounted(() => {
-//   getBooths();
-// });
+onMounted(() => {
+  getBooths();
+});
 </script>
 
 <template>
@@ -53,13 +54,14 @@ const booths = ref([]);
           <tr>
             <th style="width: 120px">작성자</th>
             <th style="width: 100px">구분</th>
-            <th style="width: 600px">제목</th>
-            <th style="width: 200px">작성일자</th>
+            <th style="width: 120px">제목</th>
+            <th style="width: 500px">내용</th>
+            <th style="width: 300px">작성일자</th>
           </tr>
         </thead>
       </table>
       <hr style="border: solid 0.5px" />
-      <adminList :booths="items" />
+      <adminList :items="booths" />
     </div>
     <pagination></pagination>
   </div>
@@ -85,8 +87,7 @@ h1 {
 .container-list {
   margin-left: 30px;
   width: 1300px;
-  height: 650px;
-  background-color: rgb(198, 238, 238);
+  height: 550px;
 }
 
 .custom-table {
