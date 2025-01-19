@@ -3,44 +3,64 @@
     <img :src="menu.image" :alt="menu.name" class="menu-image" />
     <div class="menu-info">
       <span class="menu-name">{{ menu.name }}</span>
-      <span class="menu-price">{{ menu.price }}</span>
+      <span class="menu-price">{{ menu.price }}원</span>
+    </div>
+    <div class="button" v-if="showButton">
+      <UpdownButton
+        ref="updownRef"
+        :initialValue="initialQuantity"
+        @update:modelValue="updateCart"
+      />
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    menu: {
-      type: Object,
-      required: true,
-    },
-  },
+<script setup>
+import { ref, computed } from 'vue';
+import UpdownButton from './updownButton.vue';
+import { useCartStore } from '@/stores/cartStores';
+
+const props = defineProps({
+  menu: { type: Object, required: true },
+  showButton: { type: Boolean, default: false },
+});
+
+const cartStore = useCartStore();
+const updownRef = ref(null);
+
+// 장바구니에서 현재 메뉴의 수량을 가져옴
+const initialQuantity = computed(() => {
+  const cartItem = cartStore.cartItems.find(item => item.id === props.menu.id);
+  return cartItem ? cartItem.quantity : 0;
+});
+
+// 수량 업데이트
+const updateCart = (quantity) => {
+  cartStore.addToCart(props.menu, quantity);
 };
 </script>
 
 <style scoped>
 .menu-card {
   display: flex;
-  align-items: center; /* 이미지와 텍스트를 수직으로 정렬 */
+  align-items: center;
   width: 100%;
   padding: 10px;
-  border-bottom: 1px solid #eee; /* 하단 테두리 추가 */
-  box-sizing: border-box; /* padding을 포함한 너비 계산 */
+  border-bottom: 1px solid #eee;
+  box-sizing: border-box;
+  justify-content: space-between;
 }
-
 .menu-image {
   width: 80px;
   height: 80px;
   margin-right: 10px;
-  object-fit: cover; /* 이미지가 카드 영역을 꽉 채우도록 설정 */
+  object-fit: cover;
 }
-
 .menu-info {
   display: flex;
-  flex-direction: column; /* 메뉴 이름과 가격을 세로로 배치 */
+  flex-direction: column;
+  flex-grow: 1;
 }
-
 .menu-name {
   font-weight: bold;
   margin-bottom: 5px;

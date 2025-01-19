@@ -15,11 +15,6 @@ const routes = [
     component: Common,
   },
   {
-    path: "/admin",
-    name: "admin",
-    component: Admin,
-  },
-  {
     path: "/user",
     name: "user",
     component: User,
