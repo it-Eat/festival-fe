@@ -21,28 +21,19 @@
 </template>
 
 <script setup>
-import {kakaoLogin} from "@/api/user"
 
 const loginWithGoogle = () => {
   console.log("Google Login");
 };
 
-const loginWithKakao = async() => {
-  try {
-    const response = await kakaoLogin();
-    console.log("API 응답 데이터:", response);
-
-    if (!response) {
-      throw new Error('카카오 로그인 URL을 받아오지 못했습니다.');
-    }
-
-    window.location.href = response;
-  } catch (error) {
-    console.error("카카오 로그인 에러:", error);
-    // 사용자에게 에러 알림을 표시할 수 있습니다
-    alert('카카오 로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
-  }
+const loginWithKakao = () => {
+  // 백엔드의 엔드포인트로 직접 이동하면, 브라우저가 리다이렉트를 처리합니다.
+  window.location.href = "https://festival-be.onrender.com/user/auth/kakao/url";
 };
+
+
+
+
 
 const loginWithNaver = () => {
   console.log("Naver Login");
