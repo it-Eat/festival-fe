@@ -1,8 +1,33 @@
 <script setup>
+import { ref, onMounted } from "vue";
 import searchBar from "@/components/admin/common/searchBar.vue";
-import adminList from "@/components/admin/common/adminList.vue";
 import adminCalendar from "@/components/admin/common/adminCalendar.vue";
 import pagination from "@/components/common/pagination.vue";
+import { getNotice } from "@/api/admin";
+
+const notices = ref([]); // 공지사항 데이터를 저장할 상태 변수
+
+const getNoticeList = async () => {
+  try {
+    const festivalId = 1;
+    const query = {
+      page: 1,
+      pageSize: 5,
+      orderBy: "recent",
+    };
+
+    const response = await getNotice(festivalId, query);
+    console.log("공지사항 데이터:", response); // 콘솔에 응답 출력
+
+    notices.value = response; // 공지사항 목록 업데이트
+  } catch (error) {
+    console.error("공지사항 API 호출 실패:", error);
+  }
+};
+
+onMounted(() => {
+  getNoticeList();
+});
 </script>
 
 <template>
@@ -17,15 +42,20 @@ import pagination from "@/components/common/pagination.vue";
       <table class="custom-table">
         <thead>
           <tr>
-            <th style="width: 120px">작성자</th>
-            <th style="width: 300px">제목</th>
-            <th style="width: 500px">내용</th>
-            <th style="width: 100px">작성일자</th>
+            <th style="width: 120px">ID</th>
+            <th style="width: 300px">내용</th>
+            <th style="width: 200px">작성일자</th>
           </tr>
         </thead>
+        <tbody>
+          <tr v-for="notice in notices" :key="notice.id">
+            <td>{{ notice.id }}</td>
+            <td>{{ notice.content }}</td>
+            <td>{{ new Date(notice.createdAt).toLocaleDateString() }}</td>
+          </tr>
+        </tbody>
       </table>
       <hr style="border: solid 0.5px" />
-      <adminList :booths="items" />
     </div>
     <pagination></pagination>
   </div>
@@ -60,7 +90,8 @@ h1 {
   border-spacing: 10px;
   font-size: 18px;
 }
-.custom-table th {
+.custom-table th,
+.custom-table td {
   padding-left: 10px;
   text-align: center;
 }

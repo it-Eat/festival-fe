@@ -5,28 +5,23 @@ import selectBar from "@/components/admin/common/selectBar.vue";
 import adminList from "@/components/admin/common/adminList.vue";
 import pagination from "@/components/common/pagination.vue";
 import adminCalendar from "@/components/admin/common/adminCalendar.vue";
-import { getLostBoards } from "@/api/admin";
+import { getLostBoards } from "@/api/admin.js";
 
-// selectBar에 전달할 옵션 (분실/습득)
 const lostOption = ref([
   { value: "lost", text: "분실" },
   { value: "found", text: "습득" },
 ]);
 
-// API 호출에 필요한 반응형 변수들
 const page = ref(1);
 const pageSize = ref(4);
 const orderBy = ref("createdAt");
 const order = ref("asc");
-const selectedType = ref("lost"); // 기본값: 분실
-const searchKeyword = ref(""); // 검색어
+const selectedType = ref("lost");
+const searchKeyword = ref("");
 
-// API 응답 데이터 저장 변수
 const booths = ref([]);
 
-// API 호출 함수 (query 객체에 typeSelect로 담음)
 const onSearch = async () => {
-  // 선택된 타입에 따라 "분실"이면 "LOSS", "습득"이면 "GET"으로 매핑
   const typeValue =
     selectedType.value === "lost"
       ? "LOSS"
@@ -39,12 +34,12 @@ const onSearch = async () => {
     pageSize: parseInt(pageSize.value) || 4,
     orderBy: orderBy.value || "createdAt",
     order: order.value || "asc",
-    typeSelect: typeValue, // 여기서 typeSelect 키로 전달
+    typeSelect: typeValue,
     keyword: searchKeyword.value || "",
   };
 
   try {
-    const festivalId = 1; // 예시로 festivalId를 1로 고정
+    const festivalId = 1;
     const response = await getLostBoards(festivalId, query);
     console.log("API 응답 데이터:", response);
     booths.value = response;
@@ -53,7 +48,6 @@ const onSearch = async () => {
   }
 };
 
-// 페이지에 진입했을 때 자동 호출
 onMounted(() => {
   onSearch();
 });
@@ -63,12 +57,9 @@ onMounted(() => {
   <div>
     <h1>분실물 관리</h1>
     <div class="container-search">
-      <!-- 분실/습득 선택: v-model로 양방향 바인딩 -->
       <selectBar :items="lostOption" v-model="selectedType" />
       <adminCalendar />
-      <!-- 검색어 입력: v-model로 양방향 바인딩 -->
       <searchBar v-model="searchKeyword" />
-      <!-- 검색 버튼 클릭 시 onSearch 호출 -->
       <button @click="onSearch">검색</button>
     </div>
     <div class="container-list">
@@ -85,7 +76,6 @@ onMounted(() => {
         </thead>
       </table>
       <hr style="border: solid 0.5px" />
-      <!-- API 응답 데이터 렌더링 -->
       <adminList :items="booths" />
     </div>
     <pagination />

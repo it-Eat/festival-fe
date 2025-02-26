@@ -1,12 +1,12 @@
 <script setup>
+import { ref, onMounted } from "vue";
 import searchBar from "@/components/admin/common/searchBar.vue";
 import adminList from "@/components/admin/common/adminList.vue";
 import adminCalendar from "@/components/admin/common/adminCalendar.vue";
 import pagination from "@/components/common/pagination.vue";
-import { getBoards } from "@/api/admin";
-import { ref, onMounted } from "vue";
+import { getBoards } from "@/api/admin.js";
 
-const booths = ref([]);
+const boards = ref([]);
 
 const getBoardList = async () => {
   try {
@@ -14,14 +14,14 @@ const getBoardList = async () => {
     const query = {
       page: 1,
       pageSize: 4,
-      orderBy: "recent",
-      order: "asc",
-      keyword: "",
+      orderBy: "createdAt", // 기본값: "createdAt"
+      order: "asc", // 기본값: "asc"
+      keyword: "", // 제목, 내용, 작성자(username) 검색어
     };
 
     const response = await getBoards(festivalId, query);
-    console.log("API 응답 데이터:", response); // API 응답 전체 확인
-    booths.value = response;
+    console.log("API 응답 데이터:", response);
+    boards.value = response;
   } catch (error) {
     console.error("API 호출 실패:", error);
   }
@@ -52,7 +52,7 @@ onMounted(() => {
         </thead>
       </table>
       <hr style="border: solid 0.5px" />
-      <adminList :items="booths" />
+      <adminList :items="boards" />
     </div>
     <pagination></pagination>
   </div>
