@@ -1,8 +1,35 @@
 <script setup>
+import { ref, onMounted } from "vue";
 import searchBar from "@/components/admin/common/searchBar.vue";
 import adminList from "@/components/admin/common/adminList.vue";
 import adminCalendar from "@/components/admin/common/adminCalendar.vue";
 import pagination from "@/components/common/pagination.vue";
+import { getBoards } from "@/api/admin.js";
+
+const boards = ref([]);
+
+const getBoardList = async () => {
+  try {
+    const festivalId = 1;
+    const query = {
+      page: 1,
+      pageSize: 4,
+      orderBy: "createdAt", // 기본값: "createdAt"
+      order: "asc", // 기본값: "asc"
+      keyword: "", // 제목, 내용, 작성자(username) 검색어
+    };
+
+    const response = await getBoards(festivalId, query);
+    console.log("API 응답 데이터:", response);
+    boards.value = response;
+  } catch (error) {
+    console.error("API 호출 실패:", error);
+  }
+};
+
+onMounted(() => {
+  getBoardList();
+});
 </script>
 
 <template>
@@ -18,14 +45,14 @@ import pagination from "@/components/common/pagination.vue";
         <thead>
           <tr>
             <th style="width: 120px">작성자</th>
-            <th style="width: 100px">댓글수</th>
-            <th style="width: 600px">제목</th>
+            <th style="width: 160px">제목</th>
+            <th style="width: 470px">내용</th>
             <th style="width: 200px">작성일자</th>
           </tr>
         </thead>
       </table>
       <hr style="border: solid 0.5px" />
-      <adminList :booths="items" />
+      <adminList :items="boards" />
     </div>
     <pagination></pagination>
   </div>
@@ -51,8 +78,7 @@ h1 {
 .container-list {
   margin-left: 30px;
   width: 1300px;
-  height: 650px;
-  background-color: rgb(198, 238, 238);
+  height: 550px;
 }
 .custom-table {
   margin-left: 20px;

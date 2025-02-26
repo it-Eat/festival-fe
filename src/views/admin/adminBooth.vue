@@ -7,8 +7,8 @@ import pagination from "@/components/common/pagination.vue";
 import { ref } from "vue";
 
 const boothOption = ref([
-  { value: "chicken", text: "지코바" },
-  { value: "icecream", text: "아이스크림" },
+  { value: "EAT", text: "먹거리" },
+  { value: "PLAY", text: "놀거리" },
 ]);
 </script>
 
