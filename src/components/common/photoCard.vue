@@ -7,7 +7,7 @@ const props = defineProps({
     required: true,
     default: () => ({}),
     validator(value) {
-      return ["id", "img", "name", "position", "description"].every(
+      return ["id", "image", "name", "location", "content"].every(
         (key) => key in value
       );
     },
@@ -40,7 +40,7 @@ const goToDetail = () => {
 
 <template>
   <div @click="goToDetail" class="photo-card">
-    <img :src="item.img" :alt="item.name" />
+    <img :src="item.image" :alt="item.name" />
     <div class="card-name">{{ item.name }}</div>
   </div>
 </template>

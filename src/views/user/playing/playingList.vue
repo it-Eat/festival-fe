@@ -2,8 +2,13 @@
 import backHeader from "@/components/common/backHeader.vue";
 import photoCard from "@/components/common/photoCard.vue";
 import { usePlayingStore } from "@/stores/playing";
+import { onMounted } from "vue";
 
 const playStore = usePlayingStore();
+
+onMounted(() => {
+  playStore.fetchItems();
+});
 </script>
 
 <template>

@@ -2,6 +2,7 @@
 import { useRouter } from "vue-router";
 import photoCard from "@/components/common/photoCard.vue";
 import { usePlayingStore } from "@/stores/playing";
+import { onMounted } from "vue";
 
 const router = useRouter();
 
@@ -10,12 +11,16 @@ const playingStore = usePlayingStore();
 const goToPlayingList = () => {
   router.push("/user/playing/playingList");
 };
+
+onMounted(() => {
+  playingStore.fetchItems();
+});
 </script>
 
 <template>
   <div>
     <photoCard
-      v-for="play in playingStore.playingList.slice(0, 6)"
+      v-for="play in playingStore.plays.slice(0, 6)"
       :key="play.id"
       :item="play"
       card-type="playing"
