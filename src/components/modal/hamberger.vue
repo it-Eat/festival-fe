@@ -1,66 +1,56 @@
 <script setup>
-import { ref } from "vue";
+import { useUserStore } from "@/stores/userStore";
 
-const isLoggedIn = ref(true); // 로그인 상태를 나타내는 변수
-const userType = ref("merchant"); // 로그인된 사용자 유형 (예: 'user', 'merchant')
-
-function handleLogin() {
-  isLoggedIn.value = true;
-  userType.value = "user"; // 일반 사용자로 로그인
-}
-
-function handleMerchantLogin() {
-  isLoggedIn.value = true;
-  userType.value = "merchant"; // 상인으로 로그인
-}
-
-function handleLogout() {
-  isLoggedIn.value = false;
-  userType.value = "user"; // 로그아웃 처리
-}
+const userStore = useUserStore();
 </script>
 
 <template>
   <div class="hamberger">
     <div class="menu-content">
       <div>
-        <!-- 사용자 이름과 로그인 상태에 따라 다르게 표시 -->
-        <div v-if="isLoggedIn">
-          <div>천세윤 님</div>
+        <!-- 로그인 상태에 따라 사용자 이름 표시 -->
+        <div v-if="userStore.isAuthenticated">
+          <div>{{ userStore.user.nickname }} 님</div>
           <hr />
         </div>
 
         <ul>
-          <!-- 로그인 여부에 따라 항목 변경 -->
-          <li v-if="!isLoggedIn">
+          <!-- 로그인 안 했을 때 -->
+          <li v-if="!userStore.isAuthenticated">
             <router-link to="/user/login">로그인</router-link>
           </li>
-          <li v-if="isLoggedIn && userType === 'user'">
+
+          <!-- 일반 사용자 메뉴 -->
+          <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
             <router-link to="/user/my/myOrderList">주문 내역</router-link>
           </li>
-          <li v-if="isLoggedIn && userType === 'user'">
+          <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
             <router-link to="/user/my/boothApply">부스 신청하기</router-link>
           </li>
-          <li v-if="isLoggedIn && userType === 'user'">
+          <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
             <router-link to="/user/my/myPostList">작성글 보기</router-link>
           </li>
-          <li v-if="isLoggedIn && userType === 'merchant'">
+
+          <!-- 상인(merchant) 메뉴 -->
+          <li v-if="userStore.isAuthenticated && userStore.userRole === 'MERCHANT'">
             <router-link to="/merchant/salesList">매출 확인</router-link>
           </li>
-          <li v-if="isLoggedIn && userType === 'merchant'">
-            <router-link to="/merchant/basicMessage"
-              >기본 메시지 지정하기</router-link
-            >
+          <li v-if="userStore.isAuthenticated && userStore.userRole === 'MERCHANT'">
+            <router-link to="/merchant/basicMessage">기본 메시지 지정하기</router-link>
           </li>
-          <li v-if="isLoggedIn">
-            <a href="#" @click="handleLogout">로그아웃</a>
+
+          <!-- 로그아웃 버튼 -->
+          <li v-if="userStore.isAuthenticated">
+            <a href="#" @click.prevent="userStore.logout">로그아웃</a>
           </li>
-          <li v-if="!isLoggedIn">
+
+          <!-- 공통 페이지 -->
+          <li v-if="!userStore.isAuthenticated">
             <router-link to="/common">공통페이지</router-link>
           </li>
         </ul>
 
-        <div v-if="isLoggedIn" class="delete-account">
+        <div v-if="userStore.isAuthenticated" class="delete-account">
           <router-link to="/user/my/deleteId">회원탈퇴</router-link>
         </div>
       </div>
@@ -106,30 +96,30 @@ function handleLogout() {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-top: auto; /* 아래로 밀기 */
+  margin-top: auto;
   margin-bottom: 40px;
   padding: 8px 16px;
-  background-color: #000000; /* 버튼 배경색 */
+  background-color: #000000;
   color: white;
   font-weight: bold;
-  border-radius: 5px; /* 둥근 모서리 */
+  border-radius: 5px;
   cursor: pointer;
   text-align: center;
   width: 10%;
   font-size: 7px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* 버튼 그림자 */
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .delete-account a {
-  text-decoration: none; /* 밑줄 제거 */
-  color: white; /* 텍스트 색상 */
-  width: 100%; /* 링크 전체 클릭 가능 */
-  display: block; /* 블록 형태로 설정 */
+  text-decoration: none;
+  color: white;
+  width: 100%;
+  display: block;
   text-align: center;
 }
 
 .delete-account:hover {
-  background-color: #474241; /* 호버 시 버튼 색상 */
+  background-color: #474241;
 }
 
 @media (max-width: 900px) {

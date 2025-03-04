@@ -21,14 +21,14 @@
 </template>
 
 <script setup>
-
 const loginWithGoogle = () => {
   console.log("Google Login");
 };
 
 const loginWithKakao = () => {
-  // 백엔드의 엔드포인트로 직접 이동하면, 브라우저가 리다이렉트를 처리합니다.
-  window.location.href = "https://festival-be.onrender.com/user/auth/kakao/url";
+  const loginURL = import.meta.env.VITE_LOGIN_URL;// 변수 선언에 const/let 사용 필요!
+  // 백엔드 엔드포인트로 이동하여 리다이렉트 처리
+  window.location.href = loginURL;
 };
 
 
