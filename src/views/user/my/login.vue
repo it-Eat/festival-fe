@@ -26,8 +26,14 @@ const loginWithGoogle = () => {
 };
 
 const loginWithKakao = () => {
-  console.log("Kakao Login");
+  const loginURL = import.meta.env.VITE_LOGIN_URL;// 변수 선언에 const/let 사용 필요!
+  // 백엔드 엔드포인트로 이동하여 리다이렉트 처리
+  window.location.href = loginURL;
 };
+
+
+
+
 
 const loginWithNaver = () => {
   console.log("Naver Login");

@@ -31,6 +31,7 @@ import Login from "@/views/user/my/login.vue";
 import FoodReview from "@/views/user/food/foodReview.vue";
 import FoodCart from "@/views/user/food/foodCart.vue";
 import FoodOrder from "@/views/user/food/foodOrder.vue";
+import LoginCallback from "@/views/user/my/loginCallback.vue"
 
 export default [
   {
@@ -140,6 +141,10 @@ export default [
     path: "/user/login",
     name: "login",
     component: Login,
+  },
+  {
+     path: '/user/auth/kakao/callback',
+      component: LoginCallback
   },
   {
     path: "/user/my/deleteId",
