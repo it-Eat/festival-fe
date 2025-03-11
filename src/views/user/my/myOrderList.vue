@@ -1,84 +1,68 @@
-<script>
+<script setup>
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import BackHeader from "@/components/common/backHeader.vue";
 import Pagination from "@/components/common/pagination.vue";
-export default {
-  components: { Pagination, BackHeader },
-  data() {
-    return {
-      items: [
-        { id: 1, name: "Item 1", price: "30,000원" },
-        { id: 2, name: "Item 2", price: "20,000원" },
-        { id: 3, name: "Item 3", price: "15,000원" },
-        { id: 4, name: "Item 4", price: "12,000원" },
-        { id: 5, name: "Item 5", price: "18,000원" },
-        // ... 더 많은 데이터
-        { id: 100, name: "Item 100", price: "50,000원" },
-      ],
-      currentPage: 1,
-      itemsPerPage: 10,
-    };
-  },
-  computed: {
-    paginatedItems() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return this.items.slice(start, end);
-    },
-    isChildRouteActive() {
-      // 현재 라우트가 자식 라우트인지 확인
-      return this.$route.name === "myOrderDetail"; // 자식 라우트의 name과 비교
 
-    },
-  },
-  methods: {
-    handlePageChange(page) {
-      this.currentPage = page;
-    },
-  },
+const router = useRouter();
+
+const items = ref([
+  { id: 1, name: "지코바", price: "23,000원" },
+  { id: 2, name: "이가네", price: "13,000원" },
+  { id: 3, name: "아이스크림", price: "5,000원" },
+  { id: 4, name: "떡볶이", price: "13,000원" },
+  { id: 5, name: "옛전 호떡", price: "10,000원" },
+  { id: 6, name: "향이 상회", price: "8,000원" },
+  { id: 7, name: "예림 연잎밥", price: "15,000원" },
+  { id: 8, name: "엔비어", price: "10,000원" },
+  { id: 9, name: "빅토리아", price: "12,000원" },
+  { id: 10, name: "꼬야토야", price: "10,000원" },
+  { id: 11, name: "옛날전통호떡", price: "5,000원" },
+]);
+
+const currentPage = ref(1);
+const itemsPerPage = 10;
+
+const paginatedItems = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return items.value.slice(start, start + itemsPerPage);
+});
+
+const handlePageChange = (page) => {
+  currentPage.value = page;
+};
+
+const navigateToDetail = (item) => {
+  router.push({
+    name: 'myOrderDetail',
+    params: { id: String(item.id) },
+    query: { name: item.name, price: item.price },
+  });
 };
 </script>
 
 <template>
   <div class="page">
     <div class="home">
-      <!-- 리스트 -->
-      <div class="content" v-if="!isChildRouteActive">
-        <!-- 헤더 -->
-        <div class="header">
-          <BackHeader />
-        </div>
-        <!-- 리스트 제목 -->
-        <div class="list-header">
-          <span class="list-header-name">주문상점</span>
-          <span class="list-header-price">금액</span>
-        </div>
-
-        <!-- 리스트 항목 -->
-        <router-link
-          v-for="item in paginatedItems"
-          :key="item.id"
-          :to="{
-            name: 'myOrderDetail',
-            query: {
-              name: item.name,
-              price: item.price,
-            },
-            params: {
-              id: item.id,
-            },
-          }"
-          class="list-item-link"
-        >
-
-          <li class="list-item">
-            <span class="item-name">{{ item.name }}</span>
-            <span class="item-price">{{ item.price }}</span>
-          </li>
-        </router-link>
+      <div class="header">
+        <BackHeader />
       </div>
+      <table class="order-table">
+        <thead>
+          <tr>
+            <th>주문상점</th>
+            <th>금액</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in paginatedItems" :key="item.id" @click="navigateToDetail(item)" class="order-row">
+            <td>{{ item.name }}</td>
+            <td>{{ item.price }}</td>
+          </tr>
+        </tbody>
+      </table>
 
-      <!-- 페이지네이션 -->
-      <div class="footer" v-if="!isChildRouteActive">
+      <div class="footer">
         <Pagination
           :total-items="items.length"
           :items-per-page="itemsPerPage"
@@ -86,7 +70,6 @@ export default {
           @page-changed="handlePageChange"
         />
       </div>
-      <router-view></router-view>
     </div>
   </div>
 </template>
@@ -119,60 +102,38 @@ export default {
   margin-bottom: 20px;
 }
 
-.content {
-  width: 100%;
-  margin-bottom: 20px;
-  padding: 0;
-}
-
-.list-header {
-  display: flex;
-  justify-content: space-between;
+.title {
+  font-size: 20px;
   font-weight: bold;
-  margin-bottom: 10px;
-  padding: 0 10px;
+  margin-bottom: 15px;
 }
 
-.list-header-name {
-  text-align: left;
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
 }
 
-.list-header-price {
-  text-align: right;
-}
-
-.list-item-link {
-  text-decoration: none;
-  color: inherit;
-}
-
-.list-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 15px 0;
+.order-table th, .order-table td {
   padding: 10px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   font-size: 16px;
-  font-weight: 500;
-  color: #333;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  list-style-type: none;
+  border-bottom: 1px solid #000;
+  border-top: none;
+  border-left: none;
+  border-right: none;
 }
 
-.item-name {
-  text-align: left;
+.order-table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
 }
 
-.item-price {
-  text-align: right;
+.order-row {
+  cursor: pointer;
 }
 
-.list-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+.order-row:hover {
+  background-color: #f5f5f5;
 }
 
 .footer {

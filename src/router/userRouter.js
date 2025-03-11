@@ -112,15 +112,13 @@ export default [
     path: "/user/my/myOrderList",
     name: "myOrderList",
     component: MyOrderList,
-    meta: { title: "주문내역", useUserName: true },
-    children: [
-      {
-        path: ":id",
-        name: "myOrderDetail",
-        component: MyOrderDetail,
-        meta: { title: " " },
-      },
-    ],
+    meta: { title: "주문내역", useUserName: true }
+  },
+  {
+    path: "/user/my/myOrderDetail/:id",
+    name: "myOrderDetail",
+    component: MyOrderDetail,
+    meta: { title: "주문 상세" }
   },
   {
     path: "/user/food/review",
