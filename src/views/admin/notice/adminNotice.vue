@@ -2,11 +2,12 @@
 import { ref, onMounted } from "vue";
 import searchBar from "@/components/admin/common/searchBar.vue";
 import adminCalendar from "@/components/admin/common/adminCalendar.vue";
+import { useRouter } from "vue-router";
 import pagination from "@/components/common/pagination.vue";
 import { getNotice } from "@/api/admin";
 
 const notices = ref([]); // 공지사항 데이터를 저장할 상태 변수
-
+const router = useRouter();
 const getNoticeList = async () => {
   try {
     const festivalId = 1;
@@ -23,6 +24,9 @@ const getNoticeList = async () => {
   } catch (error) {
     console.error("공지사항 API 호출 실패:", error);
   }
+};
+const goToDetail = (boardId, festivalId) => {
+  router.push(`/admin/notice/${boardId}/${festivalId}`);
 };
 
 onMounted(() => {
@@ -48,7 +52,12 @@ onMounted(() => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="notice in notices" :key="notice.id">
+          <tr
+            v-for="notice in notices"
+            :key="notice.id"
+            @click="goToDetail(notice.id, 1)"
+            style="cursor: pointer"
+          >
             <td>{{ notice.id }}</td>
             <td>{{ notice.content }}</td>
             <td>{{ new Date(notice.createdAt).toLocaleDateString() }}</td>
@@ -82,7 +91,6 @@ h1 {
   margin-left: 30px;
   width: 1300px;
   height: 650px;
-  background-color: rgb(198, 238, 238);
 }
 .custom-table {
   margin-left: 20px;

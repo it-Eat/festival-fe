@@ -52,7 +52,7 @@ onMounted(() => {
         </thead>
       </table>
       <hr style="border: solid 0.5px" />
-      <adminList :items="boards" />
+      <adminList :items="boards" routeName="adminBoardDetail" />
     </div>
     <pagination></pagination>
   </div>

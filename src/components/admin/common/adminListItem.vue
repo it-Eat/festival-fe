@@ -1,11 +1,27 @@
 <script setup>
 import { defineProps } from "vue";
+import { useRouter } from "vue-router";
+const props = defineProps({
+  item: Object,
+  routeName: {
+    type: String,
+    default: "",
+  },
+});
 
-defineProps({ item: Object });
+const router = useRouter();
+
+const goToDetail = () => {
+  if (props.routeName) {
+    router.push(
+      `/admin/${props.routeName}/${props.item.id}/${props.item.festivalId}`
+    );
+  }
+};
 </script>
 
 <template>
-  <div class="list-item">
+  <div class="list-item" @click="goToDetail" style="cursor: pointer">
     <!-- 공통 항목 -->
     <div style="margin-left: 80px; width: 100px">{{ item.userId }}</div>
     <!-- LOSS 타입일 경우에만 표시할 항목 -->

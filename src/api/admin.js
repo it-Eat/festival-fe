@@ -81,4 +81,50 @@ async function getNotice(festivalId, query) {
   }
 }
 
-export { getBoards, getLostBoards, getNotice };
+// 게시글 상세 api
+async function getBoardDetail(boardId, festivalId) {
+  try {
+    const response = await local.get(`board/${boardId}/${festivalId}`, {
+      headers: {
+        "Content-Type": "application/json", // JSON 응답 명확히 설정
+      },
+    });
+
+    console.log("✅ API 응답 데이터:", response.data); // 응답 데이터 확인
+
+    if (!response.data || Object.keys(response.data).length === 0) {
+      throw new Error("게시글 데이터를 찾을 수 없습니다.");
+    }
+
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error(
+        "API 응답 오류:",
+        error.response.status,
+        error.response.data
+      );
+      throw new Error(
+        `API 요청 실패: ${error.response.status} - ${error.response.statusText}`
+      );
+    } else if (error.request) {
+      console.error("API 요청 실패 (서버 응답 없음):", error.request);
+      throw new Error("서버 응답이 없습니다. 네트워크 상태를 확인해주세요.");
+    } else {
+      console.error("요청 설정 오류:", error.message);
+      throw new Error("API 요청 중 오류가 발생했습니다.");
+    }
+  }
+}
+
+async function getComments(boardId, festivalId) {
+  try {
+    const response = await local.get(`comment/${boardId}/${festivalId}`);
+    return response.data;
+  } catch (error) {
+    console.error("댓글 API 요청 실패:", error);
+    return [];
+  }
+}
+
+export { getBoards, getLostBoards, getNotice, getBoardDetail, getComments };

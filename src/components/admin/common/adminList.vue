@@ -7,6 +7,10 @@ defineProps({
     type: Array,
     required: true,
   },
+  routeName: {
+    type: String,
+    default: "", // 기본값을 빈 문자열로 설정
+  },
 });
 </script>
 
@@ -16,6 +20,7 @@ defineProps({
       v-for="item in items"
       :key="item.id"
       :item="item"
+      :routeName="routeName"
     ></adminListItem>
   </div>
 </template>
