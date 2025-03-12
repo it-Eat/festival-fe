@@ -140,7 +140,8 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background-color: #fdf9f9;
+  width: 100%;
+  min-height: 100vh;
 }
 
 /* 게시글 & 댓글 카드가 같은 층에 가로로 정렬 */
@@ -149,14 +150,15 @@ onMounted(() => {
   flex-direction: row;
   justify-content: center;
   align-items: flex-start;
-  gap: 40px;
-  width: 100%;
-  max-width: 1200px;
+  gap: 20px;
+  width: 90%;
+  max-width: 1400px;
 }
+
 /* 게시글 & 댓글 공통 스타일 */
 .board-container,
 .comment-container {
-  width: 800px;
+  flex: 1;
   background: white;
   padding: 20px;
   border-radius: 10px;
@@ -165,7 +167,7 @@ onMounted(() => {
 
 /* 게시글 제목 */
 .board-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
   text-align: center;
   margin-bottom: 10px;
@@ -190,8 +192,8 @@ onMounted(() => {
 
 .image-container {
   width: 100%;
-  max-width: 450px;
-  height: 300px;
+  max-width: 550px;
+  height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -201,7 +203,7 @@ onMounted(() => {
 
 .board-image {
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: cover;
 }
 
@@ -228,7 +230,7 @@ onMounted(() => {
 }
 
 .comment-content {
-  max-width: 250px;
+  max-width: 300px;
   word-wrap: break-word;
   overflow-wrap: break-word;
   text-align: left;
@@ -291,12 +293,13 @@ onMounted(() => {
   color: white;
 }
 
-/* 목록 버튼을 게시글 카드 아래로 이동 */
+/* 목록 버튼을 왼쪽 끝으로 이동 */
 .back-btn-container {
   display: flex;
-  justify-content: center;
-  margin-top: 10px;
-  width: 100%;
+  justify-content: flex-start;
+  width: 90%;
+  max-width: 1400px;
+  margin-top: 20px;
 }
 
 /* 목록으로 돌아가기 버튼 */
@@ -304,7 +307,6 @@ onMounted(() => {
   display: block;
   width: 220px;
   height: 50px;
-  margin-top: 15px;
   font-size: 16px;
   color: white;
   background: #ff6b6b;
