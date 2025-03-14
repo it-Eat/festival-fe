@@ -4,13 +4,13 @@ import backHeader from "@/components/common/backHeader.vue";
 </script>
 
 <template>
+  <backHeader
+    class="header"
+    :title="'불꽃놀이 페스티벌'"
+    :useUserName="true"
+    :category="'home'"
+  />
   <div class="home">
-    <backHeader
-      :title="'불꽃놀이 페스티벌'"
-      :useUserName="true"
-      :category="'home'"
-    />
-
     <!-- 배너 -->
     <div class="banner">
       <h2>2030.5.4</h2>
@@ -24,20 +24,24 @@ import backHeader from "@/components/common/backHeader.vue";
 </template>
 
 <style scoped>
+.header {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
 .home {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* 수직 중앙 정렬 */
   align-items: center; /* 가로 중앙 정렬 */
   width: 100%;
-  max-width: 450px; /* 최대 너비 설정 */
+  max-width: 600px; /* 최대 너비 설정 */
   margin: 0 auto; /* 중앙 정렬 */
   background: #f9f9f9;
 }
 
 .banner {
   width: 100%;
-  max-width: 450px; /* 헤더와 동일한 너비 */
+  /* max-width: 450px; 헤더와 동일한 너비 */
   box-sizing: border-box;
   height: auto;
   max-height: 150px;

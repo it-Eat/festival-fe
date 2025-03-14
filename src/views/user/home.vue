@@ -21,10 +21,9 @@ import HomeComponent from "./homeComponent.vue"; // 중괄호 제거
   justify-content: center;
   align-items: center;
   width: 100%;
-  max-width: 450px; /* 최대 너비 설정 */
+  max-width: 600px; /* 최대 너비 설정 */
   height: 100vh;
   margin: 0 auto; /* 중앙 정렬 */
-  padding: 5px;
 }
 
 html,
