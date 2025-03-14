@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import api from "@/api/user.js";
+import api from "@/api/axiosInstance.js";
 
 export const usePlayingStore = defineStore("itemStore", {
   state: () => ({

@@ -1,7 +1,9 @@
 <script setup>
 import { useUserStore } from "@/stores/userStore";
+import { ref } from "vue";
 
 const isMenuOpen = ref(false);
+const userStore = useUserStore();
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -61,11 +63,21 @@ function handleLogout() {
           </li>
 
           <!-- 상인(merchant) 메뉴 -->
-          <li v-if="userStore.isAuthenticated && userStore.userRole === 'MERCHANT'">
+          <li
+            v-if="
+              userStore.isAuthenticated && userStore.userRole === 'MERCHANT'
+            "
+          >
             <router-link to="/merchant/salesList">매출 확인</router-link>
           </li>
-          <li v-if="userStore.isAuthenticated && userStore.userRole === 'MERCHANT'">
-            <router-link to="/merchant/basicMessage">기본 메시지 지정하기</router-link>
+          <li
+            v-if="
+              userStore.isAuthenticated && userStore.userRole === 'MERCHANT'
+            "
+          >
+            <router-link to="/merchant/basicMessage"
+              >기본 메시지 지정하기</router-link
+            >
           </li>
 
           <!-- 로그아웃 버튼 -->
