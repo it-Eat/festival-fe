@@ -5,6 +5,7 @@ import adminUserManage from "@/views/admin/adminUserManage.vue";
 import adminBooth from "@/views/admin/adminBooth.vue";
 import adminNotice from "@/views/admin/notice/adminNotice.vue";
 import adminBoardDetail from "@/views/admin/board/adminBoardDetail.vue";
+import adminLostDetail from "@/views/admin/lost/adminLostDetail.vue";
 
 export default [
   {
@@ -41,6 +42,12 @@ export default [
         path: "adminBoardDetail/:boardId/:festivalId",
         name: "adminBoardDetail",
         component: adminBoardDetail,
+        props: true,
+      },
+      {
+        path: "adminLostDetail/:boardId/:festivalId",
+        name: "adminLostDetail",
+        component: adminLostDetail,
         props: true,
       },
     ],

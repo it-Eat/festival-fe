@@ -19,7 +19,7 @@ const order = ref("asc");
 const selectedType = ref("lost");
 const searchKeyword = ref("");
 
-const booths = ref([]);
+const lost = ref([]);
 
 const onSearch = async () => {
   const typeValue =
@@ -42,7 +42,7 @@ const onSearch = async () => {
     const festivalId = 1;
     const response = await getLostBoards(festivalId, query);
     console.log("API 응답 데이터:", response);
-    booths.value = response;
+    lost.value = response;
   } catch (error) {
     console.error("API 호출 실패:", error);
   }
@@ -76,7 +76,7 @@ onMounted(() => {
         </thead>
       </table>
       <hr style="border: solid 0.5px" />
-      <adminList :items="booths" />
+      <adminList :items="lost" routeName="adminLostDetail" />
     </div>
     <pagination />
   </div>

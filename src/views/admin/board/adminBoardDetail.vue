@@ -19,21 +19,14 @@
 
           <!-- 이미지 -->
           <div class="image-wrapper">
-            <!-- <div
+            <div
               v-if="board?.images && board.images.length > 0"
               class="image-container"
             >
-              <img
-                v-for="(img, index) in board.images"
-                :key="index"
-                :src="img"
-                alt="첨부 이미지"
-                class="board-image"
-              />
-            </div> -->
-            <div class="no-image">📸 첨부된 이미지가 없습니다.</div>
+              <img :src="board.images" class="board-image" />
+            </div>
+            <div v-else class="no-image">📸 첨부된 이미지가 없습니다.</div>
           </div>
-
           <!-- 게시글 내용 -->
           <div class="board-content">
             <p>{{ board?.content || "내용이 없습니다." }}</p>
@@ -96,16 +89,56 @@ const router = useRouter();
 const board = ref(null);
 const comments = ref([]);
 
+// 날짜 포맷팅 함수
+const formatDate = (dateString) => {
+  if (!dateString) return "-";
+  const date = new Date(dateString);
+  return date.toLocaleString("ko-KR");
+};
+
+// 게시글 상세 조회
 const fetchBoardDetail = async () => {
   try {
     const { boardId, festivalId } = route.params;
     const response = await getBoardDetail(boardId, festivalId);
-    board.value = Array.isArray(response) ? response[0] : response;
+    const data = Array.isArray(response) ? response[0] : response;
+
+    // 만약 data.images가 문자열이나 객체 배열 등으로 넘어올 수 있다면, 여기서 배열로 가공
+    if (data?.images) {
+      // 1) JSON 문자열인지 체크(ex: "[\"url1\", \"url2\"]")
+      if (typeof data.images === "string") {
+        try {
+          data.images = JSON.parse(data.images);
+        } catch (error) {
+          console.error("images JSON 파싱 실패:", error);
+          data.images = [];
+        }
+      }
+
+      // 2) 객체 배열 형태라면(ex: [{ url: "..." }, { url: "..." }])
+      if (Array.isArray(data.images)) {
+        data.images = data.images.map((item) => {
+          // 이미 문자열이면 그대로 사용
+          if (typeof item === "string") {
+            return item;
+          }
+          // 객체에 url 속성이 있다면 그걸로 대체
+          if (item.url) {
+            return item.url;
+          }
+          // 그 외는 빈 문자열 처리
+          return "";
+        });
+      }
+    }
+
+    board.value = data;
   } catch (error) {
     console.error("게시글 상세 API 호출 실패:", error);
   }
 };
 
+// 댓글 목록 조회
 const fetchComments = async () => {
   try {
     const { boardId, festivalId } = route.params;
@@ -120,12 +153,7 @@ const goBack = () => {
   router.push("/admin/adminBoard");
 };
 
-const formatDate = (dateString) => {
-  if (!dateString) return "-";
-  const date = new Date(dateString);
-  return date.toLocaleString("ko-KR");
-};
-
+// 페이지 로드시 데이터 조회
 onMounted(() => {
   fetchBoardDetail();
   fetchComments();
@@ -133,189 +161,211 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 전체 화면을 감싸는 컨테이너 */
+/* 전체 페이지 중앙 정렬 및 상하 여백 */
 .wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  width: 100%;
-  min-height: 100vh;
+  max-width: 1500px;
+  margin: 40px auto; /* 화면 중앙 정렬 & 상단 여백 */
+  padding: 0 20px;
 }
 
-/* 게시글 & 댓글 카드가 같은 층에 가로로 정렬 */
+/* 게시글(왼쪽) & 댓글(오른쪽)을 가로로 나란히 배치 */
 .detail-container {
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
   gap: 20px;
-  width: 90%;
-  max-width: 1400px;
 }
 
-/* 게시글 & 댓글 공통 스타일 */
+/* 각각의 카드(왼쪽 게시글, 오른쪽 댓글) 기본 스타일 */
 .board-container,
 .comment-container {
   flex: 1;
-  background: white;
-  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
   border-radius: 10px;
-  box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+/* -- 게시글 카드 -- */
+.board-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 /* 게시글 제목 */
 .board-title {
-  font-size: 22px;
+  font-size: 1.5rem;
   font-weight: bold;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-/* 작성자 & 작성일 */
+/* 작성자 & 작성일 섹션 */
 .board-info {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
+  align-items: center;
   color: #555;
-  margin-bottom: 10px;
+  font-size: 0.9rem;
 }
 
-/* 이미지 */
+/* 구분선 */
+.board-info + hr {
+  margin: 8px 0;
+  border: none;
+  border-top: 1px solid #eee;
+}
+
+/* 이미지 래퍼 */
 .image-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 20px 0;
 }
 
+/* 실제 이미지가 들어가는 컨테이너 */
 .image-container {
+  max-width: 700px;
+  max-height: 700px;
   width: 100%;
-  max-width: 550px;
   height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: 6px;
+  margin: 0 auto;
 }
 
+/* 이미지가 화면에 맞춰서 보이도록 */
 .board-image {
-  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
   height: auto;
-  object-fit: cover;
+  object-fit: contain;
 }
-
+/* 이미지가 없을 때 */
 .no-image {
-  font-size: 14px;
-  color: #888;
   text-align: center;
-  width: 100%;
-  height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px dashed #ddd;
-  border-radius: 10px;
-}
-
-/* 댓글 카드 */
-.comment-card {
-  width: 100%;
-  background: #f8f8f8;
-  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #999;
+  border: 1px dashed #ccc;
+  border-radius: 6px;
   padding: 20px;
-  text-align: center;
 }
 
-.comment-content {
-  max-width: 300px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  text-align: left;
+/* 게시글 내용 */
+.board-content {
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
+/* -- 댓글 카드 -- */
+.comment-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: #fff;
+}
+
+/* 댓글 헤더(타이틀 & 삭제 버튼) */
 .comment-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+/* 댓글 목록 타이틀 */
+.comment-header h2 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+/* 상단 우측 삭제 버튼 */
 .delete-btn {
-  background: #ff6b6b;
-  color: white;
+  background-color: #ff6b6b;
+  color: #fff;
   border: none;
   padding: 8px 12px;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
 }
 
+/* 댓글 테이블 */
 .comment-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
 }
 
 .comment-table th,
 .comment-table td {
   border: 1px solid #ddd;
   padding: 10px;
+  font-size: 0.9rem;
   text-align: center;
 }
 
 .comment-table th {
-  background-color: #ffebe6;
-  color: #333;
+  background-color: #f9f9f9;
+  font-weight: 600;
 }
 
 .comment-table tr:nth-child(even) {
-  background-color: #f9f9f9;
+  background-color: #fcfcfc;
+}
+
+/* 댓글 내용 열은 왼쪽 정렬 */
+.comment-content {
+  text-align: left;
+  word-break: break-word;
 }
 
 /* 페이지네이션 */
 .pagination {
   display: flex;
   justify-content: center;
+  gap: 4px;
   margin-top: 10px;
 }
 
 .page-btn {
-  border: none;
-  padding: 8px 12px;
-  margin: 0 5px;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #555;
+  padding: 6px 10px;
+  border-radius: 4px;
   cursor: pointer;
-  border-radius: 5px;
 }
 
-.page-btn.active {
-  background: #ff6b6b;
-  color: white;
+.page-btn.active,
+.page-btn:hover {
+  background-color: #ff6b6b;
+  color: #fff;
 }
 
-/* 목록 버튼을 왼쪽 끝으로 이동 */
+/* 목록 버튼 컨테이너 (아래쪽 왼쪽 정렬) */
 .back-btn-container {
+  margin-top: 20px;
   display: flex;
   justify-content: flex-start;
-  width: 90%;
-  max-width: 1400px;
-  margin-top: 20px;
 }
 
 /* 목록으로 돌아가기 버튼 */
 .back-btn {
-  display: block;
-  width: 220px;
-  height: 50px;
-  font-size: 16px;
-  color: white;
-  background: #ff6b6b;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px; /* 아이콘과 글자 간격을 벌리려면 사용 */
+  background-color: #ff6b6b;
+  color: #fff;
   border: none;
-  border-radius: 5px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  border-radius: 6px;
   cursor: pointer;
 }
 
 .back-btn:hover {
-  background: #e74c3c;
+  background-color: #ee5c5c;
 }
 </style>

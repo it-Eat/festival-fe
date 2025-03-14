@@ -9,7 +9,7 @@ defineProps({
   },
   routeName: {
     type: String,
-    default: "", // 기본값을 빈 문자열로 설정
+    default: "",
   },
 });
 </script>

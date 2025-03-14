@@ -14,9 +14,9 @@ const getBoardList = async () => {
     const query = {
       page: 1,
       pageSize: 4,
-      orderBy: "createdAt", // 기본값: "createdAt"
-      order: "asc", // 기본값: "asc"
-      keyword: "", // 제목, 내용, 작성자(username) 검색어
+      orderBy: "createdAt",
+      order: "asc",
+      keyword: "",
     };
 
     const response = await getBoards(festivalId, query);
