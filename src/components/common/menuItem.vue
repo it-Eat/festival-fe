@@ -1,11 +1,20 @@
 <template>
   <div class="menu-card">
-    <img :src="menu.image" :alt="menu.name" class="menu-image" />
+    <img
+      :src="menu.image || 'https://via.placeholder.com/80'"
+      :alt="menu.name"
+      class="menu-image"
+    />
     <div class="menu-info">
       <span class="menu-name">{{ menu.name }}</span>
       <span class="menu-price">{{ menu.price }}원</span>
     </div>
-    <div class="button" v-if="showButton">
+
+    <!-- 품절 상태 표시 -->
+    <span v-if="menu.soldOut" class="sold-out">품절</span>
+
+    <!-- 장바구니 버튼 -->
+    <div class="button" v-if="showButton && !menu.soldOut">
       <UpdownButton
         ref="updownRef"
         :initialValue="initialQuantity"
@@ -52,19 +61,26 @@ const updateCart = (quantity) => {
   box-sizing: border-box;
   justify-content: space-between;
 }
+
 .menu-image {
   width: 80px;
   height: 80px;
   margin-right: 10px;
   object-fit: cover;
 }
+
 .menu-info {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
+
 .menu-name {
   font-weight: bold;
-  margin: 0; /* 기본 여백 제거 */
+}
+
+.sold-out {
+  color: red;
+  font-weight: bold;
 }
 </style>

@@ -2,7 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "https://festival-be.onrender.com",
-  withCredentials: true, // 모든 요청에 쿠키 포함
+  withCredentials: false, // 모든 요청에 쿠키 포함
 });
 
 // 쿠키에서 access-token 가져오기

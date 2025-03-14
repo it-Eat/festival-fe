@@ -1,170 +1,250 @@
 <script setup>
 import BackHeader from "@/components/common/backHeader.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { useInfiniteScroll } from "@vueuse/core";
 import { useRouter } from "vue-router";
+import api from "@/api/axiosInstance";
 
-// 음식 목록 예시 데이터
-const foodList = ref([
-  {
-    id: 1,
-    name: "지코바",
-    location: "A-11",
-    rating: 4.1,
-    img: "https://via.placeholder.com/600x300",
-  },
-  {
-    id: 2,
-    name: "영한김밥",
-    location: "A-13",
-    rating: 4.8,
-    img: "https://via.placeholder.com/600x300",
-  },
-  {
-    id: 3,
-    name: "삼공주 분식",
-    location: "A-14",
-    rating: 5.0,
-    img: "https://via.placeholder.com/600x300",
-  },
-  {
-    id: 4,
-    name: "곱네",
-    location: "A-15",
-    rating: 4.2,
-    img: "https://via.placeholder.com/600x300",
-  },
-]);
-
-// 라우터 이동 함수
 const router = useRouter();
-const goToDetail = (foodId) => {
-  // 이동할 때 params로 id를 넘김: /user/food/foodDetail/:id
-  // router/index.js 등에 { path: "/user/food/foodDetail/:id", name: "foodDetail" } 형태로 설정되어 있어야 함
-  router.push({
-    name: "foodDetail",
-    params: { id: foodId },
-  });
+
+const boothList = ref([]);
+const page = ref(1);
+const isLoading = ref(false);
+const hasMore = ref(true);
+
+const festivalId = 1;
+
+const enrichBoothData = async (booth) => {
+  try {
+    // 대기시간
+    const detailRes = await api.get(`/booth/${booth.id}/${festivalId}`);
+    booth.waitingTime = detailRes.data.waitingTime || "";
+
+    // 메뉴 → 4개
+    const menuRes = await api.get(`/menu/${booth.id}`);
+    booth.menuItems = menuRes.data.slice(0, 4);
+
+    // 리뷰 → 평균별점
+    const reviewRes = await api.get("/review", {
+      params: {
+        boothId: booth.id,
+        page: 1,
+        pageSize: 100,
+        orderBy: "recent",
+      },
+    });
+    const reviews = reviewRes.data;
+    if (reviews.length) {
+      const sum = reviews.reduce((acc, r) => acc + r.score, 0);
+      booth.avgRating = (sum / reviews.length).toFixed(1);
+    } else {
+      booth.avgRating = "0.0";
+    }
+  } catch (err) {
+    console.error("enrichBoothData error:", err);
+  }
 };
+
+const fetchBooths = async () => {
+  if (!hasMore.value || isLoading.value) return;
+
+  try {
+    isLoading.value = true;
+    const res = await api.get(`/booth/${festivalId}`, {
+      params: {
+        page: page.value,
+        pageSize: 5,
+        orderBy: "recent",
+        keyword: "",
+        type: "EAT",
+      },
+    });
+    let newData = res.data.filter((b) => b.boothType === "EAT");
+    if (!newData.length) {
+      hasMore.value = false;
+    } else {
+      for (const booth of newData) {
+        await enrichBoothData(booth);
+      }
+      boothList.value.push(...newData);
+      page.value++;
+    }
+  } catch (error) {
+    console.error("fetchBooths error:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const goToDetail = (boothId) => {
+  router.push({ name: "foodDetail", params: { id: boothId } });
+};
+
+const target = ref(null);
+useInfiniteScroll(target, fetchBooths);
+
+onMounted(() => {
+  fetchBooths();
+});
 </script>
 
 <template>
-  <!-- 최상위: page -->
   <div class="page">
-    <!-- home -->
     <div class="home">
-      <!-- header -->
       <div class="header">
         <BackHeader title="먹거리" />
       </div>
 
-      <!-- content -->
       <div class="content">
-        <!-- 음식 목록 -->
-        <div class="food-list">
-          <!-- 음식 아이템 (빨간 테두리, 왼쪽 텍스트 / 오른쪽 이미지) -->
+        <div class="booth-list">
           <div
-            v-for="food in foodList"
-            :key="food.id"
-            class="food-item"
-            @click="goToDetail(food.id)"
+            v-for="booth in boothList"
+            :key="booth.id"
+            class="booth-item"
+            @click="goToDetail(booth.id)"
           >
-            <div class="food-info">
-              <div class="food-name">{{ food.name }}</div>
-              <div class="food-location">위치 : {{ food.location }}</div>
-              <div class="food-rating">별점 : {{ food.rating.toFixed(1) }}</div>
+            <!-- 이미지 4개 -->
+            <div class="booth-images">
+              <img
+                v-for="(menu, idx) in booth.menuItems"
+                :key="idx"
+                :src="menu.image || 'https://via.placeholder.com/80'"
+                class="menu-img"
+              />
             </div>
-            <div class="food-img">
-              <img :src="food.img" alt="음식 이미지" />
+
+            <!-- 텍스트 -->
+            <div class="booth-info">
+              <!-- 첫 줄: 이름 + 별점 -->
+              <div class="booth-header">
+                <span class="booth-name">{{ booth.name }}</span>
+                <span class="star-rating">★ {{ booth.avgRating }}</span>
+              </div>
+
+              <!-- 두 번째 줄: 위치 + 대기시간 (같은 줄) -->
+              <div class="booth-loc-wait">
+                <span class="booth-location"
+                  >위치 : {{ booth.location || "정보 없음" }}</span
+                >
+                <span class="booth-waiting">{{ booth.waitingTime }}</span>
+              </div>
+
+              <!-- 링크 (홀리보러 가기) -->
+              <div class="booth-link">둘러보러 가기 ➔</div>
             </div>
           </div>
         </div>
+
+        <!-- 무한스크롤 로딩 -->
+        <div ref="target" class="load-more" v-if="isLoading">로딩 중...</div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* 페이지 전체 컨테이너 */
 .page {
   display: flex;
   justify-content: center;
   background-color: #fff;
 }
-
-/* home: 세로 배치 */
 .home {
   display: flex;
   flex-direction: column;
-  width: 600px; /* 중앙 고정 폭 */
+  width: 600px;
   min-height: 100vh;
   margin: auto;
   box-sizing: border-box;
 }
-
 @media (max-width: 900px) {
   .home {
     width: 100%;
   }
 }
-
 .header {
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
-
 .content {
   width: 100%;
-  box-sizing: border-box;
   padding: 0 16px;
+  box-sizing: border-box;
 }
-
-/* 음식 목록 래퍼 */
-.food-list {
+.booth-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* 각각의 음식 아이템 박스 */
-.food-item {
+/* *** booth-item, booth-images, booth-info (CSS) *** */
+.booth-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid #f66; /* 빨간 테두리 */
-  padding: 12px;
-  box-sizing: border-box;
-  cursor: pointer; /* 포인터 커서로 변경 */
+  flex-direction: column;
+  border-bottom: 1px solid #eee;
+  padding: 12px 0;
+  cursor: pointer;
 }
-
-/* 호버 시 약간의 배경색 변경 (옵션) */
-
-.food-item:hover {
-  background-color: #f9f9f9;
+.booth-item:hover {
+  background-color: #fafafa;
 }
-
-/* 왼쪽 텍스트 영역 */
-.food-info {
+/* 이미지 4개, gap 조금 */
+.booth-images {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px; /* 이미지 사이 소량 여백 */
+  margin-bottom: 8px;
+}
+.menu-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 4px;
+}
+/* 텍스트 정보 */
+.booth-info {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-
-.food-name {
-  font-weight: bold;
+.booth-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.booth-name {
   font-size: 16px;
+  font-weight: bold;
 }
-
-.food-location,
-.food-rating {
+.star-rating {
+  color: #f66;
   font-size: 14px;
-  color: #333;
 }
-
-/* 오른쪽 이미지 영역 */
-.food-img img {
-  width: 80px;
-  height: 80px;
-  object-fit: cover; /* 이미지가 영역에 맞게 잘림 */
-  border-radius: 4px; /* 모서리를 조금 둥글게 */
+/* 위치 + 대기시간 한 줄 */
+.booth-loc-wait {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.booth-location {
+  color: #666;
+  font-size: 14px;
+}
+.booth-waiting {
+  color: #f66;
+  font-size: 14px;
+  font-weight: bold;
+}
+.booth-link {
+  font-size: 14px;
+  color: #f66;
+  text-align: right;
+}
+/* 무한스크롤 로딩 */
+.load-more {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+  font-size: 14px;
 }
 </style>
