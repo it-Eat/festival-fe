@@ -1,16 +1,9 @@
 <script setup>
 import { useRouter } from "vue-router";
 import photoCard from "@/components/common/photoCard.vue";
-
 import { useFoodStore } from "@/stores/food";
 
 const foodStore = useFoodStore();
-
-// for (let i = 1; i < 5; i++) {
-//   const foodItem = foodStore.getFoodById(i);
-//   console.log(foodItem);
-// }
-
 const router = useRouter();
 
 const goToFoodList = () => {
@@ -19,20 +12,86 @@ const goToFoodList = () => {
 </script>
 
 <template>
-  <div>
-    <photoCard
-      v-for="food in foodStore.foodList.slice(0, 6)"
-      :key="food.id"
-      :item="food"
-      card-type="food"
-    ></photoCard>
-    <button class="button1" @click="goToFoodList">더보기</button>
+  <div class="home-food">
+    <div class="food-list">
+      <photoCard
+        v-for="food in foodStore.foodList.slice(0, 6)"
+        :key="food.id"
+        :item="food"
+        card-type="food"
+      />
+    </div>
+
+    <button class="more-button" @click="goToFoodList">먹거리 보러가기</button>
   </div>
 </template>
 
 <style scoped>
-.button1 {
-  grid-column: 1 / -1; /* 버튼이 전체 너비를 차지하도록 */
-  justify-self: center;
+/* 홈 푸드 컨테이너 */
+.home-food {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+.food-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: minmax(120px, auto);
+  gap: 16px;
+  width: 100%;
+  max-width: 450px;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.photoCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* 먹거리 목록 스타일 (3행 2열) */
+.food-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3열 구성 */
+  grid-auto-rows: minmax(120px, auto); /* 행 크기 자동 조정 */
+  gap: 16px; /* 여백 증가 */
+  width: 100%;
+  max-width: 500px; /* 부모 요소와 일치 */
+  padding: 10px;
+  justify-content: space-between; /* 카드 간격 균등 배분 */
+  justify-items: center;
+}
+
+.more-button {
+  background-color: #ff6f61;
+  color: white;
+  font-size: 16px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  justify-content: center;
+  width: 180px;
+  max-width: 200px;
+  margin-top: 20px;
+  transition: background 0.3s;
+}
+
+.more-button:hover {
+  background-color: #e65a50;
 }
 </style>

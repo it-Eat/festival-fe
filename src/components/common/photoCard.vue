@@ -7,7 +7,7 @@ const props = defineProps({
     required: true,
     default: () => ({}),
     validator(value) {
-      return ["id", "img", "name", "position", "description"].every(
+      return ["id", "image", "name", "location", "content"].every(
         (key) => key in value
       );
     },
@@ -40,7 +40,7 @@ const goToDetail = () => {
 
 <template>
   <div @click="goToDetail" class="photo-card">
-    <img :src="item.img" :alt="item.name" />
+    <img :src="item.image" :alt="item.name" />
     <div class="card-name">{{ item.name }}</div>
   </div>
 </template>
@@ -51,6 +51,8 @@ const goToDetail = () => {
   height: 90%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
   background-color: #fff;
   padding: 8px;
@@ -67,6 +69,10 @@ const goToDetail = () => {
 }
 
 .photo-card div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
   margin-top: 8px;
   color: #333;
   font-size: 11px;

@@ -18,10 +18,6 @@ async function kakaoLogin() {
   }
 }
 
-
-
-
-
 async function processKakaoCallback(code){
   const local = localAxios();
   try {

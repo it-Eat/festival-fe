@@ -1,9 +1,13 @@
 <script setup>
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+
 const menuItems = [
-  { name: "먹거리", path: "/user/userHome/homeFood" },
-  { name: "놀거리", path: "/user/userHome/homePlaying" },
-  { name: "게시판", path: "/user/userHome/homeBoard" },
-  { name: "축제 정보", path: "/user/userHome/homeFestInfo" },
+  { name: "먹거리", path: "/user/userHome/homeFood", icon: "🍽️" },
+  { name: "놀거리", path: "/user/userHome/homePlaying", icon: "🎡" },
+  { name: "축제 정보", path: "/user/userHome/homeFestInfo", icon: "ℹ️" },
+  { name: "게시판", path: "/user/userHome/homeBoard", icon: "📝" },
 ];
 </script>
 
@@ -14,7 +18,9 @@ const menuItems = [
       :key="index"
       :to="item.path"
       class="menu-button"
+      :class="{ active: route.path === item.path }"
     >
+      <span class="icon">{{ item.icon }}</span>
       {{ item.name }}
     </router-link>
   </div>
@@ -23,29 +29,45 @@ const menuItems = [
 <style scoped>
 .menu-component {
   display: flex;
+  justify-content: space-around;
+  align-items: center;
   width: 100%;
+  padding: 12px 0;
+  background-color: white;
+  border-bottom: 2px solid #ddd;
 }
 
-.rounded-left {
-  border-top-left-radius: 10px;
-}
-
-.rounded-right {
-  border-top-right-radius: 10px;
-}
-
+/* 메뉴 버튼 스타일 */
 .menu-button {
   flex: 1;
-  height: 50px;
-  color: #fff;
-  border: 1px solid #8b8b8b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 14px;
   text-align: center;
+  color: #777;
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease-in-out;
+  font-weight: bold;
   cursor: pointer;
-  outline: none;
-  margin: 0;
 }
 
+/* 아이콘 스타일 */
+.icon {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+/* 활성화된 메뉴 스타일 */
+.menu-button.active {
+  color: #ff6f61;
+  border-bottom: 3px solid #ff6f61;
+}
+
+/* 버튼 호버 효과 */
 .menu-button:hover {
-  background-color: #f47142;
+  color: #ff6f61;
 }
 </style>

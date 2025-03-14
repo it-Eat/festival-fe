@@ -16,12 +16,14 @@ import HomeComponent from "./homeComponent.vue"; // 중괄호 제거
 }
 
 .container {
-  width: 100%;
-  height: 100vh;
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 450px; /* 최대 너비 설정 */
+  height: 100vh;
+  margin: 0 auto; /* 중앙 정렬 */
   padding: 5px;
 }
 

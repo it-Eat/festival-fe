@@ -65,6 +65,6 @@ const updateCart = (quantity) => {
 }
 .menu-name {
   font-weight: bold;
-  margin-bottom: 5px;
+  margin: 0; /* 기본 여백 제거 */
 }
 </style>

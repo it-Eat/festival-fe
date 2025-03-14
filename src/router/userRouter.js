@@ -6,20 +6,27 @@ import homeFestInfo from "@/views/user/home/homeFestInfo.vue";
 import homeFood from "@/views/user/home/homeFood.vue";
 import homePlaying from "@/views/user/home/homePlaying.vue";
 import homeComponent from "@/views/user/homeComponent.vue";
+
 import playingList from "@/views/user/playing/playingList.vue";
 import playingDetail from "@/views/user/playing/playingDetail.vue";
+
 import MyOrderList from "@/views/user/my/myOrderList.vue";
 import DeleteId from "@/views/user/my/deleteId.vue";
 import MyPostList from "@/views/user/my/myPostList.vue";
 import BoothApply from "@/views/user/my/boothApply.vue";
 import MyOrderDetail from "@/views/user/my/myOrderDetail.vue";
+import MyWriteReview from "@/views/user/my/myWriteReview.vue";
+
 import LostItemDetail from "@/views/user/lostItem/lostItemDetail.vue";
 import LostItemList from "@/views/user/lostItem/lostItemList.vue";
+
 import BoardList from "@/views/user/board/boardList.vue";
+import BoardDetail from "@/views/user/board/boardDetail.vue";
+
 import FoodList from "@/views/user/food/foodList.vue";
 import FoodDetail from "@/views/user/food/foodDetail.vue";
-import BoardDetail from "@/views/user/board/boardDetail.vue";
-import MyWriteReview from "@/views/user/my/myWriteReview.vue";
+import FoodSearch from "@/views/user/food/foodSearch.vue";
+
 import SalesList from "@/views/merchant/salesList.vue";
 import BasicMessage from "@/views/merchant/basicMessage.vue";
 import MerchantHome from "@/views/merchant/merchantHome.vue";
@@ -51,7 +58,6 @@ export default [
       },
     ],
   },
-
   {
     path: "/user/userHome",
     name: "userHome",
@@ -83,7 +89,6 @@ export default [
       },
     ],
   },
-
   {
     path: "/user/food/foodList",
     name: "foodList",
@@ -97,10 +102,15 @@ export default [
     props: true,
   },
   {
+    path: "/user/food/foodSearch",
+    name: "foodSearch",
+    component: FoodSearch,
+  },
+  {
     path: "/user/playing/playingList",
     name: "playingList",
     component: playingList,
-    meta: { title: "놀거리 리스트" },
+    props: true,
   },
   {
     path: "/user/playing/playingDetail/:id",
@@ -148,14 +158,14 @@ export default [
     path: "/user/my/deleteId",
     name: "deleteId",
     component: DeleteId,
-    meta: { title: "회원탈퇴"},
+    meta: { title: "회원탈퇴" },
   },
 
   {
     path: "/user/my/myPostList",
     name: "myPostList",
     component: MyPostList,
-    meta: {title: "게시글보기", useUserName: true}
+    meta: { title: "게시글보기", useUserName: true },
   },
   {
     path: "/user/my/boothApply",
@@ -191,7 +201,6 @@ export default [
     component: MyWriteReview,
     meta: { title: "리뷰 작성하기" },
   },
-
 
   // 상인
 
