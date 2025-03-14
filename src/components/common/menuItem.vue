@@ -16,9 +16,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import UpdownButton from './updownButton.vue';
-import { useCartStore } from '@/stores/cartStores';
+import { ref, computed } from "vue";
+import UpdownButton from "./updownButton.vue";
+import { useCartStore } from "@/stores/cartStores";
 
 const props = defineProps({
   menu: { type: Object, required: true },
@@ -30,7 +30,9 @@ const updownRef = ref(null);
 
 // 장바구니에서 현재 메뉴의 수량을 가져옴
 const initialQuantity = computed(() => {
-  const cartItem = cartStore.cartItems.find(item => item.id === props.menu.id);
+  const cartItem = cartStore.cartItems.find(
+    (item) => item.id === props.menu.id
+  );
   return cartItem ? cartItem.quantity : 0;
 });
 

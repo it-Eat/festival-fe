@@ -1,51 +1,170 @@
 <script setup>
-import backHeader from "@/components/common/backHeader.vue";
-import photoCard from "@/components/common/photoCard.vue";
+import BackHeader from "@/components/common/backHeader.vue";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
-import charryice from "@/assets/food/charryice.jpg";
-import chicken from "@/assets/food/chicken.jpg";
-import crepe from "@/assets/food/crepe.jpg";
-import fishcake from "@/assets/food/fishcake.jpg";
-import leegane from "@/assets/food/leegane.jpg";
-import sausage from "@/assets/food/sausage.jpg";
-
+// 음식 목록 예시 데이터
 const foodList = ref([
-  { foodNum: 1, img: charryice, name: "벚꽃아이스" },
-  { foodNum: 2, img: chicken, name: "닭꼬치" },
-  { foodNum: 3, img: crepe, name: "크레페" },
-  { foodNum: 4, img: fishcake, name: "오뎅" },
-  { foodNum: 5, img: leegane, name: "이가네" },
-  { foodNum: 6, img: sausage, name: "소세지" },
-
-  { foodNum: 7, img: charryice, name: "벚꽃아이스" },
-  { foodNum: 8, img: chicken, name: "닭꼬치" },
-  { foodNum: 9, img: crepe, name: "크레페" },
-  { foodNum: 10, img: fishcake, name: "오뎅" },
-  { foodNum: 11, img: leegane, name: "이가네" },
-  { foodNum: 12, img: sausage, name: "소세지" },
+  {
+    id: 1,
+    name: "지코바",
+    location: "A-11",
+    rating: 4.1,
+    img: "https://via.placeholder.com/600x300",
+  },
+  {
+    id: 2,
+    name: "영한김밥",
+    location: "A-13",
+    rating: 4.8,
+    img: "https://via.placeholder.com/600x300",
+  },
+  {
+    id: 3,
+    name: "삼공주 분식",
+    location: "A-14",
+    rating: 5.0,
+    img: "https://via.placeholder.com/600x300",
+  },
+  {
+    id: 4,
+    name: "곱네",
+    location: "A-15",
+    rating: 4.2,
+    img: "https://via.placeholder.com/600x300",
+  },
 ]);
+
+// 라우터 이동 함수
+const router = useRouter();
+const goToDetail = (foodId) => {
+  // 이동할 때 params로 id를 넘김: /user/food/foodDetail/:id
+  // router/index.js 등에 { path: "/user/food/foodDetail/:id", name: "foodDetail" } 형태로 설정되어 있어야 함
+  router.push({
+    name: "foodDetail",
+    params: { id: foodId },
+  });
+};
 </script>
 
 <template>
-  <backHeader></backHeader>
-  <div class="play-gallery">
-    <photoCard
-      v-for="food in foodList"
-      :key="food.foodNum"
-      :item="food"
-    ></photoCard>
+  <!-- 최상위: page -->
+  <div class="page">
+    <!-- home -->
+    <div class="home">
+      <!-- header -->
+      <div class="header">
+        <BackHeader title="먹거리" />
+      </div>
+
+      <!-- content -->
+      <div class="content">
+        <!-- 음식 목록 -->
+        <div class="food-list">
+          <!-- 음식 아이템 (빨간 테두리, 왼쪽 텍스트 / 오른쪽 이미지) -->
+          <div
+            v-for="food in foodList"
+            :key="food.id"
+            class="food-item"
+            @click="goToDetail(food.id)"
+          >
+            <div class="food-info">
+              <div class="food-name">{{ food.name }}</div>
+              <div class="food-location">위치 : {{ food.location }}</div>
+              <div class="food-rating">별점 : {{ food.rating.toFixed(1) }}</div>
+            </div>
+            <div class="food-img">
+              <img :src="food.img" alt="음식 이미지" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.play-gallery {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  padding: 5px;
-  border-radius: 12px;
-  justify-items: center;
+/* 페이지 전체 컨테이너 */
+.page {
+  display: flex;
   justify-content: center;
+  background-color: #fff;
+}
+
+/* home: 세로 배치 */
+.home {
+  display: flex;
+  flex-direction: column;
+  width: 600px; /* 중앙 고정 폭 */
+  min-height: 100vh;
+  margin: auto;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .home {
+    width: 100%;
+  }
+}
+
+.header {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.content {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 16px;
+}
+
+/* 음식 목록 래퍼 */
+.food-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 각각의 음식 아이템 박스 */
+.food-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #f66; /* 빨간 테두리 */
+  padding: 12px;
+  box-sizing: border-box;
+  cursor: pointer; /* 포인터 커서로 변경 */
+}
+
+/* 호버 시 약간의 배경색 변경 (옵션) */
+
+.food-item:hover {
+  background-color: #f9f9f9;
+}
+
+/* 왼쪽 텍스트 영역 */
+.food-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.food-name {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.food-location,
+.food-rating {
+  font-size: 14px;
+  color: #333;
+}
+
+/* 오른쪽 이미지 영역 */
+.food-img img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover; /* 이미지가 영역에 맞게 잘림 */
+  border-radius: 4px; /* 모서리를 조금 둥글게 */
 }
 </style>

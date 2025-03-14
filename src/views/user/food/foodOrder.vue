@@ -51,9 +51,7 @@
         </div>
 
         <div class="order-summary">
-          <div class="total-price">
-            {{ totalPrice.toLocaleString() }}원
-          </div>
+          <div class="total-price">{{ totalPrice.toLocaleString() }}원</div>
           <button class="order-button" @click="showModal = true">
             결제하기
           </button>
@@ -66,20 +64,23 @@
 </template>
 
 <script setup>
-import BackHeader from '@/components/common/backHeader.vue';
-import { useCartStore } from '@/stores/cartStores';
-import { computed, ref } from 'vue';
-import OrderComplete from '@/components/modal/orderComplete.vue';
+import BackHeader from "@/components/common/backHeader.vue";
+import { useCartStore } from "@/stores/cartStores";
+import { computed, ref } from "vue";
+import OrderComplete from "@/components/modal/orderComplete.vue";
 
 const cartStore = useCartStore();
 const cartItems = computed(() => cartStore.cartItems);
 
 const totalPrice = computed(() => {
-  return cartItems.value.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  return cartItems.value.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 });
 
-const contact = ref(''); // 연락처
-const paymentMethod = ref(''); // 선택된 결제 방식
+const contact = ref(""); // 연락처
+const paymentMethod = ref(""); // 선택된 결제 방식
 const showModal = ref(false); // 모달 표시 여부
 </script>
 
@@ -87,16 +88,22 @@ const showModal = ref(false); // 모달 표시 여부
 .page {
   display: flex;
   justify-content: center;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
 }
 
 .home {
   display: flex;
   flex-direction: column;
+  min-height: 100vh; /* 화면 크기에 따라 전체 높이를 채움 */
   width: 600px;
   max-width: 95vw;
   box-sizing: border-box;
-  padding: 20px;
+}
+
+@media (max-width: 900px) {
+  .home {
+    width: 100%;
+  }
 }
 
 .header {
