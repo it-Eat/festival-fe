@@ -4,17 +4,17 @@
       <div class="login-container">
         <h1>소셜 로그인</h1>
         <div class="social-buttons">
+          <p class="description">소셜로그인으로 회원가입을 할 수 있습니다.</p>
           <button class="google-button" @click="loginWithGoogle">
-            <img src="/src/assets/google_logo.png" alt="Google Logo" class="social-icon">Google로 시작하기
+            <img src="/src/assets/google_logo.png" alt="Google Logo" class="social-icon"> Google로 시작하기
           </button>
           <button class="kakao-button" @click="loginWithKakao">
-            <img src="/src/assets/kakao_logo.png" alt="Kakao Logo" class="social-icon">Kakao로 시작하기
+            <img src="/src/assets/kakao_logo.png" alt="Kakao Logo" class="social-icon"> 카카오로 시작하기
           </button>
           <button class="naver-button" @click="loginWithNaver">
-            <img src="/src/assets/naver_logo.png" alt="Naver Logo" class="social-icon">Naver로 시작하기
+            <img src="/src/assets/naver_logo.png" alt="Naver Logo" class="social-icon"> 네이버로 시작하기
           </button>
         </div>
-        <router-link to="" class="admin-link">관리자임?</router-link>
       </div>
     </div>
   </div>
@@ -26,7 +26,8 @@ const loginWithGoogle = () => {
 };
 
 const loginWithKakao = () => {
-  console.log("Kakao Login");
+  const loginURL = import.meta.env.VITE_LOGIN_URL;
+  window.location.href = loginURL;
 };
 
 const loginWithNaver = () => {
@@ -38,102 +39,83 @@ const loginWithNaver = () => {
 .page {
   display: flex;
   justify-content: center;
-  align-items: center; /* page에도 추가 */
-  min-height: 95vh; /* 최소 높이를 100vh로 설정 */
+  align-items: center;
+  min-height: 95vh;
 }
 
 .home {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  /* justify-content 제거 또는 주석 처리 */
-  width: 600px;
-  /* height: 95vh; 제거 */
+  width: 100%;
+  max-width: 500px;
   box-sizing: border-box;
   margin: auto;
-}
-
-@media (max-width: 900px) {
-  .home {
-    width: 100%;
-  }
-}
-
-.content {
-  width: 100%;
-  display: flex;
   justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
 .login-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   width: 100%;
-  max-width: 400px;
   padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  text-align: center;
   background-color: white;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-  margin: auto;
 }
 
-.social-buttons {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+.login-container h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.description {
+  color: #555;
   margin-bottom: 20px;
+  font-size: 14px;
 }
 
 .social-buttons button {
   display: flex;
   align-items: center;
+  justify-content: center;
   width: 100%;
-  padding: 10px 15px;
+  height: 45px;
   margin-bottom: 10px;
   border: none;
-  border-radius: 5px;
+  border-radius: 3px;
+  font-weight: bold;
   cursor: pointer;
-  box-sizing: border-box;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.social-buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .social-icon {
   width: 20px;
   height: 20px;
-  margin-right: 10px;
+  margin-right: 8px;
 }
 
 .google-button {
-  background-color: #ffffff;
-  color: #000000;
+  background-color: white;
+  color: #444;
   border: 1px solid #ddd;
 }
 
-.google-button:hover {
-  background-color: #f5f5f5;
-}
-
 .kakao-button {
-  background-color: #FEE500;
-  color: #000000;
-}
-
-.kakao-button:hover {
-  background-color: #f7dc6f;
+  background-color: #fee500;
+  color: #3c1e1e;
 }
 
 .naver-button {
-  background-color: #03C75A;
-  color: #ffffff;
+  background-color: #2db400;
+  color: white;
 }
 
-.naver-button:hover {
-  background-color: #03a84a;
-}
-
-.admin-link {
-  color: blue;
-  text-decoration: none;
+@media (max-width: 900px) {
+  .home {
+    width: 90%;
+  }
 }
 </style>

@@ -9,6 +9,7 @@ axios.defaults.baseURL = import.meta.env.VITE_VUE_API_URL;
 
 const app = createApp(App);
 app.config.globalProperties.axios = axios;
-app.use(createPinia());
+const pinia = createPinia();
+app.use(pinia);
 app.use(router);
 app.mount("#app");

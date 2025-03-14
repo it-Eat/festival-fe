@@ -38,6 +38,7 @@ import Login from "@/views/user/my/login.vue";
 import FoodReview from "@/views/user/food/foodReview.vue";
 import FoodCart from "@/views/user/food/foodCart.vue";
 import FoodOrder from "@/views/user/food/foodOrder.vue";
+import LoginCallback from "@/views/user/my/loginCallback.vue"
 
 export default [
   {
@@ -121,15 +122,13 @@ export default [
     path: "/user/my/myOrderList",
     name: "myOrderList",
     component: MyOrderList,
-    meta: { title: "주문내역", useUserName: true },
-    children: [
-      {
-        path: ":id",
-        name: "myOrderDetail",
-        component: MyOrderDetail,
-        meta: { title: " " },
-      },
-    ],
+    meta: { title: "주문내역", useUserName: true }
+  },
+  {
+    path: "/user/my/myOrderDetail/:id",
+    name: "myOrderDetail",
+    component: MyOrderDetail,
+    meta: { title: "주문 상세" }
   },
   {
     path: "/user/food/review",
@@ -150,6 +149,10 @@ export default [
     path: "/user/login",
     name: "login",
     component: Login,
+  },
+  {
+     path: '/user/auth/kakao/callback',
+      component: LoginCallback
   },
   {
     path: "/user/my/deleteId",

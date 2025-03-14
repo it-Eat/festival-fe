@@ -20,6 +20,10 @@ function goToLost() {
 function goToBooth() {
   router.push({ name: "adminBooth" });
 }
+
+function goToNotice() {
+  router.push({ name: "adminNotice" });
+}
 </script>
 
 <template>
@@ -36,7 +40,7 @@ function goToBooth() {
         <li @click="goToBoard">게시판</li>
       </ul>
     </div>
-    <h3 @click="goToBoard">공지사항</h3>
+    <h3 @click="goToNotice">공지사항</h3>
   </div>
 </template>
 

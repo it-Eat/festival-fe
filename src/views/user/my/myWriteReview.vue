@@ -1,14 +1,32 @@
 <template>
   <div class="page">
     <div class="home">
+      <!-- 상단 헤더 -->
       <div class="header">
-        <BackHeader />
+        <BackHeader :title="'이가네'"/>
       </div>
+
+      <!-- 구분선 -->
+      <hr class="divider" />
+
+      <!-- 메인 콘텐츠 영역 -->
       <div class="content">
-        <h3>상품 및 상점은 어떠셨나요?</h3>
-        <StarScore v-model:rating="rating" />
-        <textarea v-model="reviewText" placeholder="최대 20자 작성해 주세요." maxlength="20"></textarea>
-        <button @click="submitReview">등록</button>
+        <h3 class="title">상품 및 상점은 어떠셨나요?</h3>
+        <div class="star-wrapper">
+          <StarScore v-model:rating="rating" />
+        </div>
+
+        <!-- 구분선 -->
+        <hr class="divider" />
+
+        <textarea
+          v-model="reviewText"
+          class="review-textarea"
+          placeholder="최대 20자 작성해 주세요."
+          maxlength="20"
+        ></textarea>
+
+        <button class="submit-button" @click="submitReview">등록</button>
       </div>
     </div>
   </div>
@@ -20,7 +38,7 @@ import { useRouter } from 'vue-router'; // useRouter 추가
 import BackHeader from '@/components/common/backHeader.vue';
 import StarScore from '@/components/common/starScore.vue';
 
-const router = useRouter(); // useRouter 초기화
+const router = useRouter();
 const rating = ref(0);
 const reviewText = ref('');
 
@@ -35,58 +53,85 @@ const submitReview = () => {
 </script>
 
 <style scoped>
-/* 기존 스타일 유지 */
 .page {
   display: flex;
   justify-content: center;
+  background-color: #fff;
 }
 
 .home {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
   width: 600px;
   height: 95vh;
   box-sizing: border-box;
   margin: auto;
+  background-color: #fff;
 }
 
 @media (max-width: 900px) {
   .home {
     width: 100%;
+    margin: 0;
   }
 }
 
 .header {
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
+}
+
+.divider {
+  width: 90%;
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 20px 0;
 }
 
 .content {
   width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-textarea {
-    width: 100%;
-    height: 400px;
-    margin-bottom: 10px;
-    margin-top: 20px;
-    padding: 10px;
-    box-sizing: border-box;
-    resize: none; /* textarea 크기 조절 방지 */
+
+.title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
-button {
-    padding: 10px 20px;
-    background-color: #4CAF50; /* Green */
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    cursor: pointer;
+
+.star-wrapper {
+  margin-bottom: 10px;
+}
+
+.review-textarea {
+  width: 90%;
+  height: 200px;
+  margin: 20px auto;
+  padding: 10px;
+  box-sizing: border-box;
+  resize: none; /* textarea 크기 조절 방지 */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.submit-button {
+  padding: 12px 40px;
+  background-color: #839cf8;
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.submit-button:hover {
+  background-color: #5c7ff0;
 }
 </style>
