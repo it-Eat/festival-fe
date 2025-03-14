@@ -109,7 +109,7 @@ export default [
     path: "/user/playing/playingList",
     name: "playingList",
     component: playingList,
-    meta: { title: "놀거리 리스트" },
+    props: true,
   },
   {
     path: "/user/playing/playingDetail/:id",
@@ -155,14 +155,14 @@ export default [
     path: "/user/my/deleteId",
     name: "deleteId",
     component: DeleteId,
-    meta: { title: "회원탈퇴"},
+    meta: { title: "회원탈퇴" },
   },
 
   {
     path: "/user/my/myPostList",
     name: "myPostList",
     component: MyPostList,
-    meta: {title: "게시글보기", useUserName: true}
+    meta: { title: "게시글보기", useUserName: true },
   },
   {
     path: "/user/my/boothApply",
@@ -198,7 +198,6 @@ export default [
     component: MyWriteReview,
     meta: { title: "리뷰 작성하기" },
   },
-
 
   // 상인
 

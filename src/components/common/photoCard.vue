@@ -51,6 +51,8 @@ const goToDetail = () => {
   height: 90%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
   background-color: #fff;
   padding: 8px;
@@ -67,6 +69,10 @@ const goToDetail = () => {
 }
 
 .photo-card div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
   margin-top: 8px;
   color: #333;
   font-size: 11px;

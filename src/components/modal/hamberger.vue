@@ -1,6 +1,18 @@
 <script setup>
 import { ref } from "vue";
 
+const isMenuOpen = ref(false);
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
+
+const closeMenu = (event) => {
+  if (event.target.classList.contains("menu-overlay")) {
+    isMenuOpen.value = false;
+  }
+};
+
 const isLoggedIn = ref(true); // 로그인 상태를 나타내는 변수
 const userType = ref("merchant"); // 로그인된 사용자 유형 (예: 'user', 'merchant')
 
@@ -22,7 +34,8 @@ function handleLogout() {
 
 <template>
   <div class="hamberger">
-    <div class="menu-content">
+    <div class="menu-overlay" v-if="isMenuOpen" @click="closeMenu"></div>
+    <div class="menu-content" :class="{ open: isMenuOpen }">
       <div>
         <!-- 사용자 이름과 로그인 상태에 따라 다르게 표시 -->
         <div v-if="isLoggedIn">
@@ -98,8 +111,25 @@ function handleLogout() {
   color: #ff6f61;
 }
 
-.menu-content ul a:hover {
-  color: #c15248;
+.menu-content {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+/* 햄버거 메뉴가 열릴 때 */
+.menu-content.open {
+  transform: translateX(0);
 }
 
 .delete-account {

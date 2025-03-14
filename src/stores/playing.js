@@ -8,7 +8,7 @@ export const usePlayingStore = defineStore("itemStore", {
   actions: {
     async fetchItems() {
       try {
-        const response = await api.get("board/board-loss/1");
+        const response = await api.get("booth/1");
         this.plays = response.data;
       } catch (error) {
         console.error("데이터 가져오기 실패:", error);
