@@ -22,7 +22,6 @@ export const useUserStore = defineStore("user", () => {
     user.value = null;
     document.cookie = "access-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "refresh-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    window.location.href = "/login"; // 로그인 페이지로 이동
   };
 
   return {

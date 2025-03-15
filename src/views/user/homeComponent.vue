@@ -7,7 +7,7 @@ import backHeader from "@/components/common/backHeader.vue";
   <backHeader
     class="header"
     :title="'불꽃놀이 페스티벌'"
-    :useUserName="true"
+    :useUserName="false"
     :category="'home'"
   />
   <div class="home">

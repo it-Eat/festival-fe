@@ -1,7 +1,17 @@
 <script setup>
 import { useUserStore } from "@/stores/userStore";
+import { useRouter } from "vue-router";
+
 const userStore = useUserStore();
+const router = useRouter();
+
+// 로컬 메서드: 로그아웃 후 "/user" 페이지로 이동
+function handleLogout() {
+  userStore.logout();
+  router.push("/user"); // 원하는 경로로 이동
+}
 </script>
+
 
 <template>
   <!-- 전체 래퍼 -->
@@ -87,7 +97,7 @@ const userStore = useUserStore();
 
       <!-- 로그인 상태일 때만: 로그아웃 + 회원탈퇴 -->
       <div v-if="userStore.isAuthenticated" class="bottom-menu">
-        <a href="#" @click.prevent="userStore.logout">
+        <a href="#" @click.prevent="handleLogout">
           로그아웃
           <span class="arrow-icon">→</span>
         </a>

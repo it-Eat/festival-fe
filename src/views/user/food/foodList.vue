@@ -53,7 +53,7 @@ const fetchBooths = async () => {
     const res = await api.get(`/booth/${festivalId}`, {
       params: {
         page: page.value,
-        pageSize: 5,
+        pageSize: 50,
         orderBy: "recent",
         keyword: "",
         type: "EAT",
