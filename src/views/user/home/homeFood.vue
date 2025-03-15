@@ -2,9 +2,17 @@
 import { useRouter } from "vue-router";
 import photoCard from "@/components/common/photoCard.vue";
 import { useFoodStore } from "@/stores/food";
+import { onMounted, computed } from "vue";
+
+const router = useRouter();
 
 const foodStore = useFoodStore();
-const router = useRouter();
+
+onMounted(() => {
+  foodStore.fetchItems();
+});
+
+const allFoods = computed(() => [...foodStore.foods]);
 
 const goToFoodList = () => {
   router.push("/user/food/FoodList");
@@ -15,7 +23,7 @@ const goToFoodList = () => {
   <div class="home-food">
     <div class="food-list">
       <photoCard
-        v-for="food in foodStore.foodList.slice(0, 6)"
+        v-for="food in allFoods.slice(0, 6)"
         :key="food.id"
         :item="food"
         card-type="food"

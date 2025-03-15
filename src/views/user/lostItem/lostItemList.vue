@@ -15,7 +15,7 @@ for (let i = 1; i < 5; i++) {
 <template>
   <div class="container">
     <div>
-      <backHeader />
+      <backHeader class="header" />
       <div class="menu">분실물</div>
       <hr style="border: 0; height: 1px; background-color: black" />
       <SmallList
@@ -30,11 +30,18 @@ for (let i = 1; i < 5; i++) {
 </template>
 
 <style scoped>
+.header {
+  max-width: 600px; /* Adjusted for responsive design */
+  width: 600px;
+  margin: 0 auto;
+}
+
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 800px;
+  max-width: 600px;
+  width: 600px;
   margin: 0 auto;
 }
 
@@ -48,6 +55,7 @@ for (let i = 1; i < 5; i++) {
 }
 
 .menu {
-  margin-bottom: 10px;
+  margin: 10px;
+  font-weight: bold; /* 글자 진하게 */
 }
 </style>
