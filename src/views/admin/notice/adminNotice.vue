@@ -2,13 +2,17 @@
   <div class="notice-wrapper">
     <h1>공지사항 관리</h1>
 
-    <!-- 검색영역, 달력 등 (생략 가능) -->
+    <!-- 검색/달력/버튼 영역 -->
     <div class="container-search">
-      <!-- 날짜 선택 -->
-      <adminCalendar />
-      <!-- 검색바 -->
-      <searchBar />
-      <button class="search-btn">검색</button>
+      <div class="search-left">
+        <adminCalendar />
+        <searchBar />
+      </div>
+      <!-- 우측 버튼 -->
+      <div class="button-group">
+        <button class="create-btn" @click="isWriteOpen = true">작성</button>
+        <button class="delete-btn">삭제</button>
+      </div>
     </div>
 
     <!-- 공지사항 목록 테이블 -->
@@ -31,7 +35,6 @@
             class="table-row"
           >
             <td><input type="checkbox" /></td>
-            <!-- 임의로 '관리자' 표기 (API상 'userName' 속성이 있다면 해당 값 사용) -->
             <td>관리자</td>
             <td class="notice-content">{{ notice.content }}</td>
             <td>{{ formatDate(notice.createdAt) }}</td>
@@ -39,69 +42,124 @@
         </tbody>
       </table>
       <hr class="line-light" />
-      <!-- 페이지네이션 -->
-      <pagination />
+      <!-- 이전/다음 버튼을 통한 페이지네이션 -->
+      <div class="pagination-nav">
+        <button @click="goToPreviousPage" :disabled="currentPage === 1">
+          이전
+        </button>
+        <span>페이지 {{ currentPage }} / {{ maxPage }}</span>
+        <button @click="goToNextPage" :disabled="currentPage >= maxPage">
+          다음
+        </button>
+      </div>
     </div>
 
-    <!--
-      모달 컴포넌트 (adminNoticeDetail)
-      :notice="selectedNotice" - 선택한 공지사항 데이터
-      :isOpen="isModalOpen" - 모달 열림/닫힘 상태
-      (close) 이벤트 - 모달 내부에서 닫기 클릭 시 부모에 알림
-    -->
+    <!-- 수정/보기 모달 -->
     <adminNoticeDetail
       :notice="selectedNotice"
       :isOpen="isModalOpen"
       @close="closeModal"
+      @update-success="handleUpdateSuccess"
+    />
+
+    <!-- 공지사항 작성 모달 -->
+    <adminNoticeWrite
+      :isOpen="isWriteOpen"
+      @close="isWriteOpen = false"
+      @write-success="handleWriteSuccess"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { getNotice } from "@/api/admin"; // 공지사항 가져오는 API
+import { ref, onMounted, computed } from "vue";
+import { getNotice } from "@/api/admin"; // 공지사항 API 호출 함수
 import adminCalendar from "@/components/admin/common/adminCalendar.vue";
 import searchBar from "@/components/admin/common/searchBar.vue";
-import pagination from "@/components/common/pagination.vue";
 import adminNoticeDetail from "./adminNoticeDetail.vue";
+import adminNoticeWrite from "./adminNoticeWrite.vue";
 
-// 공지사항 리스트
 const notices = ref([]);
 const isModalOpen = ref(false);
 const selectedNotice = ref(null);
+const isWriteOpen = ref(false);
 
-// 공지사항 조회
+// 페이지네이션 관련 변수
+const currentPage = ref(1);
+const pageSize = ref(10);
+const totalItems = ref(0);
+
+// 최대 페이지 계산 (전체 항목 수와 페이지당 개수를 기반)
+const maxPage = computed(() => {
+  return Math.ceil(totalItems.value / pageSize.value) || 1;
+});
+
+// 공지사항 조회 함수
 const getNoticeList = async () => {
   try {
     const festivalId = 1;
     const query = {
-      page: 1,
-      pageSize: 5,
+      page: currentPage.value,
+      pageSize: pageSize.value,
       orderBy: "recent",
     };
     const response = await getNotice(festivalId, query);
-    notices.value = response; // 목록 갱신
+
+    if (response && response.total !== undefined) {
+      notices.value = response.items;
+      totalItems.value = response.total;
+    } else if (Array.isArray(response)) {
+      notices.value = response;
+      totalItems.value = 50;
+    }
+    // 그 외의 경우 기본값 할당
+    else {
+      notices.value = [];
+      totalItems.value = 0;
+    }
   } catch (error) {
     console.error("공지사항 API 호출 실패:", error);
   }
 };
 
-// 날짜 포맷
 const formatDate = (dateString) => {
   if (!dateString) return "-";
   return new Date(dateString).toLocaleString("ko-KR");
 };
 
-// 모달 열기
 const openModal = (notice) => {
   selectedNotice.value = notice;
   isModalOpen.value = true;
 };
 
-// 모달 닫기
 const closeModal = () => {
   isModalOpen.value = false;
   selectedNotice.value = null;
+};
+
+// 이전 페이지 버튼 클릭
+const goToPreviousPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    getNoticeList();
+  }
+};
+
+// 다음 페이지 버튼 클릭
+const goToNextPage = () => {
+  if (currentPage.value < maxPage.value) {
+    currentPage.value++;
+    getNoticeList();
+  }
+};
+
+const handleUpdateSuccess = () => {
+  getNoticeList();
+};
+
+const handleWriteSuccess = () => {
+  isWriteOpen.value = false;
+  getNoticeList();
 };
 
 onMounted(() => {
@@ -110,55 +168,61 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 전체 Wrapper */
 .notice-wrapper {
   max-width: 2000px;
-  margin: 40px; /* 페이지 가운데 정렬 */
+  margin: 40px;
   padding: 0 20px;
 }
 
-/* 상단 타이틀 */
 h1 {
   font-size: 2rem;
   margin-bottom: 30px;
   text-shadow: 4px 4px rgb(226, 223, 223);
 }
 
-/* 검색/날짜 섹션 */
 .container-search {
   display: flex;
-  justify-content: space-between; /* 양쪽으로 배치 */
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-/* 날짜 관련 */
-.date-container {
+/* 검색 부분(왼쪽) */
+.search-left {
   display: flex;
-  align-items: center;
   gap: 10px;
 }
-.date-label {
-  font-weight: 600;
-  margin-right: 4px;
+
+/* 버튼 그룹(오른쪽) */
+.button-group {
+  display: flex;
+  gap: 10px;
 }
 
-/* 검색 관련 */
-.search-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.search-btn {
-  padding: 8px 16px;
-  background-color: #ff6b6b;
+/* 작성 버튼 (초록색) */
+.create-btn {
+  background-color: #4caf50;
   color: #fff;
   border: none;
   border-radius: 6px;
+  padding: 8px 16px;
   cursor: pointer;
 }
-.search-btn:hover {
-  background-color: #ee5c5c;
+.create-btn:hover {
+  background-color: #43a047;
+}
+
+/* 삭제 버튼 (빨간색) */
+.delete-btn {
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.delete-btn:hover {
+  background-color: #e53935;
 }
 
 /* 테이블 영역 */
@@ -184,8 +248,8 @@ h1 {
 /* 테이블 스타일 */
 .custom-table {
   width: 100%;
-  border-collapse: separate; /* 셀 간격/분리 스타일 */
-  border-spacing: 0; /* 셀 사이 간격 없애기 (원한다면 0이 아닌 값을) */
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 1rem;
   text-align: center;
 }
@@ -205,7 +269,7 @@ h1 {
   transition: background-color 0.2s;
 }
 .table-row:hover {
-  background-color: #f5f5f5; /* 호버 시 배경 */
+  background-color: #f5f5f5;
 }
 .custom-table tbody td {
   padding: 12px 8px;
@@ -216,14 +280,35 @@ h1 {
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap; /* 한 줄로 제한 */
-  max-width: 500px; /* 테이블 헤더에 맞춰서 */
+  white-space: nowrap;
+  max-width: 500px;
 }
 
-/* 페이지네이션 */
-.pagination-container {
+/* 이전/다음 버튼을 위한 페이지네이션 네비게이션 */
+.pagination-nav {
   margin-top: 20px;
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.pagination-nav button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #ff6f61;
+  color: white;
+  cursor: pointer;
+}
+
+.pagination-nav button:disabled {
+  background-color: #ccc;
+  cursor: default;
+}
+
+.pagination-nav span {
+  font-size: 1rem;
+  font-weight: bold;
 }
 </style>

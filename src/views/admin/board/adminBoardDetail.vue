@@ -115,7 +115,6 @@ const fetchBoardDetail = async () => {
         }
       }
 
-      // 2) 객체 배열 형태라면(ex: [{ url: "..." }, { url: "..." }])
       if (Array.isArray(data.images)) {
         data.images = data.images.map((item) => {
           // 이미 문자열이면 그대로 사용
