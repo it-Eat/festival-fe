@@ -2,7 +2,7 @@
 import { useRouter } from "vue-router";
 import photoCard from "@/components/common/photoCard.vue";
 import { usePlayingStore } from "@/stores/playing";
-import { onMounted, ref, computed } from "vue";
+import { onMounted, computed } from "vue";
 
 const router = useRouter();
 
@@ -13,7 +13,9 @@ onMounted(() => {
 });
 
 // 서버 데이터 + 더미 데이터 합치기
-const allPlays = computed(() => Array.isArray(playingStore.plays) ? [...playingStore.plays] : []);
+const allPlays = computed(() =>
+  Array.isArray(playingStore.plays) ? [...playingStore.plays] : []
+);
 
 const goToPlayingList = () => {
   router.push("/user/playing/playingList");

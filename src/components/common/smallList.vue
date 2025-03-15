@@ -6,7 +6,7 @@ const props = defineProps({
     default: null,
     validator: (value) => {
       if (value) {
-        return ["id", "title", "contents", "date", "found"].every(
+        return ["id", "title", "content", "createdAt", "lossType"].every(
           (key) => key in value
         );
       }
@@ -19,7 +19,9 @@ const props = defineProps({
     default: null,
     validator: (value) => {
       if (value) {
-        return ["id", "title", "contents", "date"].every((key) => key in value);
+        return ["id", "title", "content", "createdAt"].every(
+          (key) => key in value
+        );
       }
       return true;
     },
@@ -48,7 +50,11 @@ const goToDetail = () => {
 
 <template>
   <div v-if="props.lost || props.board" @click="goToDetail" class="item">
-    <LostChip v-if="props.lost" :found="props.lost?.found" class="lost-chip" />
+    <LostChip
+      v-if="props.lost"
+      :lossType="props.lost?.lossType"
+      class="lost-chip"
+    />
 
     <div class="title" :class="{ 'board-title': props.board }">
       <strong>{{
@@ -56,10 +62,10 @@ const goToDetail = () => {
       }}</strong>
     </div>
     <div class="contents">
-      {{ props.lost?.contents || props.board?.contents || "내용 없음" }}
+      {{ props.lost?.content || props.board?.content || "내용 없음" }}
     </div>
     <div class="date">
-      {{ props.lost?.date || props.board?.date || "날짜 없음" }}
+      {{ props.lost?.createdAt || props.board?.createdAt || "날짜 없음" }}
     </div>
   </div>
   <hr v-if="props.lost || props.board" class="divider" />
