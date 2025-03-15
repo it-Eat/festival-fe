@@ -1,7 +1,7 @@
 <script setup>
 const props = defineProps({
-  found: {
-    type: Boolean,
+  lossType: {
+    type: String,
     required: true,
   },
 });
@@ -9,7 +9,7 @@ const props = defineProps({
 <template>
   <!-- lostChip -->
   <div class="status">
-    <div class="a" v-if="props.found">습득</div>
+    <div class="a" v-if="props.lossType === 'GET'">습득</div>
     <div class="b" v-else>분실</div>
   </div>
 </template>

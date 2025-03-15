@@ -2,9 +2,24 @@
 import SmallList from "@/components/common/smallList.vue";
 import { useLostStore } from "@/stores/lost";
 import { useBoardStore } from "@/stores/board";
+import { onMounted, computed } from "vue";
 
+// const router = useRouter();
 const lostStore = useLostStore();
 const boardStore = useBoardStore();
+
+onMounted(() => {
+  lostStore.fetchItems();
+  boardStore.fetchItems();
+});
+
+const allLosts = computed(() =>
+  Array.isArray(lostStore.losts) ? [...lostStore.losts] : []
+);
+
+const allBoards = computed(() =>
+  Array.isArray(boardStore.boards) ? [...boardStore.boards] : []
+);
 </script>
 
 <template>
@@ -15,10 +30,10 @@ const boardStore = useBoardStore();
         <hr class="divider" />
         <SmallList
           class="list-item"
-          v-for="lostItem in lostStore.lostList.slice(0, 3)"
+          v-for="lostItem in allLosts.slice(0, 3)"
           :key="lostItem.id"
           :lost="lostItem"
-          v-show="lostStore.lostList.length > 0"
+          v-show="allLosts.length > 0"
         />
         <div class="more-button-container">
           <button class="more-button">
@@ -32,9 +47,10 @@ const boardStore = useBoardStore();
         <hr class="divider" />
         <SmallList
           class="list-item"
-          v-for="boardItem in boardStore.boardList.slice(0, 3)"
+          v-for="boardItem in allBoards.slice(0, 3)"
           :key="boardItem.id"
           :board="boardItem"
+          v-show="allBoards.length > 0"
         />
         <div class="more-button-container">
           <button class="more-button">
