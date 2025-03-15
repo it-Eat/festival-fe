@@ -3,6 +3,7 @@ const props = defineProps({
   lost: {
     type: Object,
     required: false,
+    default: null,
     validator: (value) => {
       if (value) {
         return ["id", "title", "contents", "date", "found"].every(
@@ -15,6 +16,7 @@ const props = defineProps({
   board: {
     type: Object,
     required: false,
+    default: null,
     validator: (value) => {
       if (value) {
         return ["id", "title", "contents", "date"].every((key) => key in value);
@@ -35,7 +37,7 @@ const goToDetail = () => {
       name: "lostItemDetail",
       params: { id: props.lost.id },
     });
-  } else {
+  } else if (props.board) {
     router.push({
       name: "boardDetail",
       params: { id: props.board.id },
@@ -45,50 +47,71 @@ const goToDetail = () => {
 </script>
 
 <template>
-  <div @click="goToDetail" class="item">
-    <LostChip v-if="props.lost" :found="props.lost.found" />
+  <div v-if="props.lost || props.board" @click="goToDetail" class="item">
+    <LostChip v-if="props.lost" :found="props.lost?.found" class="lost-chip" />
 
-    <div class="title">
-      <strong>{{ (props.lost || props.board).title }}</strong>
+    <div class="title" :class="{ 'board-title': props.board }">
+      <strong>{{
+        props.lost?.title || props.board?.title || "제목 없음"
+      }}</strong>
     </div>
-    <div class="contents">{{ (props.lost || props.board).contents }}</div>
-    <div class="date">{{ (props.lost || props.board).date }}</div>
+    <div class="contents">
+      {{ props.lost?.contents || props.board?.contents || "내용 없음" }}
+    </div>
+    <div class="date">
+      {{ props.lost?.date || props.board?.date || "날짜 없음" }}
+    </div>
   </div>
-  <hr class="divider" />
+  <hr v-if="props.lost || props.board" class="divider" />
 </template>
 
 <style scoped>
 .item {
-  font-size: 0.625rem;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-around;
   text-align: center;
-  background-color: rgb(222, 213, 213);
-  border-radius: 0.25rem;
-  overflow: hidden;
-  box-sizing: border-box;
-  padding: 0.1875rem 0.25rem;
-  width: 100%;
-}
-
-.title,
-.contents,
-.date {
-  max-width: 9.375rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin-left: 0.5rem;
+  background-color: white;
+  border-radius: 8px;
+  padding: 3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 95%;
+  margin: 3px auto;
+  border-bottom: 1px solid black;
 }
 
 .title {
-  max-width: 120px;
+  font-size: 12px;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contents {
+  font-size: 12px;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.date {
+  font-size: 12px;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.board-title {
+  margin-left: 3px;
 }
 
 .divider {
   border: 0;
   height: 1px;
   background-color: black;
+  margin: 0;
 }
 </style>

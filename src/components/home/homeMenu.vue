@@ -32,7 +32,7 @@ const menuItems = [
   justify-content: space-around;
   align-items: center;
   width: 100%;
-  padding: 12px 0;
+  padding: 5px 0;
   background-color: white;
   border-bottom: 2px solid #ddd;
 }

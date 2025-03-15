@@ -13,7 +13,7 @@ onMounted(() => {
 });
 
 // 서버 데이터 + 더미 데이터 합치기
-const allPlays = computed(() => [...playingStore.plays]);
+const allPlays = computed(() => Array.isArray(playingStore.plays) ? [...playingStore.plays] : []);
 
 const goToPlayingList = () => {
   router.push("/user/playing/playingList");
