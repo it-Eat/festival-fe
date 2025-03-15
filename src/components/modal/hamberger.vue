@@ -1,188 +1,211 @@
 <script setup>
 import { useUserStore } from "@/stores/userStore";
-import { ref } from "vue";
-
-const isMenuOpen = ref(false);
 const userStore = useUserStore();
-
-const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value;
-};
-
-const closeMenu = (event) => {
-  if (event.target.classList.contains("menu-overlay")) {
-    isMenuOpen.value = false;
-  }
-};
-
-const isLoggedIn = ref(true); // 로그인 상태를 나타내는 변수
-const userType = ref("merchant"); // 로그인된 사용자 유형 (예: 'user', 'merchant')
-
-function handleLogin() {
-  isLoggedIn.value = true;
-  userType.value = "user"; // 일반 사용자로 로그인
-}
-
-function handleMerchantLogin() {
-  isLoggedIn.value = true;
-  userType.value = "merchant"; // 상인으로 로그인
-}
-
-function handleLogout() {
-  isLoggedIn.value = false;
-  userType.value = "user"; // 로그아웃 처리
-}
 </script>
 
 <template>
-  <div class="hamberger">
-    <div class="menu-overlay" v-if="isMenuOpen" @click="closeMenu"></div>
-    <div class="menu-content" :class="{ open: isMenuOpen }">
-      <div>
-        <!-- 로그인 상태에 따라 사용자 이름 표시 -->
-        <div v-if="userStore.isAuthenticated">
-          <div>{{ userStore.user.nickname }} 님</div>
-          <hr />
-        </div>
+  <!-- 전체 래퍼 -->
+  <div class="menu-wrapper">
+    <!-- 왼쪽 회색 바 -->
+    <div class="left-bar"></div>
 
-        <ul>
-          <!-- 로그인 안 했을 때 -->
-          <li v-if="!userStore.isAuthenticated">
-            <router-link to="/user/login">로그인</router-link>
-          </li>
+    <!-- 오른쪽(흰색 영역) -->
+    <div class="menu-content">
+      <!-- 상단 로고 / 브랜드명 (예시) -->
+      <div class="header-logo">
+        <span class="black-text">it</span><span class="red-text">-eat</span>
+      </div>
 
-          <!-- 일반 사용자 메뉴 -->
-          <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
-            <router-link to="/user/my/myOrderList">주문 내역</router-link>
-          </li>
-          <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
-            <router-link to="/user/my/boothApply">부스 신청하기</router-link>
-          </li>
-          <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
-            <router-link to="/user/my/myPostList">작성글 보기</router-link>
-          </li>
+      <!-- 로그인 상태인 경우: 닉네임 표시 -->
+      <div v-if="userStore.isAuthenticated" class="user-info">
+        <span class="nickname">{{ userStore.user.nickname }} 님,</span>
+      </div>
+      <hr v-if="userStore.isAuthenticated" />
 
-          <!-- 상인(merchant) 메뉴 -->
-          <li
-            v-if="
-              userStore.isAuthenticated && userStore.userRole === 'MERCHANT'
-            "
-          >
-            <router-link to="/merchant/salesList">매출 확인</router-link>
-          </li>
-          <li
-            v-if="
-              userStore.isAuthenticated && userStore.userRole === 'MERCHANT'
-            "
-          >
-            <router-link to="/merchant/basicMessage"
-              >기본 메시지 지정하기</router-link
-            >
-          </li>
+      <!-- 메뉴 목록 -->
+      <ul>
+        <!-- 비로그인 상태 -->
+        <li v-if="!userStore.isAuthenticated">
+          <router-link to="/user/login">
+            로그인
+            <span class="arrow-icon">→</span>
+          </router-link>
+        </li>
+        <li v-if="!userStore.isAuthenticated">
+          <router-link to="/common">
+            공통 페이지
+            <span class="home-icon">🏠</span>
+          </router-link>
+        </li>
 
-          <!-- 로그아웃 버튼 -->
-          <li v-if="userStore.isAuthenticated">
-            <a href="#" @click.prevent="userStore.logout">로그아웃</a>
-          </li>
+        <!-- 일반 사용자 메뉴 -->
+        <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
+          <router-link to="/common">
+            공통 페이지
+            <span class="home-icon">🏠</span>
+          </router-link>
+        </li>
+        <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
+          <router-link to="/user/my/myOrderList">
+            주문 내역
+            <span class="home-icon">🏠</span>
+          </router-link>
+        </li>
+        <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
+          <router-link to="/user/my/boothApply">
+            부스 신청하기
+            <span class="plane-icon">✈</span>
+          </router-link>
+        </li>
+        <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
+          <router-link to="/user/my/myPostList">
+            작성글 보기
+            <span class="edit-icon">✎</span>
+          </router-link>
+        </li>
 
-          <!-- 공통 페이지 -->
-          <li v-if="!userStore.isAuthenticated">
-            <router-link to="/common">공통페이지</router-link>
-          </li>
-        </ul>
+        <!-- 상인(merchant) 메뉴 -->
+        <li v-if="userStore.isAuthenticated && userStore.userRole === 'MERCHANT'">
+          <router-link to="/common">
+            공통 페이지
+            <span class="home-icon">🏠</span>
+          </router-link>
+        </li>
+        <li v-if="userStore.isAuthenticated && userStore.userRole === 'MERCHANT'">
+          <router-link to="/merchant/salesList">
+            매출 확인
+            <span class="home-icon">🏠</span>
+          </router-link>
+        </li>
+        <li v-if="userStore.isAuthenticated && userStore.userRole === 'MERCHANT'">
+          <router-link to="/merchant/basicMessage">
+            기본 메시지 지정하기
+            <span class="plane-icon">✈</span>
+          </router-link>
+        </li>
+      </ul>
 
-        <div v-if="userStore.isAuthenticated" class="delete-account">
-          <router-link to="/user/my/deleteId">회원탈퇴</router-link>
-        </div>
+      <!-- 로그인 상태일 때만: 로그아웃 + 회원탈퇴 -->
+      <div v-if="userStore.isAuthenticated" class="bottom-menu">
+        <a href="#" @click.prevent="userStore.logout">
+          로그아웃
+          <span class="arrow-icon">→</span>
+        </a>
+
+        <router-link to="/user/my/deleteId" class="delete-link">
+          회원 탈퇴
+        </router-link>
       </div>
     </div>
   </div>
 </template>
 
+
 <style scoped>
+/* 전체 레이아웃 래퍼 */
+.menu-wrapper {
+  display: flex;          /* 왼쪽 바 + 오른쪽 컨텐츠를 나란히 */
+  height: 100vh;          /* 화면 전체 높이 */
+  background-color: #fff;
+}
+
+
+
+/* 오른쪽 흰색 영역 */
 .menu-content {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 30%;
-  height: 100vh;
-  background: #ffffff;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+  flex: 1;                /* 나머지 공간 차지 */
   padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  width: 400px;
+  position: relative;     /* 하단 메뉴(absolute) 배치용 */
+  box-sizing: border-box;
 }
 
-.menu-content ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+/* 로고 / 브랜드명 */
+.header-logo {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 
-.menu-content li {
-  margin: 10px 0;
+/* "it"은 검정, "-eat"은 빨간색 */
+.black-text {
+  color: #000;
 }
-
-.menu-content ul a {
-  text-decoration: none;
+.red-text {
   color: #ff6f61;
 }
 
-.menu-content {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 300px;
-  height: 100vh;
-  background: #ffffff;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
-  padding: 20px;
+/* 로그인 후 사용자 정보 */
+.user-info {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transform: translateX(100%);
-  transition: transform 0.3s ease-in-out;
-}
-
-/* 햄버거 메뉴가 열릴 때 */
-.menu-content.open {
-  transform: translateX(0);
-}
-
-.delete-account {
-  display: flex;
-  justify-content: flex-end;
   align-items: center;
-  margin-top: auto;
-  margin-bottom: 40px;
-  padding: 8px 16px;
-  background-color: #000000;
-  color: white;
+  margin-bottom: 8px;
+}
+
+/* 사용자 아이콘 (간단히 원형 배경) */
+.user-icon {
+  width: 36px;
+  height: 36px;
+  background-color: #ff6f61;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.nickname {
+  font-size: 16px;
   font-weight: bold;
-  border-radius: 5px;
-  cursor: pointer;
-  text-align: center;
-  width: 10%;
-  font-size: 7px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.delete-account a {
+/* 메뉴 목록 스타일 */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 20px;
+}
+li {
+  margin: 10px 0;
+}
+
+/* 각 링크의 기본 스타일 */
+a,
+.router-link-active {
   text-decoration: none;
-  color: white;
-  width: 100%;
-  display: block;
-  text-align: center;
+  font-size: 15px;
+  color: #ff6f61;
+}
+a:hover {
+  color: #c15248;
 }
 
-.delete-account:hover {
-  background-color: #474241;
+/* 하단(로그아웃, 회원 탈퇴) 배치 */
+.bottom-menu {
+  position: absolute;
+  bottom: 40px;
+  left: 20px;
+  right: 20px;
+
+  display: flex;
+  justify-content: space-between; /* 좌우로 배치 */
+  align-items: center;
 }
 
-@media (max-width: 900px) {
-  .menu-content {
-    width: 100%;
-  }
+.arrow-icon {
+  margin-left: 5px;
+}
+.plane-icon {
+  margin-left: 5px;
+}
+.edit-icon {
+  margin-left: 5px;
+}
+.home-icon {
+  margin-left: 5px;
+}
+
+/* 회원탈퇴는 살짝 연한 회색 + 글자 작게 */
+.delete-link {
+  color: #999 !important;
+  font-size: 14px;
 }
 </style>
+

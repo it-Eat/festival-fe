@@ -1,20 +1,10 @@
-<script setup>
-import BackHeader from '@/components/common/backHeader.vue';
-import SmallList from '@/components/common/smallList.vue';
-import { useLostStore } from '@/stores/lost';
-import { useBoardStore } from '@/stores/board';
-
-const lostStore = useLostStore();
-const boardStore = useBoardStore();
-</script>
-
 <template>
   <div class="page">
     <div class="home">
       <!-- 상단 헤더 영역 -->
       <div class="header">
-        <!-- 타이틀: 천세윤님의 게시글 -->
-        <BackHeader :title="'천세윤님의 게시글'" />
+        <!-- 타이틀: 사용자 정보가 있을 경우, 닉네임으로 제목 표시 -->
+        <BackHeader :title="userStore.user ? `${userStore.user.nickname}님의 게시글` : '게시글'" />
       </div>
 
       <div class="content">
@@ -32,10 +22,7 @@ const boardStore = useBoardStore();
           <!-- 자세히 보기 버튼 -->
           <div class="btn-wrapper">
             <button class="detail-button">
-              <router-link
-                to="/user/lostItem/list"
-                class="detail-link"
-              >
+              <router-link to="/user/lostItem/list" class="detail-link">
                 자세히 보기 &gt;
               </router-link>
             </button>
@@ -56,10 +43,7 @@ const boardStore = useBoardStore();
           <!-- 자세히 보기 버튼 -->
           <div class="btn-wrapper">
             <button class="detail-button">
-              <router-link
-                to="/user/board/list"
-                class="detail-link"
-              >
+              <router-link to="/user/board/list" class="detail-link">
                 자세히 보기 &gt;
               </router-link>
             </button>
@@ -69,6 +53,59 @@ const boardStore = useBoardStore();
     </div>
   </div>
 </template>
+
+<script setup>
+import { onMounted } from 'vue';
+import BackHeader from '@/components/common/backHeader.vue';
+import SmallList from '@/components/common/smallList.vue';
+import { useLostStore } from '@/stores/lost';
+import { useBoardStore } from '@/stores/board';
+import { useUserStore } from '@/stores/userStore';
+import api from '@/api/axiosInstance';
+
+const lostStore = useLostStore();
+const boardStore = useBoardStore();
+const userStore = useUserStore();
+
+const festivalId = 1;
+
+// 게시글 데이터 불러오기 (내 게시물, keyword로 내 닉네임 전달)
+const fetchBoardList = async () => {
+  try {
+    const keyword = userStore.user ? userStore.user.nickname : '';
+    const res = await api.get(`/board/${festivalId}`, { params: { keyword } });
+    // 만약 store에 setBoardList 메서드가 있으면 호출, 없으면 직접 할당
+    if (boardStore.setBoardList) {
+      boardStore.setBoardList(res.data);
+    } else {
+      boardStore.boardList = res.data;
+    }
+  } catch (error) {
+    console.error("Error fetching board list:", error);
+  }
+};
+
+// 분실물 데이터 불러오기 (내 분실물, keyword로 내 닉네임 전달)
+const fetchLostList = async () => {
+  try {
+    const keyword = userStore.user ? userStore.user.nickname : '';
+    const res = await api.get(`/board/board-loss/${festivalId}`, { params: { keyword } });
+    // 만약 store에 setLostList 메서드가 있으면 호출, 없으면 직접 할당
+    if (lostStore.setLostList) {
+      lostStore.setLostList(res.data);
+    } else {
+      lostStore.lostList = res.data;
+    }
+  } catch (error) {
+    console.error("Error fetching lost list:", error);
+  }
+};
+
+onMounted(() => {
+  fetchBoardList();
+  fetchLostList();
+});
+</script>
 
 <style scoped>
 /* 전체 페이지를 화면 중앙 정렬 */

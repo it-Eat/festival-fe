@@ -122,7 +122,7 @@ export default [
     path: "/user/my/myOrderList",
     name: "myOrderList",
     component: MyOrderList,
-    meta: { title: "주문내역", useUserName: true }
+    meta: { title: "결제내역", useUserName: true }
   },
   {
     path: "/user/my/myOrderDetail/:id",

@@ -3,13 +3,13 @@ import {
   ChevronLeft,
   AlignJustify,
   ShoppingCart,
-  Search,
   Bell,
 } from "lucide-vue-next";
 import { useRouter, useRoute } from "vue-router";
 import { computed, ref } from "vue";
 import Hamberger from "../modal/hamberger.vue";
-import { useCartStore } from "@/stores/cartStores"; // store import 추가
+import { useCartStore } from "@/stores/cartStores";
+import { useUserStore } from "@/stores/userStore";  // Pinia 스토어 임포트
 
 const props = defineProps({
   title: String,
@@ -17,10 +17,11 @@ const props = defineProps({
   category: String,
 });
 
-console.log(props.category);
+const userStore = useUserStore();  // 사용자 정보 불러오기
 
-const cartStore = useCartStore(); // store 사용
-const cartTotalCount = computed(() => cartStore.totalCount); // 총 수량 계산
+// 사용자 가게(store) 관련
+const cartStore = useCartStore();
+const cartTotalCount = computed(() => cartStore.totalCount);
 
 const router = useRouter();
 const route = useRoute();
@@ -33,36 +34,34 @@ const handleNotification = () => {
   console.log("알림 화면으로 이동");
 };
 
-// const handleSearch = () => {
-//   console.log("검색 기능 실행");
-// };
-
-const userName = "천세윤";
-
+// 페이지 제목: 로그인 상태이면 userStore.user.nickname 사용, 아니면 기본값("손님")
 const pageTitle = computed(() => {
+  const name = userStore.isAuthenticated ? userStore.user.nickname : "손님";
   if (props.title) {
     if (props.useUserName) {
-      return `${userName}님의 ${props.title}`;
+      return `${name}님의 ${props.title}`;
     }
     return props.title;
   } else {
     if (route.meta.title && route.meta.useUserName) {
-      return `${userName}님의 ${route.meta.title}`;
+      return `${name}님의 ${route.meta.title}`;
     }
     return route.meta.title || "기본 페이지 제목";
   }
 });
 
+// 햄버거 메뉴 열림 여부
 const isHambergerOpen = ref(false);
-
 const toggleMenu = () => {
   isHambergerOpen.value = !isHambergerOpen.value;
 };
 
+// 장바구니 이동
 const goShoppingList = () => {
   router.push("/user/food/foodCart");
 };
 
+// 오버레이 클릭 시 닫기 (메뉴 내부 클릭은 무시)
 const closeMenu = (e) => {
   if (e.target === e.currentTarget) {
     isHambergerOpen.value = false;
@@ -71,58 +70,77 @@ const closeMenu = (e) => {
 </script>
 
 <template>
-  <header class="header-container">
-    <Bell
-      v-if="props.category === 'home'"
-      class="left-icon"
-      @click="handleNotification"
-    />
-    <ChevronLeft v-else class="left-icon" @click="goBack" />
-    <h1>{{ pageTitle }}</h1>
-    <!-- <Search class="right-icon" @click="handleSearch" /> -->
-    <div class="right-icon-container">
-      <!-- foodDetail 페이지일 때는 ShoppingCart -->
-      <ShoppingCart
-        v-if="props.category === 'foodDetail'"
-        class="right-icon"
-        @click="goShoppingList"
+  <!-- ① 전체를 감싸는 래퍼 -->
+  <div class="header-wrapper">
+    <!-- ② 상단 헤더 영역 -->
+    <header class="header-container">
+      <!-- 카테고리가 home이면 알림 아이콘, 아니면 뒤로가기 아이콘 -->
+      <Bell
+        v-if="props.category === 'home'"
+        class="left-icon"
+        @click="handleNotification"
       />
-      <span
-        v-if="props.category === 'foodDetail' && cartTotalCount > 0"
-        class="cart-badge"
-      >
-        {{ cartTotalCount }}
-      </span>
-      <span v-if="props.category === 'foodList'" class="cart-badge"> </span>
-      <!-- foodList 페이지가 아닐 때만 햄버거 메뉴 표시 -->
-      <template v-if="props.category !== 'foodDetail'">
-        <AlignJustify class="right-icon" @click="toggleMenu" />
-        <div
-          :class="{ 'menu-overlay': true, open: isHambergerOpen }"
-          @click="closeMenu"
+      <ChevronLeft v-else class="left-icon" @click="goBack" />
+
+      <!-- 가운데 제목 -->
+      <h1>{{ pageTitle }}</h1>
+
+      <!-- 오른쪽 아이콘 영역 -->
+      <div class="right-icon-container">
+        <!-- foodDetail 페이지일 때 장바구니 -->
+        <ShoppingCart
+          v-if="props.category === 'foodDetail'"
+          class="right-icon"
+          @click="goShoppingList"
+        />
+        <span
+          v-if="props.category === 'foodDetail' && cartTotalCount > 0"
+          class="cart-badge"
         >
-          <Hamberger />
-        </div>
-      </template>
+          {{ cartTotalCount }}
+        </span>
+
+        <!-- foodDetail 페이지가 아닐 때 햄버거 아이콘 -->
+        <template v-if="props.category !== 'foodDetail'">
+          <AlignJustify class="right-icon" @click="toggleMenu" />
+        </template>
+      </div>
+    </header>
+
+    <!-- ③ 햄버거 메뉴 오버레이 (백헤더 내부에서만 보이도록) -->
+    <div
+      v-if="isHambergerOpen"
+      class="menu-overlay"
+      @click="closeMenu"
+    >
+      <!-- 실제 햄버거 메뉴 -->
+      <Hamberger />
     </div>
-  </header>
+  </div>
 </template>
 
 <style scoped>
+/* (A) 백헤더 전체 래퍼 */
+.header-wrapper {
+  position: relative;  /* 자식 .menu-overlay를 이 래퍼 기준으로 absolute 배치 */
+  width: 100%;
+}
+
+/* (B) 헤더 컨테이너 기본 스타일 */
 .header-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  min-height: 50px; /* 기존 60px에서 줄임 */
-  padding: 8px 12px; /* 패딩 축소 */
+  min-height: 50px;
+  padding: 8px 12px;
   background-color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
   position: relative;
 }
 
-/* 제목 텍스트 스타일 */
+/* 가운데 제목 */
 .header-container h1 {
   font-size: 1.2rem;
   font-weight: bold;
@@ -131,12 +149,13 @@ const closeMenu = (e) => {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  white-space: nowrap; /* 텍스트 줄 바꿈 방지 */
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 70%; /* 긴 제목일 경우 너비 제한 */
+  max-width: 70%;
 }
 
+/* 왼쪽 아이콘 */
 .left-icon {
   position: absolute;
   left: 16px;
@@ -147,6 +166,7 @@ const closeMenu = (e) => {
   transition: color 0.3s ease;
 }
 
+/* 오른쪽 아이콘 래퍼 */
 .right-icon-container {
   position: absolute;
   right: 16px;
@@ -154,6 +174,7 @@ const closeMenu = (e) => {
   align-items: center;
 }
 
+/* 오른쪽 아이콘 */
 .right-icon {
   color: #ff6f61;
   width: 24px;
@@ -162,49 +183,26 @@ const closeMenu = (e) => {
   transition: color 0.3s ease;
 }
 
-.header-container > div {
-  display: flex;
-  justify-content: space-between;
-}
-
-.left-icon {
-  margin-right: auto;
-}
-
-.right-icon {
-  margin-left: auto;
-}
-
 .right-icon:hover,
 .left-icon:hover {
   color: #bcb4b3;
 }
 
+/* (C) 오버레이: header-wrapper 내부에서만 절대 위치 */
 .menu-overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
-  right: 0;
-  width: 50%;
-  height: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
   display: flex;
   justify-content: flex-end;
   align-items: flex-start;
-  z-index: 1000;
-  transform: translateX(100%);
-  transition: transform 0.3s ease-in-out;
 }
 
-.menu-overlay.open {
-  transform: translateX(0);
-}
-
-.hamburger-container {
-  background-color: #ffffff;
-  height: 100%;
-  width: 100%;
-  overflow: auto;
-}
+/* 장바구니 배지 */
 .cart-badge {
   background-color: red;
   color: white;

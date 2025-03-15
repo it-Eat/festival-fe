@@ -18,17 +18,22 @@ async function kakaoLogin() {
   }
 }
 
-async function processKakaoCallback(code){
+async function processKakaoCallback(code) {
   const local = localAxios();
   try {
-    // 백엔드의 콜백 엔드포인트 호출
-    const response = await local.get(`/user/auth/kakao/callback?code=${code}`);
-
+    const response = await local.get(
+      `/user/auth/kakao/callback?code=${code}`,
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
     return response.data;
   } catch (error) {
-    console.error('카카오 로그인 처리 실패:', error);
-    throw error; // 호출한 곳에서 오류를 처리하도록 예외를 던짐
+    console.error("카카오 로그인 처리 실패:", error);
+    throw error;
   }
-};
+}
+
 
 export {kakaoLogin, processKakaoCallback};

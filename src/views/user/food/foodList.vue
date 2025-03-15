@@ -152,7 +152,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   width: 600px;
-  min-height: 100vh;
+  max-height: 100vh;
   margin: auto;
   box-sizing: border-box;
 }

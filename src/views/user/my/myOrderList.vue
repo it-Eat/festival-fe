@@ -1,51 +1,64 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import BackHeader from "@/components/common/backHeader.vue";
 import Pagination from "@/components/common/pagination.vue";
+import api from "@/api/axiosInstance";
+import { useUserStore } from "@/stores/userStore";
 
 const router = useRouter();
+const userStore = useUserStore();
 
-const items = ref([
-  { id: 1, name: "지코바", price: "23,000원" },
-  { id: 2, name: "이가네", price: "13,000원" },
-  { id: 3, name: "아이스크림", price: "5,000원" },
-  { id: 4, name: "떡볶이", price: "13,000원" },
-  { id: 5, name: "옛전 호떡", price: "10,000원" },
-  { id: 6, name: "향이 상회", price: "8,000원" },
-  { id: 7, name: "예림 연잎밥", price: "15,000원" },
-  { id: 8, name: "엔비어", price: "10,000원" },
-  { id: 9, name: "빅토리아", price: "12,000원" },
-  { id: 10, name: "꼬야토야", price: "10,000원" },
-  { id: 11, name: "옛날전통호떡", price: "5,000원" },
-]);
+// API를 통해 받아올 결제 내역 데이터 (초기값은 빈 배열)
+const payments = ref([]);
 
+// 페이지네이션 관련 변수
 const currentPage = ref(1);
 const itemsPerPage = 10;
 
 const paginatedItems = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
-  return items.value.slice(start, start + itemsPerPage);
+  return payments.value.slice(start, start + itemsPerPage);
 });
 
 const handlePageChange = (page) => {
   currentPage.value = page;
 };
 
-const navigateToDetail = (item) => {
+const navigateToDetail = (payment) => {
   router.push({
     name: 'myOrderDetail',
-    params: { id: String(item.id) },
-    query: { name: item.name, price: item.price },
+    params: { id: String(payment.id) },
+    query: {
+      boothName: payment.wishList && payment.wishList[0] ? payment.wishList[0].booth.name : "",
+      price: payment.price,
+      payType: payment.payType,
+      waitingNumber: payment.waitingNumber
+    }
   });
 };
+
+const fetchPayments = async () => {
+  if (!userStore.isAuthenticated) return;
+  try {
+    const res = await api.get(`/pay/user/${userStore.user.id}`, { withCredentials: true });
+    // API 응답이 배열 형태라고 가정합니다.
+    payments.value = res.data;
+  } catch (error) {
+    console.error("Error fetching payments:", error);
+  }
+};
+
+onMounted(() => {
+  fetchPayments();
+});
 </script>
 
 <template>
   <div class="page">
     <div class="home">
       <div class="header">
-        <BackHeader />
+        <BackHeader title="주문 내역" />
       </div>
       <table class="order-table">
         <thead>
@@ -55,16 +68,23 @@ const navigateToDetail = (item) => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in paginatedItems" :key="item.id" @click="navigateToDetail(item)" class="order-row">
-            <td>{{ item.name }}</td>
-            <td>{{ item.price }}</td>
+          <tr
+            v-for="payment in paginatedItems"
+            :key="payment.id"
+            @click="navigateToDetail(payment)"
+            class="order-row"
+          >
+            <td>
+              {{ payment.wishList && payment.wishList[0] ? payment.wishList[0].booth.name : "정보 없음" }}
+            </td>
+            <td>{{ payment.price }}원</td>
           </tr>
         </tbody>
       </table>
 
       <div class="footer">
         <Pagination
-          :total-items="items.length"
+          :total-items="payments.length"
           :items-per-page="itemsPerPage"
           :current-page="currentPage"
           @page-changed="handlePageChange"
