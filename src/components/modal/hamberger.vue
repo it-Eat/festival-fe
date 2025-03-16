@@ -75,19 +75,19 @@ function handleLogout() {
         </li>
 
         <!-- 상인(merchant) 메뉴 -->
-        <li v-if="userStore.isAuthenticated && userStore.userRole === 'MERCHANT'">
+        <li v-if="userStore.isAuthenticated && userStore.userRole === 'SELLER'">
           <router-link to="/common">
             공통 페이지
             <span class="home-icon">🏠</span>
           </router-link>
         </li>
-        <li v-if="userStore.isAuthenticated && userStore.userRole === 'MERCHANT'">
+        <li v-if="userStore.isAuthenticated && userStore.userRole === 'SELLER'">
           <router-link to="/merchant/salesList">
             매출 확인
             <span class="home-icon">🏠</span>
           </router-link>
         </li>
-        <li v-if="userStore.isAuthenticated && userStore.userRole === 'MERCHANT'">
+        <li v-if="userStore.isAuthenticated && userStore.userRole === 'SELLER'">
           <router-link to="/merchant/basicMessage">
             기본 메시지 지정하기
             <span class="plane-icon">✈</span>
