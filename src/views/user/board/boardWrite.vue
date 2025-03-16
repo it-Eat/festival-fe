@@ -4,17 +4,31 @@ import { ref } from "vue";
 import axios from "axios";
 
 const title = ref("");
-const content = ref("");
+const content = ref([]);
+const images = ref([]);
 const festivalId = 1; // 실제 festivalId로 변경 필요
 
 const submitPost = async () => {
+  const formData = new FormData();
+  formData.append("title", title.value);
+  formData.append("content", content.value);
+  formData.append("boardType", "BOARD");
+  formData.append("lossType", "NULL");
+
+  images.value.forEach((file) => {
+    formData.append("images", file);
+  });
+
   try {
-    await axios.post(`https://festival-be.onrender.com/board/${festivalId}`, {
-      title: title.value,
-      content: content.value,
-      boardType: "BOARD",
-      lossType: "NULL",
-    });
+    await axios.post(
+      `https://festival-be.onrender.com/board/${festivalId}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     alert("게시글이 등록되었습니다.");
   } catch (error) {
     console.error(error);
@@ -38,9 +52,13 @@ const submitPost = async () => {
         placeholder="게시글 내용을 작성해주세요."
         class="content-area"
       ></textarea>
-      <button class="submit-button" @click="submitPost">
-        게시글 등록하기>
-      </button>
+      <input
+        type="file"
+        multiple
+        @change="images = Array.from($event.target.files)"
+        class="input-images"
+      />
+      <button class="submit-button" @click="submitPost">게시글 등록하기</button>
     </div>
   </div>
 </template>
@@ -79,6 +97,16 @@ button {
   cursor: pointer;
   align-self: flex-end;
   font-weight: bold;
+}
+
+.input-images {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
 
 .backHeader {
