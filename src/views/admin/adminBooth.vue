@@ -72,6 +72,7 @@ import searchBar from "@/components/admin/common/searchBar.vue";
 import selectBar from "@/components/admin/common/selectBar.vue";
 import adminCalendar from "@/components/admin/common/adminCalendar.vue";
 import { getBooths, patchBooth } from "@/api/admin";
+import axios from "axios"; // 추가: /user/change-type 호출을 위해
 
 const festivalId = 1;
 const router = useRouter();
@@ -125,14 +126,25 @@ const fetchBooths = async () => {
   }
 };
 
-// 미승인 -> 승인 patch API
+// 미승인 -> 승인 patch API + 추가 /user/change-type 호출
 const acceptBooth = async (booth) => {
   try {
-    const payload = {
+    // 1. 기존 부스 승인 patch 요청
+    const payload1 = {
       location: booth.location || "A-3",
       type: "ACCEPT",
     };
-    await patchBooth(festivalId, booth.id, payload);
+    await patchBooth(festivalId, booth.id, payload1);
+
+    // 2. 추가로 /user/change-type patch 요청
+    const payload2 = {
+      type: "ACCEPT",
+      boothId: booth.id,
+    };
+    await axios.patch(`/user/change-type`, payload2, {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
+    });
 
     alert("승인 처리되었습니다.");
     location.reload();

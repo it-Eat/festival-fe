@@ -24,17 +24,10 @@
               {{ notice.content }}
             </div>
 
-            <!-- 하단 영역(작성일, 작성자, 화살표 버튼) -->
             <div class="notice-footer">
-              <!-- 왼쪽: 작성일 -->
               <span class="date">{{ formatDate(notice.createdAt) }}</span>
-
-              <!-- 오른쪽: 작성자 -->
               <span class="author">작성자 : 관리자</span>
-
-              <!-- 중앙(화살표 텍스트): 펼치기/접기 토글 -->
               <div class="toggle-arrow" @click.stop="toggleExpand(index)">
-                <!-- 펼쳐진 상태라면 ▲, 접힌 상태라면 ▼ -->
                 <span v-if="expandedItems[index]">▲</span>
                 <span v-else>▼</span>
               </div>
@@ -49,20 +42,17 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import BackHeader from "@/components/common/backHeader.vue";
-import { getNotice } from "@/api/user"; // 경로에 맞게 수정
+import { getNotice } from "@/api/user";
 
-// 공지사항 배열
 const notices = ref([]);
 
-// 각 아이템의 펼침 상태 (false: 접힘, true: 펼침)
 const expandedItems = ref([]);
 
-// 컴포넌트 마운트 시 API 호출
 onMounted(async () => {
   try {
     const festivalId = 1; // 예시
     const query = {};
-    // getNotice 함수가 [{ id, content, createdAt, ... }, ... ] 배열을 반환한다고 가정
+
     const data = await getNotice(festivalId, query);
     notices.value = data;
     // 모든 항목을 접힘(false) 상태로 초기화
