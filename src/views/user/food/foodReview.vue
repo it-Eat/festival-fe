@@ -1,22 +1,31 @@
 <script setup>
-import { useRoute } from "vue-router";
 import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import api from "@/api/axiosInstance";
 import BackHeader from "@/components/common/backHeader.vue";
 
-// ✅ URL에서 boothId 가져오기
 const route = useRoute();
 const boothId = route.query.boothId;
-
-// ✅ 리뷰 리스트 저장
 const reviews = ref([]);
 
-// 📌 API 요청: 부스 리뷰 가져오기
+// 날짜 포맷 함수
+const formatDate = (isoDate) => {
+  const date = new Date(isoDate);
+  // 한국어 로케일, 원하는 옵션에 따라 형식 지정
+  return date.toLocaleString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
 const fetchReviews = async () => {
   try {
     const response = await api.get(`/review`, {
       params: {
-        boothId: boothId, // ✅ 필수: 선택한 부스 ID
+        boothId: boothId,
         page: 1,
         pageSize: 5,
         orderBy: "recent",
@@ -26,14 +35,14 @@ const fetchReviews = async () => {
         scoreOrder: "",
       },
     });
-    reviews.value = response.data; // 받아온 데이터 저장
+    reviews.value = response.data;
   } catch (error) {
     console.error("리뷰 불러오기 실패:", error);
   }
 };
 
 onMounted(() => {
-  fetchReviews(); // ✅ 페이지가 로드되면 리뷰 불러오기
+  fetchReviews();
 });
 </script>
 
@@ -56,7 +65,8 @@ onMounted(() => {
                   {{ star <= review.score ? "★" : "☆" }}
                 </span>
               </div>
-              <span class="review-date">작성일 : {{ review.createdAt }}</span>
+              <!-- formatDate 함수를 사용하여 작성일 포맷 -->
+              <span class="review-date">작성일 : {{ formatDate(review.createdAt) }}</span>
             </div>
             <div class="review-content">
               {{ review.content }}

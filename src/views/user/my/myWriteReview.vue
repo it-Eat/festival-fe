@@ -3,7 +3,7 @@
     <div class="home">
       <!-- 상단 헤더 -->
       <div class="header">
-        <BackHeader :title="'이가네'"/>
+        <BackHeader :title="storeName" />
       </div>
 
       <!-- 구분선 -->
@@ -12,6 +12,8 @@
       <!-- 메인 콘텐츠 영역 -->
       <div class="content">
         <h3 class="title">상품 및 상점은 어떠셨나요?</h3>
+
+        <!-- 별점 컴포넌트 (별점 선택) -->
         <div class="star-wrapper">
           <StarScore v-model:rating="rating" />
         </div>
@@ -19,6 +21,7 @@
         <!-- 구분선 -->
         <hr class="divider" />
 
+        <!-- 리뷰 입력 textarea -->
         <textarea
           v-model="reviewText"
           class="review-textarea"
@@ -26,6 +29,7 @@
           maxlength="20"
         ></textarea>
 
+        <!-- 등록 버튼 -->
         <button class="submit-button" @click="submitReview">등록</button>
       </div>
     </div>
@@ -33,22 +37,59 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router'; // useRouter 추가
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import BackHeader from '@/components/common/backHeader.vue';
 import StarScore from '@/components/common/starScore.vue';
+import api from '@/api/axiosInstance';
 
 const router = useRouter();
+const route = useRoute();
+
+// query로 넘어온 boothId, boothName (안전하게 기본값 지정)
+const boothId = route.query.boothId || null;
+const boothName = route.query.boothName || '상점 이름';
+
+// 기본 storeName은 boothName으로 설정
+const storeName = ref(boothName);
+
+// 부스 정보를 API로 업데이트 (선택 사항)
+const fetchBoothInfo = async () => {
+  try {
+    const festivalId = 1; // 예시
+    const res = await api.get(`/booth/${boothId}/${festivalId}`);
+    storeName.value = res.data.name;
+  } catch (error) {
+    console.error('부스 정보 불러오기 실패:', error);
+  }
+};
+
+onMounted(() => {
+  if (boothId) {
+    fetchBoothInfo();
+  }
+});
+
+// 별점과 리뷰 내용을 관리할 ref
 const rating = ref(0);
 const reviewText = ref('');
 
-const submitReview = () => {
-  console.log('별점:', rating.value);
-  console.log('리뷰 내용:', reviewText.value);
-
-  // 리뷰 제출 로직 (예: API 호출)
-
-  router.back(); // 이전 페이지로 이동
+// 리뷰 등록 함수
+const submitReview = async () => {
+  try {
+    const scoreValue = parseInt(rating.value, 10);
+    if (!boothId) {
+      console.error('boothId가 없습니다.');
+      return;
+    }
+    await api.post(`/review/${boothId}`, {
+      content: reviewText.value,
+      score: scoreValue,
+    });
+    router.back();
+  } catch (error) {
+    console.error('리뷰 작성 실패:', error);
+  }
 };
 </script>
 
@@ -112,7 +153,7 @@ const submitReview = () => {
   margin: 20px auto;
   padding: 10px;
   box-sizing: border-box;
-  resize: none; /* textarea 크기 조절 방지 */
+  resize: none;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
@@ -123,8 +164,6 @@ const submitReview = () => {
   border: none;
   color: white;
   text-align: center;
-  text-decoration: none;
-  display: inline-block;
   font-size: 16px;
   cursor: pointer;
   border-radius: 8px;
