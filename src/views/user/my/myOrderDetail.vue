@@ -1,88 +1,122 @@
 <script setup>
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import BackHeader from '@/components/common/backHeader.vue';
+import api from '@/api/axiosInstance';
 
-// 현재 라우트에서 쿼리 파라미터를 가져옵니다.
 const route = useRoute();
 const router = useRouter();
 
-// 가게 이름을 쿼리 파라미터에서 받아옵니다.
-const storeName = route.query.name || '가게 이름';
+const paymentId = route.params.id;
+const paymentDetail = ref(null);
+const menuList = ref([]);
+const enrichedWishList = ref([]);
 
-// 메뉴 아이템, 총 금액, 결제 방식 등의 데이터 설정
-const menuItems = [
-{
-    id: 1,
-    image: 'https://via.placeholder.com/50',
-    name: "떡볶이",
-    quantity: 2,
-    price: '10,000원',
-  },
-  {
-    id: 2,
-    image: 'https://via.placeholder.com/50',
-    name: "오뎅",
-    quantity: 1,
-    price: '5,000원',
-  },
-  {
-    id: 3,
-    image: 'https://via.placeholder.com/50',
-    name: storeName,
-    quantity: 3,
-    price: '15,000원',
-  },
+// storeName를 헤더에 표시할 부스 이름으로 사용
+const storeName = ref('상점 정보 없음');
 
-];
-const totalPrice = route.query.price || '0원';
-const paymentMethod = '카드 결제';
-const paymentDate = '2024-12-22';
+// 결제 상세 데이터를 받아오는 함수
+const fetchPaymentDetail = async () => {
+  try {
+    const res = await api.get(`/pay/${paymentId}`, { withCredentials: true });
+    paymentDetail.value = res.data;
 
-const navigateToReviewPage = () => {
-  // 리뷰 페이지로 이동
-  router.push('/user/my/myWriteReview');
+    // paymentDetail에 boothId가 있으면 부스 정보를 가져옴
+    if (paymentDetail.value?.boothId) {
+      fetchBoothInfo(paymentDetail.value.boothId);
+      fetchMenuList(paymentDetail.value.boothId);
+    }
+  } catch (error) {
+    console.error("결제 상세 데이터 불러오기 실패:", error);
+  }
 };
+
+// boothId를 이용하여 부스 정보를 가져와 storeName 업데이트
+const fetchBoothInfo = async (boothId) => {
+  try {
+    // URL: /booth/{boothId}/1 (1은 festivalId 혹은 고정값)
+    const res = await api.get(`/booth/${boothId}/1`);
+    storeName.value = res.data.name;
+  } catch (error) {
+    console.error("부스 정보 불러오기 실패:", error);
+  }
+};
+
+// 메뉴 데이터를 받아오는 함수
+const fetchMenuList = async (boothId) => {
+  try {
+    const res = await api.get(`/menu/${boothId}`);
+    menuList.value = res.data;
+    combineWishListWithMenu();
+  } catch (error) {
+    console.error("메뉴 데이터 불러오기 실패:", error);
+  }
+};
+
+// wishList와 메뉴 데이터를 결합
+const combineWishListWithMenu = () => {
+  if (paymentDetail.value?.wishList) {
+    enrichedWishList.value = paymentDetail.value.wishList.map(item => {
+      const detailedMenu = menuList.value.find(menu => menu.id === item.menu.id) || null;
+      return { ...item, detailedMenu };
+    });
+  }
+};
+
+onMounted(() => {
+  fetchPaymentDetail();
+});
+
+const totalPrice = computed(() => paymentDetail.value ? paymentDetail.value.price : 0);
+const paymentMethod = computed(() => paymentDetail.value ? paymentDetail.value.payType : '');
+const paymentDate = computed(() => paymentDetail.value ? new Date(paymentDetail.value.createdAt).toLocaleString() : '');
 </script>
 
 <template>
-  <div class="home">
-    <!-- 헤더 -->
+  <div class="page">
+    <!-- 헤더 영역: storeName으로 부스 이름 표시 -->
     <div class="header">
       <BackHeader :title="storeName" />
     </div>
-    <!-- 주문한 메뉴 리스트 -->
+
+    <!-- 주문 메뉴 리스트 영역 -->
     <div class="menu-list">
-      <div class="menu-item" v-for="item in menuItems" :key="item.id">
-        <img :src="item.image" alt="메뉴 이미지" class="menu-image" />
-        <span class="menu-name">{{ item.name }}</span>
-        <span class="menu-quantity">{{ item.quantity }}개</span>
-        <span class="menu-price">{{ item.price }}</span>
+      <div class="menu-item" v-for="item in enrichedWishList" :key="item.id">
+        <img
+          class="menu-image"
+          :src="item.detailedMenu?.image || 'https://via.placeholder.com/50'"
+          alt="메뉴 이미지"
+        />
+        <div class="menu-details">
+          <div class="menu-name">
+            {{ item.detailedMenu?.name || item.menu?.name || '메뉴 정보 없음' }}
+          </div>
+          <div class="menu-quantity">{{ item.cnt }}개</div>
+          <div class="menu-price">
+            {{ item.detailedMenu?.price ? item.detailedMenu.price + '원' : item.price + '원' }}
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- 총 금액 -->
-    <div class="total-price">
-      <span class="total-price-label">총 금액</span>
-      <span class="total-price-value">{{ totalPrice }}</span>
-    </div>
-
-    <!-- 결제 정보 및 리뷰 버튼 -->
+    <!-- 결제 정보 및 리뷰 작성 버튼 영역 -->
     <div class="payment-info">
       <div class="payment-details">
         <div>결제방식: {{ paymentMethod }}</div>
         <div>결제일자: {{ paymentDate }}</div>
       </div>
-      <button class="review-button" @click="navigateToReviewPage">리뷰 작성하기</button>
+      <button class="review-button" @click="router.push({ name: 'writeReview', query: { boothId: paymentDetail?.boothId, boothName: storeName } })">
+        리뷰 작성하기
+      </button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.home {
+.page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
   width: 600px;
   height: 95vh;
   box-sizing: border-box;
@@ -90,7 +124,7 @@ const navigateToReviewPage = () => {
 }
 
 @media (max-width: 900px) {
-  .home {
+  .page {
     width: 100%;
   }
 }
@@ -102,21 +136,19 @@ const navigateToReviewPage = () => {
 
 .menu-list {
   width: 100%;
-  max-height: 600px; /* 스크롤 가능한 높이 제한 */
+  flex-grow: 1;
   overflow-y: auto;
   margin-bottom: 20px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 0px;
-  flex-grow: 1; /* 메뉴 리스트가 최소한의 공간을 차지하도록 설정 */
+  padding: 10px;
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   margin-bottom: 10px;
-  padding: 10px;
+  padding-bottom: 10px;
   border-bottom: 1px solid #f0f0f0;
 }
 
@@ -131,46 +163,40 @@ const navigateToReviewPage = () => {
   margin-right: 10px;
 }
 
-.menu-name {
-  flex: 2;
-  text-align: left;
-}
-
-.menu-quantity {
-  flex: 1;
-  text-align: center;
-}
-
-.menu-price {
-  flex: 1;
-  text-align: right;
-}
-
-.total-price {
+.menu-details {
   display: flex;
-  justify-content: space-between;
-  width: 100%;
-  font-size: 18px;
+  flex-direction: column;
+  flex: 1;
+}
+
+.menu-name {
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
+}
+
+.menu-quantity,
+.menu-price {
+  font-size: 14px;
 }
 
 .payment-info {
+  width: 100%;
+  padding: 10px;
+  border-top: 1px solid #e0e0e0;
   display: flex;
   justify-content: space-between;
-  width: 100%;
   align-items: center;
+  position: sticky;
+  bottom: 0;
+  background-color: #fff;
 }
 
 .payment-details {
-  flex: 1;
-  text-align: left;
   font-size: 14px;
   line-height: 1.5;
 }
 
 .review-button {
-  flex: 1;
   max-width: 150px;
   padding: 10px;
   font-size: 14px;
@@ -185,9 +211,4 @@ const navigateToReviewPage = () => {
 .review-button:hover {
   background-color: #0056b3;
 }
-
-.home > .payment-info {
-  margin-top: auto; /* Push payment info to the bottom */
-}
-
 </style>

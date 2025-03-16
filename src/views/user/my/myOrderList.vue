@@ -74,6 +74,7 @@ onMounted(() => {
   <div class="page">
     <div class="home">
       <div class="header">
+        <!-- paymentDetail 없이 단순히 "주문 내역" 제목을 사용 -->
         <BackHeader title="주문 내역" />
       </div>
       <table class="order-table">
