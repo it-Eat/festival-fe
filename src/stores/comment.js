@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import api from "@/api/axiosInstance.js";
-import Cookies from "js-cookie"; // 수정된 부분
 
 export const useCommentStore = defineStore("comment", () => {
   const commentList = ref([]);

@@ -22,6 +22,7 @@ import LostItemList from "@/views/user/lostItem/lostItemList.vue";
 
 import BoardList from "@/views/user/board/boardList.vue";
 import BoardDetail from "@/views/user/board/boardDetail.vue";
+import BoardWrite from "@/views/user/board/boardWrite.vue";
 
 import FoodList from "@/views/user/food/foodList.vue";
 import FoodDetail from "@/views/user/food/foodDetail.vue";
@@ -38,7 +39,7 @@ import Login from "@/views/user/my/login.vue";
 import FoodReview from "@/views/user/food/foodReview.vue";
 import FoodCart from "@/views/user/food/foodCart.vue";
 import FoodOrder from "@/views/user/food/foodOrder.vue";
-import LoginCallback from "@/views/user/my/loginCallback.vue"
+import LoginCallback from "@/views/user/my/loginCallback.vue";
 import Notice from "@/views/common/notice.vue";
 
 export default [
@@ -123,13 +124,13 @@ export default [
     path: "/user/my/myOrderList",
     name: "myOrderList",
     component: MyOrderList,
-    meta: { title: "결제내역", useUserName: true }
+    meta: { title: "결제내역", useUserName: true },
   },
   {
     path: "/user/my/myOrderDetail/:id",
     name: "myOrderDetail",
     component: MyOrderDetail,
-    meta: { title: "주문 상세" }
+    meta: { title: "주문 상세" },
   },
   {
     path: "/user/food/review",
@@ -152,8 +153,8 @@ export default [
     component: Login,
   },
   {
-     path: '/user/auth/kakao/callback',
-      component: LoginCallback
+    path: "/user/auth/kakao/callback",
+    component: LoginCallback,
   },
   {
     path: "/user/my/deleteId",
@@ -195,6 +196,11 @@ export default [
     path: "/user/board/list",
     name: "boardList",
     component: BoardList,
+  },
+  {
+    path: "/user/board/write",
+    name: "boardWrite",
+    component: BoardWrite,
   },
   {
     path: "/user/my/myWriteReview",

@@ -15,7 +15,7 @@ onMounted(() => {
   <backHeader></backHeader>
   <div class="play-gallery">
     <photoCard
-      v-for="play in playStore.playingList"
+      v-for="play in playStore.plays"
       :key="play.id"
       :item="play"
     ></photoCard>
