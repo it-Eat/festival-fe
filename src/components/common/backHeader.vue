@@ -31,7 +31,7 @@ const goBack = () => {
 };
 
 const handleNotification = () => {
-  console.log("알림 화면으로 이동");
+  router.push("/user/notice");
 };
 
 // 페이지 제목: 로그인 상태이면 userStore.user.nickname 사용, 아니면 기본값("손님")

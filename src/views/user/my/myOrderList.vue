@@ -1,6 +1,6 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import BackHeader from "@/components/common/backHeader.vue";
 import Pagination from "@/components/common/pagination.vue";
 import api from "@/api/axiosInstance";
@@ -9,7 +9,9 @@ import { useUserStore } from "@/stores/userStore";
 const router = useRouter();
 const userStore = useUserStore();
 
-// API를 통해 받아올 결제 내역 데이터 (초기값은 빈 배열)
+const festivalId = 1;
+
+// 결제 내역 데이터를 저장할 ref
 const payments = ref([]);
 
 // 페이지네이션 관련 변수
@@ -27,14 +29,14 @@ const handlePageChange = (page) => {
 
 const navigateToDetail = (payment) => {
   router.push({
-    name: 'myOrderDetail',
+    name: "myOrderDetail",
     params: { id: String(payment.id) },
     query: {
-      boothName: payment.wishList && payment.wishList[0] ? payment.wishList[0].booth.name : "",
+      boothName: payment.boothName || "정보 없음",
       price: payment.price,
       payType: payment.payType,
-      waitingNumber: payment.waitingNumber
-    }
+      waitingNumber: payment.waitingNumber,
+    },
   });
 };
 
@@ -42,8 +44,22 @@ const fetchPayments = async () => {
   if (!userStore.isAuthenticated) return;
   try {
     const res = await api.get(`/pay/user/${userStore.user.id}`, { withCredentials: true });
-    // API 응답이 배열 형태라고 가정합니다.
-    payments.value = res.data;
+    const data = res.data; // 결제 내역 배열
+    // 각 결제 항목에 boothName 추가 (wishList가 비어있으면 별도 API 호출)
+    for (const payment of data) {
+      if (!payment.wishList || payment.wishList.length === 0) {
+        try {
+          const boothRes = await api.get(`/booth/${payment.boothId}/${festivalId}`);
+          payment.boothName = boothRes.data.name;
+        } catch (err) {
+          console.error(`부스 정보 가져오기 실패 (boothId: ${payment.boothId}):`, err);
+          payment.boothName = "정보 없음";
+        }
+      } else {
+        payment.boothName = payment.wishList[0]?.booth?.name || "정보 없음";
+      }
+    }
+    payments.value = data;
   } catch (error) {
     console.error("Error fetching payments:", error);
   }
@@ -74,9 +90,7 @@ onMounted(() => {
             @click="navigateToDetail(payment)"
             class="order-row"
           >
-            <td>
-              {{ payment.wishList && payment.wishList[0] ? payment.wishList[0].booth.name : "정보 없음" }}
-            </td>
+            <td>{{ payment.boothName || "정보 없음" }}</td>
             <td>{{ payment.price }}원</td>
           </tr>
         </tbody>
@@ -122,19 +136,14 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
-.title {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 15px;
-}
-
 .order-table {
   width: 100%;
   border-collapse: collapse;
   text-align: center;
 }
 
-.order-table th, .order-table td {
+.order-table th,
+.order-table td {
   padding: 10px;
   font-size: 16px;
   border-bottom: 1px solid #000;

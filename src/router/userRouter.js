@@ -39,6 +39,7 @@ import FoodReview from "@/views/user/food/foodReview.vue";
 import FoodCart from "@/views/user/food/foodCart.vue";
 import FoodOrder from "@/views/user/food/foodOrder.vue";
 import LoginCallback from "@/views/user/my/loginCallback.vue"
+import Notice from "@/views/common/notice.vue";
 
 export default [
   {
@@ -200,6 +201,11 @@ export default [
     name: "writeReview",
     component: MyWriteReview,
     meta: { title: "리뷰 작성하기" },
+  },
+  {
+    path: "/user/notice",
+    name: "notice",
+    component: Notice,
   },
 
   // 상인
