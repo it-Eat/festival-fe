@@ -2,117 +2,148 @@
 import backHeader from "@/components/common/backHeader.vue";
 import commnetList from "@/components/common/commentList.vue";
 import lostChip from "@/components/common/lostChip.vue";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useLostStore } from "@/stores/lost";
+import api from "@/api/axiosInstance.js";
 
 const route = useRoute();
 const lostStore = useLostStore();
 const currentId = Number(route.params.id);
-const currentItem = lostStore.getLostById(currentId);
+const festivalId = 1; // 사용하는 festivalId 값으로 변경하세요
+const newComment = ref("");
+
+const currentItem = computed(() => lostStore.getLostById(currentId));
+
+const createComment = async () => {
+  try {
+    await api.post(
+      `https://festival-be.onrender.com/comment/${currentId}/${festivalId}`,
+      {
+        content: newComment.value,
+      }
+    );
+    newComment.value = "";
+    lostStore.fetchItems();
+  } catch (error) {
+    console.error("댓글 작성 실패:", error);
+  }
+};
 </script>
 
 <template>
-  <div>
+  <div v-if="currentItem">
     <backHeader class="header" />
     <div class="a">
       <hr />
       <div style="display: flex; margin: 3px 0px">
-        <lostChip :found="currentItem.found" style="margin-left: 3px" />
+        <lostChip
+          v-if="currentItem.found !== undefined"
+          :found="currentItem.found"
+          style="margin-left: 3px"
+        />
         <div class="title" style="margin: 0 auto">{{ currentItem.title }}</div>
       </div>
       <hr />
 
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 5px;
-          padding: 5px;
-        "
-        class="meta-data-bar"
-      >
+      <div class="meta-data-bar">
         <div>{{ currentItem.name }}</div>
         <div>{{ currentItem.date }}</div>
       </div>
 
-      <div
-        style="display: flex; flex-direction: column; text-align: center"
-        class="main-contents"
-      >
-        <img
-          style="margin: auto; aspect-ratio: 1; padding: 10px"
-          :src="currentItem.img"
-          :alt="currentItem.title"
-        />
+      <div class="main-contents">
+        <img :src="currentItem.img" :alt="currentItem.title" />
         <div>{{ currentItem.contents }}</div>
+      </div>
+
+      <div class="comment-section">
+        <textarea
+          v-model="newComment"
+          placeholder="댓글을 입력하세요"
+        ></textarea>
+        <button @click="createComment">댓글 작성</button>
       </div>
 
       <commnetList :type="1" :writingId="currentId" class="comment-list" />
     </div>
+  </div>
+  <div v-else>
+    <p>데이터를 불러오는 중...</p>
   </div>
 </template>
 
 <style scoped>
 .a {
   max-width: 600px;
-  margin: 0 auto;
+  margin: 20px auto;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
 .header {
-  max-width: 600px; /* Adjusted for responsive design */
-  margin: 0 auto;
+  max-width: 600px;
+  margin: 0 auto 15px auto;
 }
 
 .title {
   text-align: center;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
-  padding: 10px 0;
-  background-color: #f8f9fa;
-  max-width: 600px;
-  margin: 0 auto;
+  padding: 12px 0;
+  color: #333333;
 }
 
 .meta-data-bar {
-  background-color: #e3e6ec;
-  padding: 8px;
-  border-radius: 5px;
+  background-color: #f5f7fa;
+  padding: 10px 15px;
+  border-radius: 8px;
   font-size: 14px;
-  font-weight: bold;
-  max-width: 600px;
-  margin: 0 auto;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  color: #555555;
+  margin-top: 10px;
 }
 
 .main-contents {
-  background-color: #ffffff;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
   text-align: center;
-  max-width: 600px;
-  margin: 0 auto;
 }
 
 .main-contents img {
-  max-width: 250px;
+  max-width: 100%;
   height: auto;
   border-radius: 10px;
+  margin: 20px auto;
+}
+
+.comment-section {
+  margin-top: 20px;
+}
+
+.comment-section textarea {
+  width: 100%;
+  height: 60px;
   margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  padding: 8px;
 }
 
 .comment-list {
-  background-color: #f1f3f5;
+  background-color: #f8f9fa;
   padding: 10px;
-  border-radius: 5px;
-  margin-top: 10px;
-  max-width: 600px;
-  margin: 0 auto;
+  border-radius: 8px;
+  margin-top: 20px;
 }
 
 .comment-list div {
-  padding: 8px;
   background-color: #ffffff;
-  margin-bottom: 5px;
-  border-radius: 5px;
-  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.08);
 }
 </style>
