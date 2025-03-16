@@ -21,13 +21,10 @@ async function kakaoLogin() {
 async function processKakaoCallback(code) {
   const local = localAxios();
   try {
-    const response = await local.get(
-      `/user/auth/kakao/callback?code=${code}`,
-      {
-        withCredentials: true,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    const response = await local.get(`/user/auth/kakao/callback?code=${code}`, {
+      withCredentials: true,
+      headers: { "Content-Type": "application/json" },
+    });
     return response.data;
   } catch (error) {
     console.error("카카오 로그인 처리 실패:", error);
@@ -35,5 +32,19 @@ async function processKakaoCallback(code) {
   }
 }
 
+// 공지사항 호출 API 함수 추가
+async function getNotice(festivalId, query) {
+  try {
+    const response = await local.get(`notice/${festivalId}`, {
+      params: query,
+      withCredentials: true,
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("공지사항 API 호출 실패:", error);
+    throw error;
+  }
+}
 
-export {kakaoLogin, processKakaoCallback};
+export { kakaoLogin, processKakaoCallback, getNotice };
