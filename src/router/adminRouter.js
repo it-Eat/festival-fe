@@ -4,6 +4,9 @@ import adminMain from "@/views/admin/adminMain.vue";
 import adminUserManage from "@/views/admin/adminUserManage.vue";
 import adminBooth from "@/views/admin/adminBooth.vue";
 import adminNotice from "@/views/admin/notice/adminNotice.vue";
+import adminBoardDetail from "@/views/admin/board/adminBoardDetail.vue";
+import adminLostDetail from "@/views/admin/lost/adminLostDetail.vue";
+import adminBoothDetail from "@/views/admin/adminBoothDetail.vue";
 
 export default [
   {
@@ -36,10 +39,24 @@ export default [
         name: "adminNotice",
         component: adminNotice,
       },
-      // {
-      //   path: "", // 기본 경로 (예: /admin)
-      //   redirect: { name: "adminBoard" }, // 기본적으로 adminBoard로 리다이렉트
-      // },
+      {
+        path: "adminBoardDetail/:boardId/:festivalId",
+        name: "adminBoardDetail",
+        component: adminBoardDetail,
+        props: true,
+      },
+      {
+        path: "adminLostDetail/:boardId/:festivalId",
+        name: "adminLostDetail",
+        component: adminLostDetail,
+        props: true,
+      },
+      {
+        path: "adminBoothDetail/:festivalId/:boothId",
+        name: "adminBoothDetail",
+        component: adminBoothDetail,
+        props: true,
+      },
     ],
   },
 ];

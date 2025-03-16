@@ -7,6 +7,10 @@ defineProps({
     type: Array,
     required: true,
   },
+  routeName: {
+    type: String,
+    default: "",
+  },
 });
 </script>
 
@@ -16,6 +20,7 @@ defineProps({
       v-for="item in items"
       :key="item.id"
       :item="item"
+      :routeName="routeName"
     ></adminListItem>
   </div>
 </template>
