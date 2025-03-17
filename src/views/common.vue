@@ -4,6 +4,7 @@ import festivalDefault from "@/assets/festivalDefault.png";
 import { useRouter } from "vue-router";
 import { getFestivalList } from "@/stores/festival";
 import { ref, onMounted, onUnmounted } from "vue";
+import backHeader from "@/components/common/backHeader.vue";
 
 const router = useRouter();
 const isLoading = ref(false);
@@ -145,6 +146,11 @@ async function searchFestival() {
 <template>
   <div class="mainpage">
     <div class="body">
+      <backHeader
+        :title="'불꽃놀이 페스티벌'"
+        :useUserName="false"
+        :category="'home'"
+      />
       <div class="body-header">
         <input
           class="body-header-input"
