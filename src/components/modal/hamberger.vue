@@ -42,7 +42,7 @@ function handleLogout() {
           </router-link>
         </li>
         <li v-if="!userStore.isAuthenticated">
-          <router-link to="/common">
+          <router-link to="/">
             공통 페이지
             <span class="home-icon">🏠</span>
           </router-link>

@@ -1,28 +1,47 @@
 <template>
   <div class="page">
     <div class="home">
+      <!-- 상단 헤더 영역: 뒤로가기 버튼 + '소셜 로그인' 텍스트 표시 -->
+      <div class="header">
+        <BackHeader :title="'소셜 로그인'"/>
+      </div>
+
+      <!-- 로그인 영역 -->
       <div class="login-container">
-        <h1>소셜 로그인</h1>
-        <div class="social-buttons">
-          <p class="description">소셜로그인으로 회원가입을 할 수 있습니다.</p>
-          <button class="google-button" @click="loginWithGoogle">
-            <img src="/src/assets/google_logo.png" alt="Google Logo" class="social-icon"> Google로 시작하기
-          </button>
-          <button class="kakao-button" @click="loginWithKakao">
-            <img src="/src/assets/kakao_logo.png" alt="Kakao Logo" class="social-icon"> 카카오로 시작하기
-          </button>
-          <button class="naver-button" @click="loginWithNaver">
-            <img src="/src/assets/naver_logo.png" alt="Naver Logo" class="social-icon"> 네이버로 시작하기
-          </button>
-        </div>
+        <!-- 회원가입하기 타이틀 -->
+        <h1>회원가입하기</h1>
+
+        <!-- 안내 문구 -->
+        <p class="description">소셜로그인으로 회원가입을 할 수 있습니다.</p>
+
+        <!-- 구글 로그인 버튼 -->
+        <button class="google-button" @click="loginWithGoogle">
+          <img src="/src/assets/google_logo.png" alt="Google Logo" class="social-icon" />
+          Google로 시작하기
+        </button>
+
+        <!-- 카카오 로그인 버튼 -->
+        <button class="kakao-button" @click="loginWithKakao">
+          <img src="/src/assets/kakao_logo.png" alt="Kakao Logo" class="social-icon" />
+          카카오로 시작하기
+        </button>
+
+        <!-- 네이버 로그인 버튼 -->
+        <button class="naver-button" @click="loginWithNaver">
+          <img src="/src/assets/naver_logo.png" alt="Naver Logo" class="social-icon" />
+          네이버로 시작하기
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import BackHeader from '@/components/common/backHeader.vue';
+
 const loginWithGoogle = () => {
   console.log("Google Login");
+  // 실제 구글 로그인 로직 또는 OAuth URL로 이동
 };
 
 const loginWithKakao = () => {
@@ -32,47 +51,62 @@ const loginWithKakao = () => {
 
 const loginWithNaver = () => {
   console.log("Naver Login");
+  // 실제 네이버 로그인 로직 또는 OAuth URL로 이동
 };
 </script>
 
 <style scoped>
+/* 전체 페이지(배경 흰색, 수직 수평 가운데 정렬) */
 .page {
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 95vh;
+  background-color: #fff;
 }
-
 .home {
-  width: 100%;
-  max-width: 500px;
-  box-sizing: border-box;
-  margin: auto;
-  justify-content: center;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 20px;
+  width: 600px;
+  min-height: 95vh;
+  margin: auto;
+  box-sizing: border-box;
 }
 
+/* 상단 헤더 */
+.header {
+  width: 100%;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #ddd; /* 스크린샷처럼 아랫줄 */
+}
+
+/* 로그인 컨테이너(흰 배경, 그림자 제거) */
 .login-container {
   width: 100%;
-  padding: 20px;
-  text-align: center;
-  background-color: white;
+  /* text-align: center; */
+  background-color: #fff;
+  /* 필요하면 padding을 조정하세요 */
+  padding: 20px 0;
+  justify-content: center;
 }
 
+/* '회원가입하기' 큰 글자 */
 .login-container h1 {
   font-size: 1.5rem;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin: 20px 0 10px;
 }
 
+/* 안내 문구 스타일 */
 .description {
   color: #555;
   margin-bottom: 20px;
   font-size: 14px;
 }
 
-.social-buttons button {
+/* 버튼 공통 스타일 */
+.google-button,
+.kakao-button,
+.naver-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -86,36 +120,45 @@ const loginWithNaver = () => {
   transition: box-shadow 0.2s, transform 0.2s;
 }
 
-.social-buttons button:hover {
+/* 호버 시 살짝 떠오르는 효과 */
+.google-button:hover,
+.kakao-button:hover,
+.naver-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* 소셜 아이콘 (구글/카카오/네이버 로고) */
 .social-icon {
   width: 20px;
   height: 20px;
   margin-right: 8px;
 }
 
+/* 구글 버튼 */
 .google-button {
-  background-color: white;
+  background-color: #fff;
   color: #444;
   border: 1px solid #ddd;
 }
 
+/* 카카오 버튼 */
 .kakao-button {
   background-color: #fee500;
   color: #3c1e1e;
 }
 
+/* 네이버 버튼 */
 .naver-button {
   background-color: #2db400;
-  color: white;
+  color: #fff;
 }
 
+/* 화면 폭이 좁을 때(모바일 대응) */
 @media (max-width: 900px) {
   .home {
-    width: 90%;
+    width: 100%;
+    padding: 10px;
   }
 }
 </style>
