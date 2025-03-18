@@ -3,8 +3,7 @@
     <div class="home">
       <!-- 상단 헤더 -->
       <div class="header">
-        <!-- storeInfo가 아직 로드되지 않았다면 '로딩 중...' 표시 -->
-        <BackHeader :title="storeInfo?.name || '로딩 중...'" category="foodDetail" />
+        <BackHeader :title="storeInfo?.name || '로딩 중...'" />
       </div>
 
       <!-- 컨텐츠 영역 -->
@@ -16,7 +15,7 @@
             alt="대표 이미지"
             class="mainImg"
           />
-          <!-- 오른쪽 상단에 위치한 수정 버튼 -->
+          <!-- 오른쪽 상단 수정 버튼 -->
           <Wrench class="edit-button" @click="goToModify" />
         </div>
 
@@ -24,10 +23,14 @@
         <div class="store-info">
           <h2 class="store-name">{{ storeInfo.name }}</h2>
           <div class="store-details">
-            <span class="store-location">위치 : {{ storeInfo.location || "정보 없음" }}</span>
+            <span class="store-location">
+              위치 : {{ storeInfo.location || "정보 없음" }}
+            </span>
             <div class="store-rating">
               <span class="star">★ {{ averageRating }}</span>
-              <span class="review" @click="goToReview">리뷰 {{ reviewCount }}개</span>
+              <span class="review" @click="goToReview">
+                리뷰 {{ reviewCount }}개
+              </span>
             </div>
           </div>
           <div class="store-desc">{{ storeInfo.content }}</div>
@@ -39,7 +42,7 @@
             v-for="menu in menus"
             :key="menu.id"
             :menu="menu"
-            :showButton="true"
+            :showButton="false"
             class="menu-item"
           />
         </div>
@@ -66,7 +69,7 @@ const route = useRoute();
 const router = useRouter();
 const cartStore = useCartStore();
 
-// 만약 URL 파라미터로 boothId를 전달하지 않는다면 기본값 1로 사용
+// merchantHome에서는 boothId를 URL params로 넘긴다고 가정
 const boothId = route.params.id || 1;
 const festivalId = 1;
 
@@ -74,24 +77,25 @@ const storeInfo = ref(null);
 const menus = ref([]);
 const reviews = ref([]);
 
-// 부스 상세 정보 API 호출 (새로운 API: /booth/my-booth/{boothId})
+// 부스 상세 정보 불러오기: /booth/my-booth/{boothId}
 const fetchBoothDetail = async () => {
   try {
     const res = await api.get(`/booth/my-booth/${boothId}`);
     storeInfo.value = res.data;
-    // cartStore에 상점명 저장 (원하는 경우)
+    // 반환된 데이터의 id를 사용해 메뉴와 리뷰 불러오기
+    if (storeInfo.value?.id) {
+      fetchMenuList(storeInfo.value.id);
+      fetchReviews(storeInfo.value.id);
+    }
     if (storeInfo.value?.name) {
       cartStore.setStoreName(storeInfo.value.name);
     }
-    // 부스 id를 이용해 메뉴 목록과 리뷰 목록을 불러옴
-    fetchMenuList(storeInfo.value.id);
-    fetchReviews(storeInfo.value.id);
   } catch (error) {
     console.error("부스 상세 정보 불러오기 실패:", error);
   }
 };
 
-// 메뉴 목록 API 호출 (기존과 동일)
+// 메뉴 목록 불러오기
 const fetchMenuList = async (id) => {
   try {
     const res = await api.get(`/menu/${id}`);
@@ -101,7 +105,7 @@ const fetchMenuList = async (id) => {
   }
 };
 
-// 리뷰 목록 API 호출 (예시)
+// 리뷰 목록 불러오기
 const fetchReviews = async (id) => {
   try {
     const res = await api.get("/review", {
@@ -126,17 +130,14 @@ const averageRating = computed(() => {
 
 const reviewCount = computed(() => reviews.value.length);
 
-// 리뷰 페이지로 이동하는 함수
-const goToReview = () => {
-  router.push({
-    path: "/user/food/review",
-    query: { boothId: storeInfo.value.id },
-  });
+// 수정 페이지로 이동: boothId를 params로 넘겨 수정 페이지(merchantModify)로 이동
+const goToModify = () => {
+  router.push({ name: "modify", params: { id: storeInfo.value.id } });
 };
 
-// 수정 페이지로 이동하는 함수 (원하는 페이지로 변경)
-const goToModify = () => {
-  router.push("/merchant/modify");
+// 리뷰 페이지 이동 (예시)
+const goToReview = () => {
+  router.push({ path: "/user/food/review", query: { boothId: storeInfo.value.id } });
 };
 
 onMounted(() => {
@@ -186,7 +187,7 @@ onMounted(() => {
   object-fit: cover;
   max-height: 300px;
 }
-/* Wrench 버튼 스타일: 대표 이미지의 오른쪽 상단에 위치 */
+/* Wrench 버튼: 대표 이미지의 오른쪽 상단 */
 .edit-button {
   position: absolute;
   top: 10px;
