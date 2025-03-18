@@ -1,4 +1,5 @@
 <script setup>
+import { defineProps } from "vue";
 import { useRouter } from "vue-router";
 
 const props = defineProps({
@@ -12,7 +13,7 @@ const props = defineProps({
       );
     },
   },
-  // 카드 타입을 구분하기 위한 prop 추가
+  // 카드 타입 (playing / food)
   cardType: {
     type: String,
     required: true,
@@ -20,17 +21,18 @@ const props = defineProps({
       return ["playing", "food"].includes(value);
     },
   },
+  // 카드 크기 (기본 normal, large 등)
+  size: {
+    type: String,
+    default: "normal", // 다른 페이지는 기본 normal
+  },
 });
-
-// console.log("Received props:", props.item, props.cardType);
 
 const router = useRouter();
 
 const goToDetail = () => {
-  // cardType에 따라 라우팅 대상을 분기처리
   const routeName =
     props.cardType === "playing" ? "playingDetail" : "foodDetail";
-
   router.push({
     name: routeName,
     params: { id: props.item.id },
@@ -39,7 +41,7 @@ const goToDetail = () => {
 </script>
 
 <template>
-  <div @click="goToDetail" class="photo-card">
+  <div @click="goToDetail" class="photo-card" :class="size">
     <img :src="item.image" :alt="item.name" />
     <div class="card-name">{{ item.name }}</div>
   </div>
@@ -47,8 +49,7 @@ const goToDetail = () => {
 
 <style scoped>
 .photo-card {
-  width: 60px;
-  height: 90%;
+  width: 60px; /* 기본 크기 */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -68,7 +69,7 @@ const goToDetail = () => {
   border-radius: 8px;
 }
 
-.photo-card div {
+.card-name {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -83,5 +84,17 @@ const goToDetail = () => {
 
 .photo-card:hover {
   transform: translateY(-5px);
+}
+
+/* 사이즈가 large일 때 */
+.photo-card.large {
+  width: 120px; /* 원하는 큰 사이즈 */
+}
+
+.photo-card.large img {
+  /* 필요하다면 이미지를 좀 더 크게 */
+}
+.photo-card.large .card-name {
+  font-size: 14px; /* 텍스트도 좀 더 크게 */
 }
 </style>

@@ -35,8 +35,13 @@ async function processKakaoCallback(code) {
 // 공지사항 호출 API 함수 추가
 async function getNotice(festivalId, query) {
   try {
+    // 전달받은 query에 pageSize: 50을 강제로 추가 (덮어씌움)
+    const params = {
+      ...query,
+      pageSize: 50,
+    };
     const response = await local.get(`notice/${festivalId}`, {
-      params: query,
+      params,
       withCredentials: true,
       headers: { "Content-Type": "application/json" },
     });
@@ -47,4 +52,17 @@ async function getNotice(festivalId, query) {
   }
 }
 
-export { kakaoLogin, processKakaoCallback, getNotice };
+async function getBoothDetail(boothId, festivalId) {
+  try {
+    const response = await local.get(`booth/${boothId}/${festivalId}`, {
+      withCredentials: true,
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("부스 상세 API 호출 실패:", error);
+    throw error;
+  }
+}
+
+export { kakaoLogin, processKakaoCallback, getNotice, getBoothDetail };
