@@ -23,7 +23,12 @@
               v-if="board?.images && board.images.length > 0"
               class="image-container"
             >
-              <img :src="board.images" class="board-image" />
+              <img :src="board.images[currentImageIndex]" class="board-image" />
+              <!-- 이미지가 두 개 이상일 경우 좌우 버튼 표시 -->
+              <div v-if="board.images.length > 1" class="carousel-buttons">
+                <button @click="prevImage" class="carousel-btn">〈</button>
+                <button @click="nextImage" class="carousel-btn">〉</button>
+              </div>
             </div>
             <div v-else class="no-image">📸 첨부된 이미지가 없습니다.</div>
           </div>
@@ -39,7 +44,7 @@
         <div class="comment-card">
           <div class="comment-header">
             <h2>💬 댓글 목록</h2>
-            <button class="delete-btn">🗑 삭제</button>
+            <button class="delete-btn" @click="deleteComment">🗑 삭제</button>
           </div>
 
           <p v-if="comments.length === 0">아직 댓글이 없습니다.</p>
@@ -55,7 +60,15 @@
             </thead>
             <tbody>
               <tr v-for="comment in comments" :key="comment.id">
-                <td><input type="checkbox" /></td>
+                <td>
+                  <!-- 라디오 버튼을 사용하여 하나만 선택되도록 함 -->
+                  <input
+                    type="radio"
+                    name="selectedComment"
+                    :value="comment.id"
+                    v-model="selectedCommentId"
+                  />
+                </td>
                 <td>{{ comment?.user?.userName || "익명" }}</td>
                 <td class="comment-content">{{ comment?.content || "-" }}</td>
                 <td>{{ formatDate(comment?.createdAt) || "-" }}</td>
@@ -83,11 +96,15 @@
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { getBoardDetail, getComments } from "@/api/admin";
+import api from "@/api/axiosInstance";
 
 const route = useRoute();
 const router = useRouter();
 const board = ref(null);
 const comments = ref([]);
+// 현재 이미지 인덱스
+const currentImageIndex = ref(0);
+const selectedCommentId = ref(null);
 
 // 날짜 포맷팅 함수
 const formatDate = (dateString) => {
@@ -103,9 +120,8 @@ const fetchBoardDetail = async () => {
     const response = await getBoardDetail(boardId, festivalId);
     const data = Array.isArray(response) ? response[0] : response;
 
-    // 만약 data.images가 문자열이나 객체 배열 등으로 넘어올 수 있다면, 여기서 배열로 가공
+    // data.images가 문자열이면 JSON 파싱 후 배열로 변환
     if (data?.images) {
-      // 1) JSON 문자열인지 체크(ex: "[\"url1\", \"url2\"]")
       if (typeof data.images === "string") {
         try {
           data.images = JSON.parse(data.images);
@@ -114,24 +130,22 @@ const fetchBoardDetail = async () => {
           data.images = [];
         }
       }
-
       if (Array.isArray(data.images)) {
         data.images = data.images.map((item) => {
-          // 이미 문자열이면 그대로 사용
           if (typeof item === "string") {
             return item;
           }
-          // 객체에 url 속성이 있다면 그걸로 대체
           if (item.url) {
             return item.url;
           }
-          // 그 외는 빈 문자열 처리
           return "";
         });
       }
     }
 
     board.value = data;
+    // 게시글이 로드되면 현재 이미지 인덱스 초기화
+    currentImageIndex.value = 0;
   } catch (error) {
     console.error("게시글 상세 API 호출 실패:", error);
   }
@@ -148,8 +162,47 @@ const fetchComments = async () => {
   }
 };
 
+// 선택된 댓글 삭제 처리 함수
+const deleteComment = async () => {
+  if (!selectedCommentId.value) {
+    alert("삭제할 댓글을 선택해 주세요.");
+    return;
+  }
+  try {
+    const { festivalId } = route.params;
+    const response = await api.delete(
+      `comment/${selectedCommentId.value}/${festivalId}`
+    );
+    if (response.status === 204) {
+      // 삭제 성공 시 목록에서 해당 댓글 제거
+      comments.value = comments.value.filter(
+        (comment) => comment.id !== selectedCommentId.value
+      );
+      // 선택값 초기화
+      selectedCommentId.value = null;
+    }
+  } catch (error) {
+    console.error("댓글 삭제 실패:", error);
+  }
+};
+
 const goBack = () => {
   router.push("/admin/adminBoard");
+};
+
+const nextImage = () => {
+  if (board.value && board.value.images && board.value.images.length > 1) {
+    currentImageIndex.value =
+      (currentImageIndex.value + 1) % board.value.images.length;
+  }
+};
+
+const prevImage = () => {
+  if (board.value && board.value.images && board.value.images.length > 1) {
+    currentImageIndex.value =
+      (currentImageIndex.value - 1 + board.value.images.length) %
+      board.value.images.length;
+  }
 };
 
 // 페이지 로드시 데이터 조회
@@ -163,7 +216,7 @@ onMounted(() => {
 /* 전체 페이지 중앙 정렬 및 상하 여백 */
 .wrapper {
   max-width: 1500px;
-  margin: 40px auto; /* 화면 중앙 정렬 & 상단 여백 */
+  margin: 40px auto;
   padding: 0 20px;
 }
 
@@ -174,7 +227,6 @@ onMounted(() => {
   gap: 20px;
 }
 
-/* 각각의 카드(왼쪽 게시글, 오른쪽 댓글) 기본 스타일 */
 .board-container,
 .comment-container {
   flex: 1;
@@ -191,7 +243,6 @@ onMounted(() => {
   gap: 16px;
 }
 
-/* 게시글 제목 */
 .board-title {
   font-size: 1.5rem;
   font-weight: bold;
@@ -199,7 +250,6 @@ onMounted(() => {
   margin-bottom: 8px;
 }
 
-/* 작성자 & 작성일 섹션 */
 .board-info {
   display: flex;
   justify-content: space-between;
@@ -208,7 +258,6 @@ onMounted(() => {
   font-size: 0.9rem;
 }
 
-/* 구분선 */
 .board-info + hr {
   margin: 8px 0;
   border: none;
@@ -222,7 +271,6 @@ onMounted(() => {
   align-items: center;
 }
 
-/* 실제 이미지가 들어가는 컨테이너 */
 .image-container {
   max-width: 700px;
   max-height: 700px;
@@ -234,9 +282,9 @@ onMounted(() => {
   overflow: hidden;
   border-radius: 6px;
   margin: 0 auto;
+  position: relative;
 }
 
-/* 이미지가 화면에 맞춰서 보이도록 */
 .board-image {
   max-width: 100%;
   max-height: 100%;
@@ -244,7 +292,7 @@ onMounted(() => {
   height: auto;
   object-fit: contain;
 }
-/* 이미지가 없을 때 */
+
 .no-image {
   text-align: center;
   font-size: 0.95rem;
@@ -254,7 +302,6 @@ onMounted(() => {
   padding: 20px;
 }
 
-/* 게시글 내용 */
 .board-content {
   font-size: 1rem;
   line-height: 1.5;
@@ -268,20 +315,17 @@ onMounted(() => {
   background-color: #fff;
 }
 
-/* 댓글 헤더(타이틀 & 삭제 버튼) */
 .comment-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* 댓글 목록 타이틀 */
 .comment-header h2 {
   font-size: 1.2rem;
   margin: 0;
 }
 
-/* 상단 우측 삭제 버튼 */
 .delete-btn {
   background-color: #ff6b6b;
   color: #fff;
@@ -291,7 +335,6 @@ onMounted(() => {
   cursor: pointer;
 }
 
-/* 댓글 테이블 */
 .comment-table {
   width: 100%;
   border-collapse: collapse;
@@ -314,7 +357,6 @@ onMounted(() => {
   background-color: #fcfcfc;
 }
 
-/* 댓글 내용 열은 왼쪽 정렬 */
 .comment-content {
   text-align: left;
   word-break: break-word;
@@ -343,18 +385,17 @@ onMounted(() => {
   color: #fff;
 }
 
-/* 목록 버튼 컨테이너 (아래쪽 왼쪽 정렬) */
+/* 목록 버튼 컨테이너 */
 .back-btn-container {
   margin-top: 20px;
   display: flex;
   justify-content: flex-start;
 }
 
-/* 목록으로 돌아가기 버튼 */
 .back-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px; /* 아이콘과 글자 간격을 벌리려면 사용 */
+  gap: 6px;
   background-color: #ff6b6b;
   color: #fff;
   border: none;
@@ -366,5 +407,25 @@ onMounted(() => {
 
 .back-btn:hover {
   background-color: #ee5c5c;
+}
+
+/* 캐러셀 버튼 스타일 */
+.carousel-buttons {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+  padding: 0 20px;
+}
+
+.carousel-btn {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: #fff;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 3px;
 }
 </style>

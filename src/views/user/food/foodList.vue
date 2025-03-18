@@ -14,37 +14,6 @@ const hasMore = ref(true);
 
 const festivalId = 1;
 
-const enrichBoothData = async (booth) => {
-  try {
-    // 대기시간
-    const detailRes = await api.get(`/booth/${booth.id}/${festivalId}`);
-    booth.waitingTime = detailRes.data.waitingTime || "";
-
-    // 메뉴 → 4개
-    const menuRes = await api.get(`/menu/${booth.id}`);
-    booth.menuItems = menuRes.data.slice(0, 4);
-
-    // 리뷰 → 평균별점
-    const reviewRes = await api.get("/review", {
-      params: {
-        boothId: booth.id,
-        page: 1,
-        pageSize: 100,
-        orderBy: "recent",
-      },
-    });
-    const reviews = reviewRes.data;
-    if (reviews.length) {
-      const sum = reviews.reduce((acc, r) => acc + r.score, 0);
-      booth.avgRating = (sum / reviews.length).toFixed(1);
-    } else {
-      booth.avgRating = "0.0";
-    }
-  } catch (err) {
-    console.error("enrichBoothData error:", err);
-  }
-};
-
 const fetchBooths = async () => {
   if (!hasMore.value || isLoading.value) return;
 
@@ -63,9 +32,13 @@ const fetchBooths = async () => {
     if (!newData.length) {
       hasMore.value = false;
     } else {
-      for (const booth of newData) {
-        await enrichBoothData(booth);
-      }
+      newData.forEach((booth) => {
+        booth.menuItems = booth.menu ? booth.menu.slice(0, 4) : [];
+
+        booth.avgRating = booth.avgReviewScore
+          ? booth.avgReviewScore.toFixed(1)
+          : "0.0";
+      });
       boothList.value.push(...newData);
       page.value++;
     }
@@ -123,13 +96,13 @@ onMounted(() => {
 
               <!-- 두 번째 줄: 위치 + 대기시간 (같은 줄) -->
               <div class="booth-loc-wait">
-                <span class="booth-location"
-                  >위치 : {{ booth.location || "정보 없음" }}</span
-                >
+                <span class="booth-location">
+                  위치 : {{ booth.location || "정보 없음" }}
+                </span>
                 <span class="booth-waiting">{{ booth.waitingTime }}</span>
               </div>
 
-              <!-- 링크 (홀리보러 가기) -->
+              <!-- 링크  -->
               <div class="booth-link">둘러보러 가기 ➔</div>
             </div>
           </div>
@@ -191,7 +164,7 @@ onMounted(() => {
 .booth-images {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 4px; /* 이미지 사이 소량 여백 */
+  gap: 4px;
   margin-bottom: 8px;
 }
 .menu-img {
