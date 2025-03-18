@@ -1,22 +1,3 @@
-<template>
-  <div class="page">
-    <div class="home">
-      <div class="header">
-        <backHeader title="놀거리" />
-      </div>
-      <div class="play-gallery">
-        <photoCard
-          v-for="play in playStore.plays"
-          :key="play.id"
-          :item="play"
-          cardType="playing"
-          size="large"
-        />
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import backHeader from "@/components/common/backHeader.vue";
 import photoCard from "@/components/common/photoCard.vue";
@@ -30,8 +11,7 @@ onMounted(() => {
 });
 </script>
 
-<<<<<<< HEAD
-=======
+
 <template>
   <backHeader></backHeader>
   <div class="play-gallery">
@@ -43,7 +23,6 @@ onMounted(() => {
   </div>
 </template>
 
->>>>>>> 434b4f082cfcb066fc268755d609b9aeb9b6f584
 <style scoped>
 .page {
   display: flex;
