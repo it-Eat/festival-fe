@@ -30,6 +30,20 @@ onMounted(() => {
 });
 </script>
 
+<<<<<<< HEAD
+=======
+<template>
+  <backHeader></backHeader>
+  <div class="play-gallery">
+    <photoCard
+      v-for="play in playStore.plays"
+      :key="play.id"
+      :item="play"
+    ></photoCard>
+  </div>
+</template>
+
+>>>>>>> 434b4f082cfcb066fc268755d609b9aeb9b6f584
 <style scoped>
 .page {
   display: flex;

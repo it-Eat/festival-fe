@@ -14,7 +14,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       try {
         // refreshToken API 호출
-        await api.post('/user/refreshToken');
+        await api.post("/user/refreshToken");
         // refreshToken 호출 후, 원래 요청 재시도
         return api(originalRequest);
       } catch (refreshError) {
