@@ -5,10 +5,6 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-function goToUser() {
-  router.push({ name: "adminUserManage" });
-}
-
 function goToBoard() {
   router.push({ name: "adminBoard" });
 }
@@ -29,7 +25,6 @@ function goToNotice() {
 <template>
   <div>
     <h2>진해군항제 축제 관리자님</h2>
-    <h3 @click="goToUser">사용자 관리</h3>
     <div>
       <h3 @click="goToBooth">상점 관리</h3>
     </div>
