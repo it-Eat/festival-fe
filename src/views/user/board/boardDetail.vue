@@ -96,6 +96,9 @@ const prevImage = () => {
         <button @click="nextImage" class="nav-button right">▶</button>
       </div>
 
+      <div class="content">{{ currentItem?.content || "내용 없음" }}</div>
+      <hr />
+
       <div class="comment-section">
         <textarea
           v-model="newComment"
