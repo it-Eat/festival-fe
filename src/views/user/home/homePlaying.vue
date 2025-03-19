@@ -30,10 +30,13 @@ const goToPlayingList = () => {
         :key="play.id"
         :item="play"
         card-type="playing"
+        size="large"
       />
     </div>
 
-    <button class="more-button" @click="goToPlayingList">더보기</button>
+    <button class="more-button" @click="goToPlayingList">
+      놀거리 보러가기
+    </button>
   </div>
 </template>
 
@@ -53,19 +56,37 @@ const goToPlayingList = () => {
 .playing-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
+  grid-auto-rows: minmax(120px, auto);
+  gap: 16px;
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
   padding: 10px;
   justify-items: center;
+  align-items: center;
+  text-align: center;
 }
 
 /* 카드 스타일 */
 .photoCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
   width: 100%;
-  max-width: 120px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  height: 100%;
+}
+/* 먹거리 목록 스타일 (3행 2열) */
+.food-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3열 구성 */
+  grid-auto-rows: minmax(120px, auto); /* 행 크기 자동 조정 */
+  gap: 16px; /* 여백 증가 */
+  width: 100%;
+  max-width: 500px; /* 부모 요소와 일치 */
+  padding: 10px;
+  justify-content: space-between; /* 카드 간격 균등 배분 */
+  justify-items: center;
 }
 
 /* 더보기 버튼 */
@@ -77,10 +98,12 @@ const goToPlayingList = () => {
   border-radius: 8px;
   cursor: pointer;
   border: none;
-  margin-top: 15px;
-  transition: background 0.3s;
   display: flex;
   justify-content: center;
+  width: 180px;
+  max-width: 200px;
+  margin-top: 20px;
+  transition: background 0.3s;
 }
 
 .more-button:hover {

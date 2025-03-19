@@ -8,7 +8,7 @@ export const useFoodStore = defineStore("itemStore", {
   actions: {
     async fetchItems() {
       try {
-        const response = await api.get("booth/1?page=1&pageSize=5&type=EAT");
+        const response = await api.get("booth/1?page=1&pageSize=6&type=EAT");
         this.foods = response.data;
       } catch (error) {
         console.error("데이터 가져오기 실패:", error);

@@ -1,6 +1,7 @@
 <script setup>
 import { defineProps } from "vue";
 import { useRouter } from "vue-router";
+import noImage from "@/assets/noimage.png"; // fallback 이미지 import
 
 const props = defineProps({
   item: {
@@ -42,7 +43,8 @@ const goToDetail = () => {
 
 <template>
   <div @click="goToDetail" class="photo-card" :class="size">
-    <img :src="item.image" :alt="item.name" />
+    <!-- 이미지가 없으면 noImage 사용 -->
+    <img :src="item.image || noImage" :alt="item.name" />
     <div class="card-name">{{ item.name }}</div>
   </div>
 </template>

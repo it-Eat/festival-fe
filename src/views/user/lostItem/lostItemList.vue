@@ -3,6 +3,7 @@ import SmallList from "@/components/common/smallList.vue";
 import pagination from "@/components/common/pagination.vue";
 import { useLostStore } from "@/stores/lost";
 import backHeader from "@/components/common/backHeader.vue";
+import { onMounted } from "vue";
 
 const lostStore = useLostStore();
 
@@ -10,6 +11,10 @@ for (let i = 1; i < 5; i++) {
   const lostItem = lostStore.getLostById(i);
   console.log(lostItem);
 }
+
+onMounted(() => {
+  lostStore.fetchItems();
+});
 </script>
 
 <template>
