@@ -5,6 +5,7 @@ export const useFoodStore = defineStore("itemStore", {
   state: () => ({
     foods: [],
   }),
+  persist: true,
   actions: {
     async fetchItems() {
       try {

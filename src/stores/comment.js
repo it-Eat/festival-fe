@@ -69,4 +69,11 @@ export const useCommentStore = defineStore("comment", () => {
     editComment,
     deleteComment,
   };
-});
+},
+{
+  persist:{
+    enabled: true,
+    paths: ["comment"],
+  }
+}
+);

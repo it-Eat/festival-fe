@@ -8,7 +8,7 @@ const router = useRouter();
 // 로컬 메서드: 로그아웃 후 "/user" 페이지로 이동
 function handleLogout() {
   userStore.logout();
-  router.push("/user"); // 원하는 경로로 이동
+  router.push("/"); // 원하는 경로로 이동
 }
 </script>
 
@@ -54,7 +54,7 @@ function handleLogout() {
         <!-- 일반 사용자 메뉴 -->
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
           <span class="home-icon">🏠</span>
-          <router-link to="/common"> 공통 페이지 </router-link>
+          <router-link to="/"> 공통 페이지 </router-link>
         </li>
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
           <span class="home-icon">📄</span>
@@ -75,7 +75,7 @@ function handleLogout() {
 
         <!-- 상인(merchant) 메뉴 -->
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'SELLER'">
-          <router-link to="/common">
+          <router-link to="/">
             <span class="home-icon">🏠</span>
             공통 페이지
           </router-link>

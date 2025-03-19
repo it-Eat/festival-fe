@@ -15,6 +15,7 @@ export const useAuthStore = defineStore("auth", {
       ],
     },
   }),
+  persist: true,
   actions: {
     setUserData(userData) {
       console.log("User data received:", userData);

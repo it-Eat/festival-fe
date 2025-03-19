@@ -6,6 +6,7 @@ export const useBoardStore = defineStore("board", {
     boards: [],
     boardDetail: {},
   }),
+  persist: true,
   actions: {
     async fetchItems() {
       try {

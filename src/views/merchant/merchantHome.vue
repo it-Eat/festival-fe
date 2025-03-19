@@ -11,7 +11,7 @@
         <!-- 대표 이미지 영역 -->
         <div class="main-image-container">
           <img
-            :src="storeInfo.image || 'https://via.placeholder.com/600x300'"
+            :src="storeInfo.image || noimage"
             alt="대표 이미지"
             class="mainImg"
           />
@@ -64,6 +64,7 @@ import BackHeader from "@/components/common/backHeader.vue";
 import MenuItem from "@/components/common/menuItem.vue";
 import { Wrench } from "lucide-vue-next";
 import { useCartStore } from "@/stores/cartStores";
+import noimage from "@/assets/noimage.png";
 
 const route = useRoute();
 const router = useRouter();

@@ -12,7 +12,7 @@
         <!-- 대표 이미지 영역 (클릭 시 파일 선택) -->
         <div class="main-image-container">
           <img
-            :src="imageUrl || 'https://via.placeholder.com/600x300'"
+            :src="imageUrl || noimage"
             alt="대표 이미지"
             class="mainImg"
             @click="onImageClick"
@@ -75,6 +75,7 @@ import { useRouter, useRoute } from "vue-router";
 import BackHeader from "@/components/common/backHeader.vue";
 import api from "@/api/axiosInstance";
 import { useMerchantStore } from "@/stores/merchant";
+import noimage from "@/assets/noimage.png";
 
 const route = useRoute();
 const router = useRouter();

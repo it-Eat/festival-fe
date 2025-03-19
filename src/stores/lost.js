@@ -5,6 +5,7 @@ export const useLostStore = defineStore("lost", {
   state: () => ({
     losts: [],
   }),
+  persist: true,
   actions: {
     async fetchItems() {
       try {
