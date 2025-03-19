@@ -1,7 +1,7 @@
 <template>
   <div class="menu-card">
     <img
-      :src="menu.image || 'https://via.placeholder.com/80'"
+      :src="menu.image || noimage"
       :alt="menu.name"
       class="menu-image"
     />
@@ -28,6 +28,7 @@
 import { ref, computed } from "vue";
 import UpdownButton from "./updownButton.vue";
 import { useCartStore } from "@/stores/cartStores";
+import noimage from "@/assets/noimage.png";
 
 const props = defineProps({
   menu: { type: Object, required: true },

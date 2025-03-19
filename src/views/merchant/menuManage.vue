@@ -31,7 +31,7 @@
               />
               <div v-else class="image-placeholder">
                 <img
-                  src="./image.png"
+                  :src=noimage
                   alt="image placeholder"
                   style="width: 50px; height: 50px;"
                 />
@@ -86,6 +86,7 @@ import { ref, onMounted, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import BackHeader from "@/components/common/backHeader.vue";
 import api from "@/api/axiosInstance";
+import noimage from "@/assets/noimage.png";
 
 const route = useRoute();
 const router = useRouter();

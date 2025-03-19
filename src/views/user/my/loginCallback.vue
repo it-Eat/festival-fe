@@ -24,7 +24,6 @@ onMounted(async () => {
   const code = route.query.code;
   if (code) {
     try {
-      console.log("🔍 로그인 코드:", code);
 
       const response = await axios.get(
         `${API_URL}/user/auth/kakao/callback?code=${code}`,
@@ -34,15 +33,12 @@ onMounted(async () => {
         }
       );
 
-      console.log("✅ 서버 응답:", response.data);
-
       // 서버 응답에서 user 정보 추출
       const { user } = response.data;
       userStore.setUser(user);
 
       // role 체크
       const userRole = user.role;
-      console.log("🔍 사용자 권한:", userRole);
 
       setTimeout(() => {
         // role이 SELLER면 merchantHome, 아니면 일반 홈("/")으로 이동

@@ -13,9 +13,14 @@ export const useCartStore = defineStore("cart", () => {
 
   // 총 수량
   const totalCount = computed(() => {
-    return cartItems.value.reduce((sum, item) => sum + item.quantity, 0);
-  });
-
+    // cartItems.value 가 falsy(null, undefined 등) 이면 빈 배열로 대체
+    return (cartItems.value ?? []).reduce((sum, item) => sum + item.quantity, 0)
+  })
+  const logout = () => {
+    boothId.value = null;
+    cartItems.value = null;
+    storeName.value = null;
+  }
   /**
    * 장바구니 추가/수정
    * - 이미 있는 메뉴는 수량 수정
@@ -73,5 +78,13 @@ export const useCartStore = defineStore("cart", () => {
     setBoothId,
     setStoreName,
     clearCart,
+    logout,
   };
-});
+},
+{
+  persist:{
+    enabled: true,
+    paths: ["cart"],
+  }
+}
+);
