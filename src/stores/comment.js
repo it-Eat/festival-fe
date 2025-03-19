@@ -20,14 +20,33 @@ export const useCommentStore = defineStore("comment", () => {
     try {
       await api.post(
         `https://festival-be.onrender.com/comment/${currentId}/${festivalId}`,
-        {
-          withCredentials: true,
-          content,
-        }
+        { content }
       );
       await fetchComments(currentId, festivalId);
     } catch (error) {
       console.error("댓글 작성 실패:", error);
+    }
+  };
+
+  const editComment = async (commentId, content, currentId, festivalId = 1) => {
+    try {
+      await api.put(`https://festival-be.onrender.com/comments/${commentId}`, {
+        content,
+      });
+      await fetchComments(currentId, festivalId);
+    } catch (error) {
+      console.error("댓글 수정 실패:", error);
+    }
+  };
+
+  const deleteComment = async (commentId, currentId, festivalId = 1) => {
+    try {
+      await api.delete(
+        `https://festival-be.onrender.com/comments/${commentId}`
+      );
+      await fetchComments(currentId, festivalId);
+    } catch (error) {
+      console.error("댓글 삭제 실패:", error);
     }
   };
 
@@ -47,5 +66,7 @@ export const useCommentStore = defineStore("comment", () => {
     getCommentByWritingId,
     fetchComments,
     createComment,
+    editComment,
+    deleteComment,
   };
 });

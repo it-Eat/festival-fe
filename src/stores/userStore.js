@@ -20,8 +20,10 @@ export const useUserStore = defineStore("user", () => {
   // 로그아웃 (유저 정보 삭제 & 쿠키 삭제)
   const logout = () => {
     user.value = null;
-    document.cookie = "access-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie = "refresh-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie =
+      "access-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie =
+      "refresh-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   };
 
   return {

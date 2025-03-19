@@ -4,10 +4,13 @@ import commentList from "@/components/common/commentList.vue";
 import { computed, ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useBoardStore } from "@/stores/board";
+import { useCommentStore } from "@/stores/comment";
+
 import api from "@/api/axiosInstance.js";
 
 const route = useRoute();
 const boardStore = useBoardStore();
+const commentStore = useCommentStore();
 const currentId = Number(route.params.id);
 const festivalId = 1;
 
@@ -30,47 +33,36 @@ watch(
 const newComment = ref("");
 
 const createComment = async () => {
-  try {
-    await api.post(`/comment/${currentId}/${festivalId}`, {
-      content: newComment.value || "테스트 댓글 내용", // 임시 내용 삽입
-    });
-    newComment.value = "";
-    await loadBoardDetail();
-  } catch (error) {
-    console.error("댓글 작성 실패:", error.response?.data || error.message);
-  }
+  await commentStore.createComment(currentId, newComment.value, festivalId);
+  newComment.value = "";
+  await loadBoardDetail();
 };
 
 const editComment = async (commentId, content) => {
-  try {
-    await api.put(`/comments/${commentId}`, { content });
-    await loadBoardDetail(); // 댓글 작성 후 상세 정보 갱신
-  } catch (error) {
-    console.error("댓글 수정 실패:", error);
-  }
+  await commentStore.editComment(commentId, content, currentId, festivalId);
+  await loadBoardDetail();
 };
 
 const deleteComment = async (commentId) => {
-  try {
-    await api.delete(`/comments/${commentId}`);
-    await loadBoardDetail(); // 댓글 작성 후 상세 정보 갱신
-  } catch (error) {
-    console.error("댓글 삭제 실패:", error);
-  }
+  await commentStore.deleteComment(commentId, currentId, festivalId);
+  await loadBoardDetail();
 };
 
 const currentImageIndex = ref(0);
 
 const nextImage = () => {
   if (currentItem.value.images.length > 0) {
-    currentImageIndex.value = (currentImageIndex.value + 1) % currentItem.value.images.length;
+    currentImageIndex.value =
+      (currentImageIndex.value + 1) % currentItem.value.images.length;
   }
   console.log(2);
 };
 
 const prevImage = () => {
   if (currentItem.value.images.length > 0) {
-    currentImageIndex.value = (currentImageIndex.value - 1 + currentItem.value.images.length) % currentItem.value.images.length;
+    currentImageIndex.value =
+      (currentImageIndex.value - 1 + currentItem.value.images.length) %
+      currentItem.value.images.length;
   }
   console.log(1);
 };
@@ -89,17 +81,26 @@ const prevImage = () => {
         <div>{{ currentItem?.createdAt || "날짜 없음" }}</div>
       </div>
 
-      <div class="main-contents" v-if="currentItem?.images && currentItem.images.length">
+      <div
+        class="main-contents"
+        v-if="currentItem?.images && currentItem.images.length"
+      >
         <button @click="prevImage" class="nav-button left">◀</button>
 
-        <img :src="currentItem.images[currentImageIndex]" :alt="currentItem?.title || '이미지 없음'" class="slider-image" />
+        <img
+          :src="currentItem.images[currentImageIndex]"
+          :alt="currentItem?.title || '이미지 없음'"
+          class="slider-image"
+        />
 
         <button @click="nextImage" class="nav-button right">▶</button>
       </div>
 
-
       <div class="comment-section">
-        <textarea v-model="newComment" placeholder="댓글을 입력하세요"></textarea>
+        <textarea
+          v-model="newComment"
+          placeholder="댓글을 입력하세요"
+        ></textarea>
         <button @click="createComment">댓글 작성</button>
       </div>
 
@@ -112,9 +113,9 @@ const prevImage = () => {
       />
     </div>
   </div>
-  <div v-else>Loading...</div> <!-- 데이터가 없을 때 로딩 메시지 표시 -->
+  <div v-else>Loading...</div>
+  <!-- 데이터가 없을 때 로딩 메시지 표시 -->
 </template>
-
 
 <style scoped>
 .a {
@@ -222,5 +223,4 @@ const prevImage = () => {
 .right {
   right: 10px;
 }
-
 </style>
