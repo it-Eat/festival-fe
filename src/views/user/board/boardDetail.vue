@@ -1,12 +1,9 @@
 <script setup>
 import backHeader from "@/components/common/backHeader.vue";
-import commentList from "@/components/common/commentList.vue";
-import { computed, ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useBoardStore } from "@/stores/board";
 import { useCommentStore } from "@/stores/comment";
-
-import api from "@/api/axiosInstance.js";
 
 const route = useRoute();
 const boardStore = useBoardStore();
@@ -120,7 +117,7 @@ const prevImage = () => {
             :key="index"
             class="comment-item"
           >
-            <span class="comment-user">{{ comment.user.userName }}</span>
+            <span class="comment-user">{{ comment.userName }}</span>
             <span class="comment-content">{{ comment.content }}</span>
             <span class="comment-date">
               {{ new Date(comment.createdAt).toLocaleString("ko-KR") }}

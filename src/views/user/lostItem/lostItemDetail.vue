@@ -1,8 +1,7 @@
 <script setup>
 import backHeader from "@/components/common/backHeader.vue";
-import commnetList from "@/components/common/commentList.vue";
 import lostChip from "@/components/common/lostChip.vue";
-import { computed, ref, onMounted } from "vue";
+import { watch, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useLostStore } from "@/stores/lost";
 import { useCommentStore } from "@/stores/comment";
@@ -12,22 +11,65 @@ const lostStore = useLostStore();
 const commentStore = useCommentStore();
 
 const currentId = Number(route.params.id);
-const newComment = ref("");
-const currentItem = computed(() => lostStore.getLostById(currentId));
+const festivalId = 1;
+const currentItem = ref(null);
 
-// 댓글 작성 함수 연결
-const createComment = () => {
-  const boothId = currentItem.value.id; // boothId 값
-  const writingId = currentId; // 현재 게시글 ID
-  const content = newComment.value;
-
-  commentStore.createComment(boothId, writingId, content, 1);
+const loadLostItemDetail = async () => {
+  try {
+    await lostStore.fetchDetailItems(currentId, festivalId);
+    await commentStore.fetchComments(currentId, festivalId);
+    currentItem.value = lostStore.getLostDetail();
+  } catch (error) {
+    console.error("데이터 로드 실패:", error);
+  }
 };
 
-// 초기 댓글 로드
-onMounted(() => {
-  commentStore.fetchComments(currentItem.value.id, 1);
-});
+onMounted(loadLostItemDetail);
+
+watch(
+  () => lostStore.getLostDetail(),
+  (newVal) => {
+    currentItem.value = newVal;
+  },
+  { immediate: true }
+);
+
+const newComment = ref("");
+
+const createComment = async () => {
+  await commentStore.createComment(currentId, newComment.value, festivalId);
+  newComment.value = "";
+  await loadLostItemDetail();
+};
+
+const currentImageIndex = ref(0);
+
+const nextImage = () => {
+  if (currentItem.value.images.length > 0) {
+    currentImageIndex.value =
+      (currentImageIndex.value + 1) % currentItem.value.images.length;
+  }
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return ""; // 날짜가 없으면 빈 문자열 반환
+  const date = new Date(dateString);
+  return date.toLocaleString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+const prevImage = () => {
+  if (currentItem.value.images.length > 0) {
+    currentImageIndex.value =
+      (currentImageIndex.value - 1 + currentItem.value.images.length) %
+      currentItem.value.images.length;
+  }
+};
 </script>
 
 <template>
@@ -35,42 +77,69 @@ onMounted(() => {
     <backHeader class="header" />
     <div class="a">
       <hr />
-      <div style="display: flex; margin: 3px 0px">
+      <div class="title">
         <lostChip
-          v-if="currentItem.found !== undefined"
-          :found="currentItem.found"
-          style="margin-left: 3px"
+          v-if="currentItem?.lossType"
+          :type="currentItem.lossType"
+          class="left-chip"
         />
-        <div class="title" style="margin: 0 auto">{{ currentItem.title }}</div>
+        <span class="title-text">{{ currentItem?.title || "제목 없음" }}</span>
       </div>
       <hr />
 
       <div class="meta-data-bar">
-        <div>{{ currentItem.name }}</div>
-        <div>{{ currentItem.date }}</div>
+        <div>{{ currentItem?.userName || "이름 없음" }}</div>
+        <div>{{ formatDate(currentItem?.createdAt) || "날짜 없음" }}</div>
       </div>
 
-      <div class="main-contents">
-        <img :src="currentItem.img" :alt="currentItem.title" />
-        <div>{{ currentItem.contents }}</div>
+      <div
+        class="main-contents"
+        v-if="currentItem?.images && currentItem.images.length"
+      >
+        <button @click="prevImage" class="nav-button left">◀</button>
+
+        <img
+          :src="currentItem.images[currentImageIndex]"
+          :alt="currentItem?.title || '이미지 없음'"
+          class="slider-image"
+        />
+
+        <button @click="nextImage" class="nav-button right">▶</button>
       </div>
+      <div class="content">{{ currentItem?.content || "내용 없음" }}</div>
+      <hr />
 
       <div class="comment-section">
         <textarea
           v-model="newComment"
           placeholder="댓글을 입력하세요"
         ></textarea>
-        <button @click="createComment(currentItem.id, newComment, 1)">
-          댓글 작성
-        </button>
+        <button @click="createComment">댓글 작성</button>
       </div>
 
-      <commnetList :type="1" :writingId="currentId" class="comment-list" />
+      <div class="comment-list-container">
+        <p class="comment-header">
+          댓글 수: {{ commentStore.commentList.length }}
+        </p>
+        <div class="comment-list" v-if="commentStore.commentList.length > 0">
+          <div
+            v-for="(comment, index) in commentStore.commentList"
+            :key="index"
+            class="comment-item"
+          >
+            <span class="comment-user">{{ comment.userName }}</span>
+            <span class="comment-content">{{ comment.content }}</span>
+            <span class="comment-date">
+              {{ new Date(comment.createdAt).toLocaleString("ko-KR") }}
+            </span>
+          </div>
+        </div>
+        <p v-else>등록된 댓글이 없습니다.</p>
+      </div>
     </div>
   </div>
-  <div v-else>
-    <p>데이터를 불러오는 중...</p>
-  </div>
+  <div v-else>Loading...</div>
+  <!-- 데이터가 없을 때 로딩 메시지 표시 -->
 </template>
 
 <style scoped>
@@ -86,6 +155,24 @@ onMounted(() => {
 .header {
   max-width: 600px;
   margin: 0 auto 15px auto;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 가운데 정렬 */
+  gap: 8px; /* 제목과 lostChip 간격 */
+  position: relative;
+}
+
+.left-chip {
+  position: absolute;
+  left: 0;
+}
+
+.title-text {
+  flex-grow: 1;
+  text-align: center;
 }
 
 .title {

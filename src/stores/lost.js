@@ -4,6 +4,7 @@ import api from "@/api/axiosInstance.js";
 export const useLostStore = defineStore("lost", {
   state: () => ({
     losts: [],
+    lostDetail: {},
   }),
   persist: true,
   actions: {
@@ -15,11 +16,23 @@ export const useLostStore = defineStore("lost", {
         console.error("데이터 가져오기 실패:", error);
       }
     },
+
+    async fetchDetailItems(lostItemId, festivalId) {
+      try {
+        const response = await api.get(`/board/${lostItemId}/${festivalId}`);
+        this.lostDetail = response.data;
+      } catch (error) {
+        console.error("데이터 가져오기 실패:", error);
+      }
+    },
   },
 
   getters: {
     getLostById: (state) => (id) => {
       return state.losts.find((item) => item.id === id) || null;
+    },
+    getLostDetail: (state) => () => {
+      return state.lostDetail || null;
     },
   },
 });
