@@ -39,16 +39,6 @@ const createComment = async () => {
   await loadBoardDetail();
 };
 
-const editComment = async (commentId, content) => {
-  await commentStore.editComment(commentId, content, currentId, festivalId);
-  await loadBoardDetail();
-};
-
-const deleteComment = async (commentId) => {
-  await commentStore.deleteComment(commentId, currentId, festivalId);
-  await loadBoardDetail();
-};
-
 const currentImageIndex = ref(0);
 
 const nextImage = () => {
@@ -57,6 +47,18 @@ const nextImage = () => {
       (currentImageIndex.value + 1) % currentItem.value.images.length;
   }
   console.log(2);
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return ""; // 날짜가 없으면 빈 문자열 반환
+  const date = new Date(dateString);
+  return date.toLocaleString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 };
 
 const prevImage = () => {
@@ -79,7 +81,7 @@ const prevImage = () => {
 
       <div class="meta-data-bar">
         <div>{{ currentItem?.userName || "이름 없음" }}</div>
-        <div>{{ currentItem?.createdAt || "날짜 없음" }}</div>
+        <div>{{ formatDate(currentItem?.createdAt) || "날짜 없음" }}</div>
       </div>
 
       <div
@@ -108,13 +110,25 @@ const prevImage = () => {
         <button @click="createComment">댓글 작성</button>
       </div>
 
-      <commentList
-        :writingId="currentId"
-        :comments="commentStore.commentList || []"
-        class="comment-list"
-        @edit-comment="editComment"
-        @delete-comment="deleteComment"
-      />
+      <div class="comment-list-container">
+        <p class="comment-header">
+          댓글 수: {{ commentStore.commentList.length }}
+        </p>
+        <div class="comment-list" v-if="commentStore.commentList.length > 0">
+          <div
+            v-for="(comment, index) in commentStore.commentList"
+            :key="index"
+            class="comment-item"
+          >
+            <span class="comment-user">{{ comment.user.userName }}</span>
+            <span class="comment-content">{{ comment.content }}</span>
+            <span class="comment-date">
+              {{ new Date(comment.createdAt).toLocaleString("ko-KR") }}
+            </span>
+          </div>
+        </div>
+        <p v-else>등록된 댓글이 없습니다.</p>
+      </div>
     </div>
   </div>
   <div v-else>Loading...</div>
@@ -226,5 +240,45 @@ const prevImage = () => {
 
 .right {
   right: 10px;
+}
+
+.comment-list-container {
+  margin-top: 20px;
+}
+
+.comment-header {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.comment-list {
+  border-top: 1px solid #000;
+  margin-top: 10px;
+}
+
+.comment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 10px;
+  border-bottom: 1px solid #000;
+}
+
+.comment-user {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.comment-content {
+  flex: 1;
+  margin-left: 15px;
+  font-size: 15px;
+}
+
+.comment-date {
+  font-size: 14px;
+  color: #666;
+  white-space: nowrap;
 }
 </style>
