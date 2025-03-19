@@ -26,10 +26,13 @@ onMounted(async () => {
     try {
       console.log("🔍 로그인 코드:", code);
 
-      const response = await axios.get(`${API_URL}/user/auth/kakao/callback?code=${code}`, {
-        withCredentials: true,
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await axios.get(
+        `${API_URL}/user/auth/kakao/callback?code=${code}`,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       console.log("✅ 서버 응답:", response.data);
 
@@ -46,7 +49,7 @@ onMounted(async () => {
         if (userRole === "SELLER") {
           router.push("/merchant/merchantHome");
         } else {
-          router.push("/");
+          router.push("/user");
         }
       }, 150);
     } catch (error) {

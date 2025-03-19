@@ -73,13 +73,12 @@
 import { computed, ref } from "vue";
 import BackHeader from "@/components/common/backHeader.vue";
 import { useCartStore } from "@/stores/cartStores";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 
 // Pinia store (가게명, 장바구니 등)
 const cartStore = useCartStore();
 const storeName = computed(() => cartStore.storeName); // 가게명
 const cartItems = computed(() => cartStore.cartItems);
-const route = useRoute();
 const router = useRouter();
 
 // 총 금액 계산
@@ -102,7 +101,6 @@ function handlePayment() {
   router.push({
     path: "/user",
   });
-
 }
 </script>
 

@@ -137,10 +137,20 @@ const goToModify = () => {
 
 // 리뷰 페이지 이동 (예시)
 const goToReview = () => {
-  router.push({ path: "/user/food/review", query: { boothId: storeInfo.value.id } });
+  router.push({
+    path: "/user/food/review",
+    query: { boothId: storeInfo.value.id },
+  });
 };
 
 onMounted(() => {
+  // URL 파라미터 등에서 boothId를 가져온다고 가정
+  const boothIdFromRoute = route.params.id || 1;
+
+  // Pinia store에 boothId 저장
+  cartStore.setBoothId(boothIdFromRoute);
+
+  // 이후 boothId를 이용해 API 호출 등 진행
   fetchBoothDetail();
 });
 </script>
