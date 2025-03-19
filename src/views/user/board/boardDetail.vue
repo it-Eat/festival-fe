@@ -1,69 +1,99 @@
 <script setup>
 import backHeader from "@/components/common/backHeader.vue";
 import commentList from "@/components/common/commentList.vue";
-import { computed, ref } from "vue";
+import { computed, ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useBoardStore } from "@/stores/board";
+import { useCommentStore } from "@/stores/comment";
+
 import api from "@/api/axiosInstance.js";
 
 const route = useRoute();
 const boardStore = useBoardStore();
+const commentStore = useCommentStore();
 const currentId = Number(route.params.id);
-const currentItem = computed(() => boardStore.getBoardById(currentId));
+const festivalId = 1;
+
+const currentItem = ref(null);
+
+const loadBoardDetail = async () => {
+  await boardStore.fetchDetailItems(currentId, festivalId);
+};
+
+onMounted(loadBoardDetail);
+
+watch(
+  () => boardStore.boardDetail,
+  (newVal) => {
+    currentItem.value = newVal;
+  },
+  { immediate: true }
+);
 
 const newComment = ref("");
 
 const createComment = async () => {
-  const festivalId = 1; // 현재 사용하는 festivalId 값으로 변경하세요
-  try {
-    await api.post(
-      `https://festival-be.onrender.com/comment/${currentId}/${festivalId}`,
-      {
-        content: newComment.value,
-      }
-    );
-    newComment.value = "";
-    boardStore.fetchItems();
-  } catch (error) {
-    console.error("댓글 작성 실패:", error);
-  }
+  await commentStore.createComment(currentId, newComment.value, festivalId);
+  newComment.value = "";
+  await loadBoardDetail();
 };
 
 const editComment = async (commentId, content) => {
-  try {
-    await api.put(`/comments/${commentId}`, { content });
-    boardStore.fetchItems();
-  } catch (error) {
-    console.error("댓글 수정 실패:", error);
-  }
+  await commentStore.editComment(commentId, content, currentId, festivalId);
+  await loadBoardDetail();
 };
 
 const deleteComment = async (commentId) => {
-  try {
-    await api.delete(`/comments/${commentId}`);
-    boardStore.fetchItems();
-  } catch (error) {
-    console.error("댓글 삭제 실패:", error);
+  await commentStore.deleteComment(commentId, currentId, festivalId);
+  await loadBoardDetail();
+};
+
+const currentImageIndex = ref(0);
+
+const nextImage = () => {
+  if (currentItem.value.images.length > 0) {
+    currentImageIndex.value =
+      (currentImageIndex.value + 1) % currentItem.value.images.length;
   }
+  console.log(2);
+};
+
+const prevImage = () => {
+  if (currentItem.value.images.length > 0) {
+    currentImageIndex.value =
+      (currentImageIndex.value - 1 + currentItem.value.images.length) %
+      currentItem.value.images.length;
+  }
+  console.log(1);
 };
 </script>
 
 <template>
-  <div>
+  <div v-if="currentItem">
     <backHeader class="header" />
     <div class="a">
       <hr />
-      <div class="title">{{ currentItem.title }}</div>
+      <div class="title">{{ currentItem?.title || "제목 없음" }}</div>
       <hr />
 
       <div class="meta-data-bar">
-        <div>{{ currentItem.name }}</div>
-        <div>{{ currentItem.date }}</div>
+        <div>{{ currentItem?.userName || "이름 없음" }}</div>
+        <div>{{ currentItem?.createdAt || "날짜 없음" }}</div>
       </div>
 
-      <div class="main-contents">
-        <img :src="currentItem.img" :alt="currentItem.title" />
-        <div>{{ currentItem.contents }}</div>
+      <div
+        class="main-contents"
+        v-if="currentItem?.images && currentItem.images.length"
+      >
+        <button @click="prevImage" class="nav-button left">◀</button>
+
+        <img
+          :src="currentItem.images[currentImageIndex]"
+          :alt="currentItem?.title || '이미지 없음'"
+          class="slider-image"
+        />
+
+        <button @click="nextImage" class="nav-button right">▶</button>
       </div>
 
       <div class="comment-section">
@@ -83,6 +113,8 @@ const deleteComment = async (commentId) => {
       />
     </div>
   </div>
+  <div v-else>Loading...</div>
+  <!-- 데이터가 없을 때 로딩 메시지 표시 -->
 </template>
 
 <style scoped>
@@ -123,6 +155,7 @@ const deleteComment = async (commentId) => {
 .main-contents {
   padding: 20px;
   text-align: center;
+  position: relative;
 }
 
 .main-contents img {
@@ -161,5 +194,33 @@ const deleteComment = async (commentId) => {
   padding: 10px;
   border-radius: 8px;
   margin-top: 20px;
+}
+
+.slider-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  border-radius: 50%;
+}
+
+.left {
+  left: 10px;
+}
+
+.right {
+  right: 10px;
 }
 </style>
