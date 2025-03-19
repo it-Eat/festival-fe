@@ -10,7 +10,14 @@ export const useCommentStore = defineStore("comment", () => {
       const response = await api.get(
         `https://festival-be.onrender.com/comment/${currentId}/${festivalId}`
       );
-      commentList.value = response.data;
+
+      commentList.value = response.data.map((comment) => ({
+        userName: comment.user.userName, // 사용자 이름
+        content: comment.content, // 댓글 내용
+        createdAt: comment.createdAt, // 생성 날짜
+      }));
+
+      console.log("가공된 댓글 리스트:", commentList.value); // 콘솔에서 확인
     } catch (error) {
       console.error("댓글 불러오기 실패:", error);
     }
