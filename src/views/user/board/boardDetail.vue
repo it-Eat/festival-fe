@@ -120,7 +120,7 @@ const prevImage = () => {
             :key="index"
             class="comment-item"
           >
-            <span class="comment-user">{{ comment.user.userName }}</span>
+            <span class="comment-user">{{ comment.userName }}</span>
             <span class="comment-content">{{ comment.content }}</span>
             <span class="comment-date">
               {{ new Date(comment.createdAt).toLocaleString("ko-KR") }}
