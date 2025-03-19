@@ -1,12 +1,9 @@
 <script setup>
 import backHeader from "@/components/common/backHeader.vue";
-import commentList from "@/components/common/commentList.vue";
-import { computed, ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useBoardStore } from "@/stores/board";
 import { useCommentStore } from "@/stores/comment";
-
-import api from "@/api/axiosInstance.js";
 
 const route = useRoute();
 const boardStore = useBoardStore();

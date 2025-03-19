@@ -3,6 +3,7 @@ import api from "@/api/axiosInstance.js";
 
 export const useLostStore = defineStore("lost", {
   state: () => ({
+    lostDetail: {},
     losts: [], // 전체 데이터를 저장
     totalItems: 0, // 총 데이터 개수
     itemsPerPage: 7, // 한 페이지에 보여줄 개수
@@ -38,6 +39,15 @@ export const useLostStore = defineStore("lost", {
         this.currentPage = page;
       }
     },
+
+    async fetchDetailItems(lostItemId, festivalId) {
+      try {
+        const response = await api.get(`/board/${lostItemId}/${festivalId}`);
+        this.lostDetail = response.data;
+      } catch (error) {
+        console.error("데이터 가져오기 실패:", error);
+      }
+    },
   },
 
   getters: {
@@ -45,7 +55,10 @@ export const useLostStore = defineStore("lost", {
     getLostById: (state) => (id) => {
       return state.losts.find((item) => item.id === id) || null;
     },
-
+    getLostDetail: (state) => () => {
+      return state.lostDetail || null;
+    },
+      
     // 현재 페이지에서 보여줄 데이터 7개 필터링
     paginatedLosts: (state) => {
       const start = (state.currentPage - 1) * state.itemsPerPage;
