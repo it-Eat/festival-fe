@@ -33,12 +33,21 @@ onMounted(async () => {
 
       console.log("✅ 서버 응답:", response.data);
 
+      // 서버 응답에서 user 정보 추출
       const { user } = response.data;
       userStore.setUser(user);
 
-      // 약간의 지연을 주어 쿠키 저장이 완료될 시간을 확보합니다.
+      // role 체크
+      const userRole = user.role;
+      console.log("🔍 사용자 권한:", userRole);
+
       setTimeout(() => {
-        router.push("/");
+        // role이 SELLER면 merchantHome, 아니면 일반 홈("/")으로 이동
+        if (userRole === "SELLER") {
+          router.push("/merchant/merchantHome");
+        } else {
+          router.push("/");
+        }
       }, 150);
     } catch (error) {
       console.error("❌ 유저 정보 가져오기 실패:", error);
@@ -49,8 +58,6 @@ onMounted(async () => {
     router.push("/user/login");
   }
 });
-
-
 </script>
 
 <style scoped>

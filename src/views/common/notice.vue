@@ -76,7 +76,7 @@ function formatDate(dateString) {
 .page {
   display: flex;
   justify-content: center;
-  background-color: #151414;
+  background-color: #fff;
 }
 .home {
   display: flex;

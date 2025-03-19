@@ -234,12 +234,12 @@ export default [
     meta: { title: "기본 메시지 지정하기" },
   },
   {
-    path: "/merchant/modify",
+    path: "/merchant/modify/:id",
     name: "modify",
     component: Modify,
   },
   {
-    path: "/merchant/menuManage",
+    path: "/merchant/menuManage/:id",
     name: "menuManage",
     component: MenuManage,
     meta: { title: "메뉴 관리" },
