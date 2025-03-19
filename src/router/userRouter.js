@@ -19,6 +19,7 @@ import MyWriteReview from "@/views/user/my/myWriteReview.vue";
 
 import LostItemDetail from "@/views/user/lostItem/lostItemDetail.vue";
 import LostItemList from "@/views/user/lostItem/lostItemList.vue";
+import LostItemWrite from "@/views/user/lostItem/lostItemWrite.vue";
 
 import BoardList from "@/views/user/board/boardList.vue";
 import BoardDetail from "@/views/user/board/boardDetail.vue";
@@ -201,6 +202,11 @@ export default [
     path: "/user/board/write",
     name: "boardWrite",
     component: BoardWrite,
+  },
+  {
+    path: "/user/lostItem/write",
+    name: "lostItemWrite",
+    component: LostItemWrite,
   },
   {
     path: "/user/my/myWriteReview",
