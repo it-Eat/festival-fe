@@ -2,11 +2,37 @@
 import backHeader from "@/components/common/backHeader.vue";
 import { ref } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
 
 const title = ref("");
-const content = ref([]);
-const images = ref([]);
-const festivalId = 1; // 실제 festivalId로 변경 필요
+const content = ref("");
+const images = ref([]); // 업로드할 이미지 파일들
+const previewImages = ref([]); // 미리보기용 이미지 URL들
+const festivalId = 1;
+const router = useRouter();
+
+// 이미지 추가 함수
+const handleImageUpload = (event) => {
+  const files = Array.from(event.target.files);
+
+  if (images.value.length + files.length > 3) {
+    alert("최대 3개의 이미지만 업로드할 수 있습니다.");
+    return;
+  }
+
+  files.forEach((file) => {
+    if (images.value.length < 3) {
+      images.value.push(file);
+      previewImages.value.push(URL.createObjectURL(file)); // 미리보기 이미지 생성
+    }
+  });
+};
+
+// 이미지 삭제 함수
+const removeImage = (index) => {
+  images.value.splice(index, 1);
+  previewImages.value.splice(index, 1);
+};
 
 const submitPost = async () => {
   const formData = new FormData();
@@ -31,6 +57,7 @@ const submitPost = async () => {
       }
     );
     alert("게시글이 등록되었습니다.");
+    router.push("/user/board/list");
   } catch (error) {
     console.error(error);
   }
@@ -53,12 +80,35 @@ const submitPost = async () => {
         placeholder="게시글 내용을 작성해주세요."
         class="content-area"
       ></textarea>
-      <input
-        type="file"
-        multiple
-        @change="images = Array.from($event.target.files)"
-        class="input-images"
-      />
+
+      <!-- 이미지 업로드 -->
+      <div class="image-upload">
+        <label class="upload-label" for="imageInput"
+          >이미지 추가 (최대 3개)</label
+        >
+        <input
+          id="imageInput"
+          type="file"
+          accept="image/*"
+          multiple
+          @change="handleImageUpload"
+          class="input-images"
+          :disabled="images.length >= 3"
+        />
+      </div>
+
+      <!-- 이미지 미리보기 -->
+      <div class="preview-container">
+        <div
+          v-for="(preview, index) in previewImages"
+          :key="index"
+          class="image-preview"
+        >
+          <img :src="preview" alt="Uploaded Image" class="preview-img" />
+          <button class="remove-btn" @click="removeImage(index)">✕</button>
+        </div>
+      </div>
+
       <button class="submit-button" @click="submitPost">게시글 등록하기</button>
     </div>
   </div>
@@ -78,6 +128,7 @@ input,
 textarea {
   border: 1px solid #ccc;
   border-radius: 8px;
+  margin-bottom: 15px;
   padding: 10px;
   width: 100%;
   box-sizing: border-box;
@@ -89,8 +140,63 @@ textarea {
   resize: none;
 }
 
-button {
-  background-color: #ff5a5f;
+/* 이미지 업로드 버튼 */
+.upload-label {
+  display: block;
+  background-color: #ff6f61;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.input-images {
+  display: none;
+}
+
+/* 이미지 미리보기 컨테이너 */
+.preview-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+/* 개별 이미지 프리뷰 */
+.image-preview {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* X 버튼 (이미지 삭제) */
+.remove-btn {
+  position: absolute;
+  background-color: transparent;
+  top: 5px;
+  right: 5px;
+  color: rgb(20, 19, 19);
+  border: none;
+  width: 15px;
+  height: 15px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.submit-button {
+  background-color: #ff6f61;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -98,19 +204,6 @@ button {
   cursor: pointer;
   align-self: flex-end;
   font-weight: bold;
-}
-
-.input-images {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px;
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-
-.backHeader {
-  margin-bottom: 15px;
+  margin-top: 20px;
 }
 </style>
