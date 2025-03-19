@@ -4,6 +4,7 @@ import { ref, onMounted } from "vue";
 import { useInfiniteScroll } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import api from "@/api/axiosInstance";
+import noImage from "@/assets/noimage.png"; // fallback 이미지 import
 
 const router = useRouter();
 
@@ -81,7 +82,7 @@ onMounted(() => {
               <img
                 v-for="(menu, idx) in booth.menuItems"
                 :key="idx"
-                :src="menu.image || 'https://via.placeholder.com/80'"
+                :src="menu.image || noImage"
                 class="menu-img"
               />
             </div>
@@ -169,7 +170,7 @@ onMounted(() => {
 }
 .menu-img {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   display: block;
   border-radius: 4px;

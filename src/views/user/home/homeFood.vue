@@ -27,6 +27,7 @@ const goToFoodList = () => {
         :key="food.id"
         :item="food"
         card-type="food"
+        size="large"
       />
     </div>
 
@@ -49,7 +50,7 @@ const goToFoodList = () => {
 
 .food-list {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   grid-auto-rows: minmax(120px, auto);
   gap: 16px;
   width: 100%;
