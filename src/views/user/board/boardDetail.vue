@@ -18,6 +18,7 @@ const currentItem = ref(null);
 
 const loadBoardDetail = async () => {
   await boardStore.fetchDetailItems(currentId, festivalId);
+  await commentStore.fetchComments(currentId, festivalId);
 };
 
 onMounted(loadBoardDetail);
@@ -108,8 +109,8 @@ const prevImage = () => {
       </div>
 
       <commentList
-        :type="2"
         :writingId="currentId"
+        :comments="commentStore.commentList || []"
         class="comment-list"
         @edit-comment="editComment"
         @delete-comment="deleteComment"
