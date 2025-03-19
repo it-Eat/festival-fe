@@ -80,10 +80,8 @@ const goToDetail = () => {
   background-color: white;
   border-radius: 8px;
   padding: 3px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 95%;
   margin: 3px auto;
-  border-bottom: 1px solid black;
 }
 
 .title {
@@ -116,7 +114,7 @@ const goToDetail = () => {
 
 .divider {
   border: 0;
-  height: 1px;
+  height: 0.5px;
   background-color: black;
   margin: 0;
 }
