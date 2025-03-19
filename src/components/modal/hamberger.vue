@@ -12,7 +12,6 @@ function handleLogout() {
 }
 </script>
 
-
 <template>
   <!-- 전체 래퍼 -->
   <div class="menu-wrapper">
@@ -34,63 +33,63 @@ function handleLogout() {
 
       <!-- 메뉴 목록 -->
       <ul>
+        <!--공통 상태-->
+        <li>
+          <router-link to="/user/notice"
+            ><span class="home-icon">📢</span> 공지사항</router-link
+          >
+        </li>
         <!-- 비로그인 상태 -->
         <li v-if="!userStore.isAuthenticated">
           <router-link to="/user/login">
+            <span class="home-icon">👤</span>
             로그인
-            <span class="arrow-icon">→</span>
           </router-link>
         </li>
         <li v-if="!userStore.isAuthenticated">
-          <router-link to="/">
-            공통 페이지
-            <span class="home-icon">🏠</span>
-          </router-link>
+          <span class="home-icon">🏠</span>
+          <router-link to="/"> 공통 페이지 </router-link>
         </li>
 
         <!-- 일반 사용자 메뉴 -->
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
-          <router-link to="/common">
-            공통 페이지
-            <span class="home-icon">🏠</span>
-          </router-link>
+          <span class="home-icon">🏠</span>
+          <router-link to="/common"> 공통 페이지 </router-link>
         </li>
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
-          <router-link to="/user/my/myOrderList">
-            주문 내역
-            <span class="home-icon">🏠</span>
-          </router-link>
+          <span class="home-icon">📄</span>
+          <router-link to="/user/my/myOrderList"> 주문 내역 </router-link>
         </li>
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
           <router-link to="/user/my/boothApply">
+            <span class="plane-icon">🙏🏻</span>
             부스 신청하기
-            <span class="plane-icon">✈</span>
           </router-link>
         </li>
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
           <router-link to="/user/my/myPostList">
+            <span class="home-icon">📝</span>
             작성글 보기
-            <span class="edit-icon">✎</span>
           </router-link>
         </li>
 
         <!-- 상인(merchant) 메뉴 -->
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'SELLER'">
           <router-link to="/common">
-            공통 페이지
             <span class="home-icon">🏠</span>
+            공통 페이지
           </router-link>
         </li>
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'SELLER'">
           <router-link to="/merchant/salesList">
-            매출 확인
             <span class="home-icon">🏠</span>
+            매출 확인
           </router-link>
         </li>
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'SELLER'">
           <router-link to="/merchant/basicMessage">
-            기본 메시지 지정하기
             <span class="plane-icon">✈</span>
+            기본 메시지 지정하기
           </router-link>
         </li>
       </ul>
@@ -98,8 +97,8 @@ function handleLogout() {
       <!-- 로그인 상태일 때만: 로그아웃 + 회원탈퇴 -->
       <div v-if="userStore.isAuthenticated" class="bottom-menu">
         <a href="#" @click.prevent="handleLogout">
+          <span class="home-icon">👤</span>
           로그아웃
-          <span class="arrow-icon">→</span>
         </a>
 
         <router-link to="/user/my/deleteId" class="delete-link">
@@ -110,23 +109,20 @@ function handleLogout() {
   </div>
 </template>
 
-
 <style scoped>
 /* 전체 레이아웃 래퍼 */
 .menu-wrapper {
-  display: flex;          /* 왼쪽 바 + 오른쪽 컨텐츠를 나란히 */
-  height: 100vh;          /* 화면 전체 높이 */
+  display: flex; /* 왼쪽 바 + 오른쪽 컨텐츠를 나란히 */
+  height: 100vh; /* 화면 전체 높이 */
   background-color: #fff;
 }
 
-
-
 /* 오른쪽 흰색 영역 */
 .menu-content {
-  flex: 1;                /* 나머지 공간 차지 */
+  flex: 1; /* 나머지 공간 차지 */
   padding: 20px;
   width: 400px;
-  position: relative;     /* 하단 메뉴(absolute) 배치용 */
+  position: relative; /* 하단 메뉴(absolute) 배치용 */
   box-sizing: border-box;
 }
 
@@ -174,6 +170,7 @@ ul {
 }
 li {
   margin: 10px 0;
+  padding: 10px 0;
 }
 
 /* 각 링크의 기본 스타일 */
@@ -218,4 +215,3 @@ a:hover {
   font-size: 14px;
 }
 </style>
-

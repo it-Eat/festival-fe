@@ -1,33 +1,27 @@
 <script setup>
 // 공통페이지
 import festivalDefault from "@/assets/festivalDefault.png";
-import { useRouter } from "vue-router";
 import { getFestivalList } from "@/stores/festival";
 import { ref, onMounted, onUnmounted } from "vue";
 import backHeader from "@/components/common/backHeader.vue";
+import { dateFormat } from "@/util/dateFormat";
+import { useRouter } from "vue-router";
 
-const router = useRouter();
 const isLoading = ref(false);
 const hasMoreData = ref(true);
 const cursor = ref(0);
 const limit = ref(9);
 const keyword = ref("");
 const festivalItems = ref([]);
+const router = useRouter();
 
 function getEventStatus(startDateStr, endDateStr) {
   if (!startDateStr || !endDateStr) return { text: "날짜 미정", color: "gray" };
 
   // YYYYMMDD 형식의 문자열을 Date 객체로 변환
-  const startYear = parseInt(startDateStr.substring(0, 4));
-  const startMonth = parseInt(startDateStr.substring(4, 6)) - 1;
-  const startDay = parseInt(startDateStr.substring(6, 8));
+  const startDate = dateFormat(startDateStr);
+  const endDate = dateFormat(endDateStr);
 
-  const endYear = parseInt(endDateStr.substring(0, 4));
-  const endMonth = parseInt(endDateStr.substring(4, 6)) - 1;
-  const endDay = parseInt(endDateStr.substring(6, 8));
-
-  const startDate = new Date(startYear, startMonth, startDay);
-  const endDate = new Date(endYear, endMonth, endDay);
   endDate.setHours(23, 59, 59);
 
   const today = new Date();
@@ -91,15 +85,14 @@ async function loadMoreData() {
 }
 
 async function goDetail(id) {
+  // router.push(`/user/${id}`);
   console.log(id);
 }
 
 function formatDate(dateStr) {
   if (!dateStr) return "";
-  const year = dateStr.substring(0, 4);
-  const month = dateStr.substring(4, 6);
-  const day = dateStr.substring(6, 8);
-  return `${year}년 ${month}월 ${day}일`;
+  const date = dateFormat(dateStr);
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 }
 
 onMounted(() => {
@@ -147,19 +140,26 @@ async function searchFestival() {
   <div class="mainpage">
     <div class="body">
       <backHeader
-        :title="'불꽃놀이 페스티벌'"
+        :title="'축제 둘러보기'"
         :useUserName="false"
         :category="'home'"
+        :showType="false"
       />
-      <div class="body-header">
+      <div class="body-header-link-btn">
+        <p>일단 상단에 배치했고, 햄버거 수정이 없으면 하겠슴다!</p>
+        <br />
+        <RouterLink to="/user" class="router-link">사용자</RouterLink>
+      </div>
+
+      <form class="body-header" @submit.prevent="searchFestival">
         <input
           class="body-header-input"
           type="text"
           placeholder="검색어를 입력해주세요."
           v-model="keyword"
         />
-        <button class="body-header-button" @click="searchFestival">검색</button>
-      </div>
+        <button class="body-header-button" type="submit">검색</button>
+      </form>
       <div class="body-content">
         <div
           @click="goDetail(item.id)"
@@ -183,12 +183,14 @@ async function searchFestival() {
           >
             {{ getEventStatus(item.eventStartDate, item.eventEndDate).text }}
           </div>
-          <p>{{ item.festivalName || "행사명 정보 없음" }}</p>
-          <p>
+          <p class="body-content-item-title">
+            {{ item.festivalName || "행사명 정보 없음" }}
+          </p>
+          <p class="body-content-item-date">
             {{ formatDate(item.eventStartDate) }} ~
             {{ formatDate(item.eventEndDate) }}
           </p>
-          <p>
+          <p class="body-content-item-address">
             {{
               item.address
                 ? item.address.split(" ").slice(0, 2).join(" ")
@@ -198,10 +200,6 @@ async function searchFestival() {
         </div>
       </div>
     </div>
-    <h1>공통 페이지 입니다.</h1>
-    <RouterLink to="/adminLogin" class="router-link">관리자로그인</RouterLink
-    ><br />
-    <RouterLink to="/user" class="router-link">사용자</RouterLink><br />
 
     <div v-if="isLoading" class="loading">데이터 로딩 중...</div>
     <div
@@ -226,6 +224,7 @@ async function searchFestival() {
 .body {
   display: flex;
   max-width: 600px;
+  width: 600px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -234,39 +233,57 @@ async function searchFestival() {
   display: flex;
   width: 100%;
   gap: 10px;
-  margin-bottom: 10px;
+  padding: 24px 0;
 }
 .body-header-input {
   width: 100%;
-  height: 40px;
+  height: 30px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 8px;
+  padding: 4px 12px;
+  color: black;
+}
+.body-header-input:focus {
+  outline: none;
+  border: 1px solid #ff6f61;
 }
 .body-header-button {
-  width: 100px;
-  height: 40px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  width: 120px;
+  border: 1px solid #ff6f61;
+  border-radius: 8px;
+  background-color: white;
+  color: #ff6f61;
+  padding: 4px 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
 }
 .body-content {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   width: 100%;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 3px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
+
 .body-content-item {
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 33%;
+  width: 100%;
+  margin-bottom: 24px;
+  cursor: pointer;
 }
+.body-content-item:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
 .body-content-item-img {
   width: 100%;
-  height: 250px;
+  height: 230px;
 }
 .status-chip {
   position: absolute;
@@ -279,11 +296,23 @@ async function searchFestival() {
   font-weight: bold;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
-.body-content-item p {
-  margin: 0;
+.body-content-item-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+.body-content-item-date {
+  font-size: 12px;
+  color: #414141;
+  margin: 4px 0;
+}
+.body-content-item-address {
   font-size: 12px;
   color: #666;
+  margin: 4px 0;
 }
+
 .loading {
   text-align: center;
   padding: 20px;
@@ -294,5 +323,35 @@ async function searchFestival() {
   padding: 20px;
   color: #999;
   width: 100%;
+}
+.body-header-link-btn {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+  padding: 24px 0 0 0;
+  margin: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 450px) {
+  .body-content {
+    grid-template-columns: 1fr 1fr;
+  }
+  .body-content-item {
+    margin-bottom: 12px;
+  }
+  .body-content-item-img {
+    height: 160px;
+  }
+  .body-content-item-title {
+    font-size: 14px;
+  }
+  .body-content-item-date {
+    font-size: 10px;
+  }
+  .body-content-item-address {
+    font-size: 10px;
+  }
 }
 </style>
