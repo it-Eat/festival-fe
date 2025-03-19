@@ -1,23 +1,19 @@
 <script setup>
-import {
-  ChevronLeft,
-  AlignJustify,
-  ShoppingCart,
-  Bell,
-} from "lucide-vue-next";
+import { ChevronLeft, AlignJustify, ShoppingCart } from "lucide-vue-next";
 import { useRouter, useRoute } from "vue-router";
 import { computed, ref } from "vue";
 import Hamberger from "../modal/hamberger.vue";
 import { useCartStore } from "@/stores/cartStores";
-import { useUserStore } from "@/stores/userStore";  // Pinia 스토어 임포트
+import { useUserStore } from "@/stores/userStore"; // Pinia 스토어 임포트
 
 const props = defineProps({
   title: String,
   useUserName: Boolean,
   category: String,
+  showType: { type: Boolean, default: true },
 });
 
-const userStore = useUserStore();  // 사용자 정보 불러오기
+const userStore = useUserStore(); // 사용자 정보 불러오기
 
 // 사용자 가게(store) 관련
 const cartStore = useCartStore();
@@ -28,10 +24,6 @@ const route = useRoute();
 
 const goBack = () => {
   router.back();
-};
-
-const handleNotification = () => {
-  router.push("/user/notice");
 };
 
 // 페이지 제목: 로그인 상태이면 userStore.user.nickname 사용, 아니면 기본값("손님")
@@ -75,18 +67,22 @@ const closeMenu = (e) => {
     <!-- ② 상단 헤더 영역 -->
     <header class="header-container">
       <!-- 카테고리가 home이면 알림 아이콘, 아니면 뒤로가기 아이콘 -->
-      <Bell
-        v-if="props.category === 'home'"
+      <!-- <Bell
+        v-if="props.category === 'home' && props.showType === true"
         class="left-icon"
         @click="handleNotification"
+      /> -->
+      <ChevronLeft
+        v-if="props.showType === true"
+        class="left-icon"
+        @click="goBack"
       />
-      <ChevronLeft v-else class="left-icon" @click="goBack" />
 
       <!-- 가운데 제목 -->
       <h1>{{ pageTitle }}</h1>
 
       <!-- 오른쪽 아이콘 영역 -->
-      <div class="right-icon-container">
+      <div class="right-icon-container" v-if="props.showType === true">
         <!-- foodDetail 페이지일 때 장바구니 -->
         <ShoppingCart
           v-if="props.category === 'foodDetail'"
@@ -108,11 +104,7 @@ const closeMenu = (e) => {
     </header>
 
     <!-- ③ 햄버거 메뉴 오버레이 (백헤더 내부에서만 보이도록) -->
-    <div
-      v-if="isHambergerOpen"
-      class="menu-overlay"
-      @click="closeMenu"
-    >
+    <div v-if="isHambergerOpen" class="menu-overlay" @click="closeMenu">
       <!-- 실제 햄버거 메뉴 -->
       <Hamberger />
     </div>
@@ -122,7 +114,7 @@ const closeMenu = (e) => {
 <style scoped>
 /* (A) 백헤더 전체 래퍼 */
 .header-wrapper {
-  position: relative;  /* 자식 .menu-overlay를 이 래퍼 기준으로 absolute 배치 */
+  position: relative; /* 자식 .menu-overlay를 이 래퍼 기준으로 absolute 배치 */
   width: 100%;
 }
 
