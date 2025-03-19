@@ -69,8 +69,8 @@ const route = useRoute();
 const router = useRouter();
 const cartStore = useCartStore();
 
-// merchantHome에서는 boothId를 URL params로 넘긴다고 가정
-const boothId = route.params.id || 1;
+// URL 파라미터에서 boothId를 가져오거나 기본값 1 사용 (API 호출용)
+const initialBoothId = route.params.id || 1;
 const festivalId = 1;
 
 const storeInfo = ref(null);
@@ -80,10 +80,12 @@ const reviews = ref([]);
 // 부스 상세 정보 불러오기: /booth/my-booth/{boothId}
 const fetchBoothDetail = async () => {
   try {
-    const res = await api.get(`/booth/my-booth/${boothId}`);
+    const res = await api.get(`/booth/my-booth/${initialBoothId}`);
     storeInfo.value = res.data;
-    // 반환된 데이터의 id를 사용해 메뉴와 리뷰 불러오기
+    // 서버 응답의 id를 사용해 cartStore에 저장 (예: id: 20)
     if (storeInfo.value?.id) {
+      cartStore.setBoothId(storeInfo.value.id);
+      // 메뉴와 리뷰는 서버 응답의 id를 사용
       fetchMenuList(storeInfo.value.id);
       fetchReviews(storeInfo.value.id);
     }
@@ -144,13 +146,8 @@ const goToReview = () => {
 };
 
 onMounted(() => {
-  // URL 파라미터 등에서 boothId를 가져온다고 가정
-  const boothIdFromRoute = route.params.id || 1;
-
-  // Pinia store에 boothId 저장
-  cartStore.setBoothId(boothIdFromRoute);
-
-  // 이후 boothId를 이용해 API 호출 등 진행
+  // 초기 boothId는 URL 파라미터에서 가져온 값 사용
+  cartStore.setBoothId(initialBoothId);
   fetchBoothDetail();
 });
 </script>

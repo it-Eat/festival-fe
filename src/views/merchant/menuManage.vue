@@ -17,8 +17,8 @@
           <!-- 이미지 영역 -->
           <div class="menu-image">
             <input
-              ref="imageInputs"
               type="file"
+              :ref="el => imageInputs[index] = el"
               accept="image/*"
               style="display: none;"
               @change="handleImageUpload(index, $event)"
@@ -61,14 +61,6 @@
               v-model="menu.content"
               placeholder="메뉴 소개글"
             />
-
-            <div class="sold-out">
-              <label>품절 여부</label>
-              <input
-                type="checkbox"
-                v-model="menu.soldOut"
-              />
-            </div>
           </div>
 
           <!-- 삭제 버튼 -->
@@ -104,7 +96,7 @@ const boothId = route.params.id || 1;
 // 메뉴 리스트
 const menus = ref([]);
 
-// 이미지 input들을 참조하기 위한 배열
+// 각 파일 input 요소를 저장할 배열
 const imageInputs = ref([]);
 
 // 페이지 로드 시 메뉴 목록 불러오기
@@ -121,6 +113,7 @@ const fetchMenus = async () => {
     menus.value = res.data.map((m) => ({
       ...m,
       imagePreview: m.image || null,
+      selectedFile: null,
     }));
   } catch (error) {
     console.error("메뉴 불러오기 실패:", error);
@@ -132,11 +125,11 @@ const addMenu = () => {
   menus.value.push({
     id: null,
     name: "",
-    price: null,
+    price: "",
     content: "",
     image: null,
     imagePreview: null,
-    soldOut: false,
+    selectedFile: null,
   });
   nextTick(() => {
     imageInputs.value.push(null);
@@ -158,45 +151,52 @@ const removeMenu = async (index) => {
   imageInputs.value.splice(index, 1);
 };
 
-// 이미지 업로드 처리
+// 이미지 업로드 처리: 파일 선택 시 URL.createObjectURL()을 이용해 미리보기 업데이트 및 파일 객체 저장
 const triggerFileInput = (index) => {
-  imageInputs.value[index].click();
+  if (imageInputs.value[index]) {
+    imageInputs.value[index].click();
+  } else {
+    console.error("해당 인덱스의 input 요소가 없습니다:", index);
+  }
 };
 
 const handleImageUpload = (index, event) => {
   const file = event.target.files[0];
   if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      menus.value[index].image = file;
-      menus.value[index].imagePreview = e.target.result;
-    };
-    reader.readAsDataURL(file);
+    menus.value[index].selectedFile = file;
+    menus.value[index].imagePreview = URL.createObjectURL(file);
   }
 };
 
-// 메뉴 저장: 각 메뉴를 개별적으로 처리합니다.
+// 메뉴 저장: 신규 메뉴 추가 시 FormData로 아래 필드로 전송합니다.
+// { name: "이름", price: "1000", content: "맛있는 치킨!", image: "이미지 url" }
 const saveMenus = async () => {
   try {
-    // forEach로 각 메뉴에 대해 저장
     for (const menu of menus.value) {
-      const payload = {
-        name: menu.name,
-        price: parseInt(menu.price, 10) || 0,
-        content: menu.content,
-        soldOut: menu.soldOut,
-        // image는 여기서는 base64 미리보기 URL 사용 (실제 파일 업로드 로직 필요할 수 있음)
-        image: menu.imagePreview,
-      };
+      const formData = new FormData();
+      formData.append("name", menu.name);
+      // price를 문자열로 변환하여 전송 (백엔드에서 int로 변경)
+      formData.append("price", menu.price ? menu.price.toString() : "0");
+      formData.append("content", menu.content);
+
+      // 이미지: 파일 객체가 존재하면 해당 파일을 전송, 없으면 기존 이미지 URL을 전송
+      if (menu.selectedFile) {
+        formData.append("image", menu.selectedFile);
+      } else {
+        formData.append("image", menu.imagePreview || "");
+      }
 
       if (menu.id) {
-        // 기존 메뉴: PUT /menu/{menu.id}
-        await api.patch(`/menu/${menu.id}`, payload);
-        console.log(`메뉴 ${menu.id} 수정 완료:`, payload);
+        // 기존 메뉴 업데이트: PATCH /menu/{menu.id}
+        await api.patch(`/menu/${menu.id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        console.log(`메뉴 ${menu.id} 수정 완료`);
       } else {
-        // 신규 메뉴: POST /menu/{boothId} (새 메뉴 생성)
-        const res = await api.post(`/menu/${boothId}`, payload);
-        // 생성된 메뉴의 id 업데이트
+        // 신규 메뉴 추가: POST /menu/{boothId}
+        const res = await api.post(`/menu/${boothId}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
         menu.id = res.data.id;
         console.log("신규 메뉴 생성 완료:", res.data);
       }
@@ -308,13 +308,6 @@ const saveMenus = async () => {
   border: 1px solid #ddd;
   border-radius: 5px;
   font-size: 0.9rem;
-}
-
-.sold-out {
-  display: flex;
-  align-items: center;
-  margin-top: 8px;
-  gap: 6px;
 }
 
 /* 삭제 버튼 */

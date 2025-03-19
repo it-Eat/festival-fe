@@ -85,6 +85,7 @@ const storeName = ref("");
 const location = ref("");
 const description = ref("");
 const imageUrl = ref("");
+const selectedFile = ref(null); // 선택한 이미지 파일을 저장
 
 const merchantStore = useMerchantStore();
 
@@ -93,25 +94,34 @@ const onImageClick = () => {
   document.getElementById("image-upload-input").click();
 };
 
-// 파일 변경 시 미리보기 업데이트
+// 파일 변경 시 미리보기 업데이트 및 파일 객체 저장
 const onFileChange = (event) => {
   const file = event.target.files[0];
   if (file) {
+    selectedFile.value = file;
     imageUrl.value = URL.createObjectURL(file);
-    // 실제 파일 업로드는 FormData나 Base64 등으로 구현 필요
   }
 };
 
-// 수정 완료: PATCH 요청으로 부스 정보 업데이트
+// 수정 완료: 이미지 파일이 있다면 FormData로 보내고, 그 외 정보는 함께 PATCH 요청
 const saveChanges = async () => {
   try {
-    const payload = {
-      name: storeName.value,
-      content: description.value,
-      image: imageUrl.value, // 실제 파일 업로드 로직에 맞게 조정
-    };
-    await api.patch(`/booth/${boothId}/1`, payload);
-    console.log("수정 완료:", payload);
+    const formData = new FormData();
+    formData.append("name", storeName.value);
+    formData.append("content", description.value);
+    // formData.append("location", location.value);
+    // 이미지 파일이 선택되었으면 FormData에 파일로 추가
+    if (selectedFile.value) {
+      formData.append("image", selectedFile.value);
+    } else {
+      // 파일이 선택되지 않았다면 기존 이미지 URL 전송
+      formData.append("image", imageUrl.value);
+    }
+    // 기존 api 경로 그대로 사용하여 부스 정보를 업데이트 (PATCH)
+    await api.patch(`/booth/${boothId}/1`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    console.log("수정 완료:", formData);
     merchantStore.setStoreName(storeName.value);
     router.back();
   } catch (error) {
