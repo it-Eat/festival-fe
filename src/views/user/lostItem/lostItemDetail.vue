@@ -2,33 +2,32 @@
 import backHeader from "@/components/common/backHeader.vue";
 import commnetList from "@/components/common/commentList.vue";
 import lostChip from "@/components/common/lostChip.vue";
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useLostStore } from "@/stores/lost";
-import api from "@/api/axiosInstance.js";
+import { useCommentStore } from "@/stores/comment";
 
 const route = useRoute();
 const lostStore = useLostStore();
-const currentId = Number(route.params.id);
-const festivalId = 1; // 사용하는 festivalId 값으로 변경하세요
-const newComment = ref("");
+const commentStore = useCommentStore();
 
+const currentId = Number(route.params.id);
+const newComment = ref("");
 const currentItem = computed(() => lostStore.getLostById(currentId));
 
-const createComment = async () => {
-  try {
-    await api.post(
-      `https://festival-be.onrender.com/comment/${currentId}/${festivalId}`,
-      {
-        content: newComment.value,
-      }
-    );
-    newComment.value = "";
-    lostStore.fetchItems();
-  } catch (error) {
-    console.error("댓글 작성 실패:", error);
-  }
+// 댓글 작성 함수 연결
+const createComment = () => {
+  const boothId = currentItem.value.id; // boothId 값
+  const writingId = currentId; // 현재 게시글 ID
+  const content = newComment.value;
+
+  commentStore.createComment(boothId, writingId, content, 1);
 };
+
+// 초기 댓글 로드
+onMounted(() => {
+  commentStore.fetchComments(currentItem.value.id, 1);
+});
 </script>
 
 <template>
@@ -61,7 +60,9 @@ const createComment = async () => {
           v-model="newComment"
           placeholder="댓글을 입력하세요"
         ></textarea>
-        <button @click="createComment">댓글 작성</button>
+        <button @click="createComment(currentItem.id, newComment, 1)">
+          댓글 작성
+        </button>
       </div>
 
       <commnetList :type="1" :writingId="currentId" class="comment-list" />
