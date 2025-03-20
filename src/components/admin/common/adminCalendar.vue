@@ -1,10 +1,11 @@
 <script setup>
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
+
+const emit = defineEmits(["date-selected"]);
 
 const startDate = ref("");
 const endDate = ref("");
 const highlightedDates = ref([]);
-
 const today = new Date().toISOString().split("T")[0]; // 현재 일자
 
 const dataChange = (e) => {
@@ -23,7 +24,23 @@ const dataChange = (e) => {
     } else if (target === document.getElementById("end-date")) {
       endDate.value = target.value;
     }
+
     updateHighlightedDates();
+
+    // 날짜 변경 시 API 요청 & 새로고침 이벤트 발생
+    emit("date-selected", {
+      page: 1,
+      pageSize: 4,
+      orderBy: "createdAt",
+      order: "asc",
+      startDate: startDate.value,
+      endDate: endDate.value,
+      typeSelect: "", // GET, LOSS 값 추가 필요
+      keyword: "",
+    });
+
+    // 페이지 새로고침
+    window.location.reload();
   }
 };
 
@@ -51,9 +68,6 @@ const updateHighlightedDates = () => {
       :disabled="!startDate"
       :max="today"
     />
-    <!-- <div v-if="startDate && endDate">
-      선택한 날짜: {{ startDate }} ~ {{ endDate }}
-    </div> -->
   </div>
 </template>
 
@@ -68,19 +82,5 @@ input[type="date"] {
   border: 1px solid #999;
   border-radius: 8px;
   margin-right: 10px; /* 두 입력 필드 사이의 간격 */
-}
-
-input[type="date"].has-value::before {
-  content: attr(data-placeholder);
-  width: 100%;
-}
-
-/* 날짜 강조 스타일 */
-input[type="date"].highlighted {
-  background-color: #ffeb3b; /* 강조 색상 */
-}
-input[type="date"]::before {
-  content: attr(data-placeholder);
-  width: 100%;
 }
 </style>
