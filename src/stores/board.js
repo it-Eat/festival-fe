@@ -7,7 +7,7 @@ export const useBoardStore = defineStore("board", {
     boardDetail: {},
   }),
   persist: {
-    enable : true,
+    enable: true,
     storage: sessionStorage,
   },
   actions: {
@@ -27,7 +27,7 @@ export const useBoardStore = defineStore("board", {
           params: {
             page: parseInt(page) || 1,
             pageSize: parseInt(pageSize) || 50, // ✅ 여기가 실제로 50으로 보내지는지 확인
-            orderBy: orderBy || "createdAt",
+            // orderBy: orderBy || "createdAt",
             order: order || "asc",
             keyword: keyword,
           },
