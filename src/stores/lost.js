@@ -10,20 +10,29 @@ export const useLostStore = defineStore("lost", {
     currentPage: 1, // 현재 페이지
   }),
   persist: {
-    enable : true,
+    enable: true,
     storage: sessionStorage,
   },
   actions: {
-    async fetchItems(page = 1, pageSize = 50) {
+    async fetchItems(
+      page = 1,
+      pageSize = 50,
+      orderBy = "createAt",
+      order = "asc",
+      keyword = ""
+    ) {
       try {
         console.log(
-          `🔍 API 요청 URL: /board/board-loss/1?page=${page}&pageSize=${pageSize}`
+          `🔍 API 요청 URL: /board/board-loss/1?page=${page}&pageSize=${pageSize}&orderBy=${orderBy}&order=${order}&keyword=${keyword}`
         );
 
         const response = await api.get("/board/board-loss/1", {
           params: {
             page: parseInt(page) || 1,
             pageSize: parseInt(pageSize) || 50, // ✅ 50개 요청
+            // orderBy: orderBy || "createAt",
+            order: order || "asc",
+            keyword: keyword,
           },
         });
 
