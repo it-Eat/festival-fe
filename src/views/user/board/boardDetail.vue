@@ -1,27 +1,35 @@
 <script setup>
 import backHeader from "@/components/common/backHeader.vue";
-import { ref, watch, onMounted } from "vue";
+import lostChip from "@/components/common/lostChip.vue";
+import { watch, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { useBoardStore } from "@/stores/board";
+import { useLostStore } from "@/stores/lost";
 import { useCommentStore } from "@/stores/comment";
+// 날짜 포맷 함수 임포트 (경로는 실제 프로젝트 구조에 맞게 조정)
+import { dateFormatWithTime } from "@/util/dateFormat";
 
 const route = useRoute();
-const boardStore = useBoardStore();
+const lostStore = useLostStore();
 const commentStore = useCommentStore();
+
 const currentId = Number(route.params.id);
 const festivalId = 1;
-
 const currentItem = ref(null);
 
-const loadBoardDetail = async () => {
-  await boardStore.fetchDetailItems(currentId, festivalId);
-  await commentStore.fetchComments(currentId, festivalId);
+const loadLostItemDetail = async () => {
+  try {
+    await lostStore.fetchDetailItems(currentId, festivalId);
+    await commentStore.fetchComments(currentId, festivalId);
+    currentItem.value = lostStore.getLostDetail();
+  } catch (error) {
+    console.error("데이터 로드 실패:", error);
+  }
 };
 
-onMounted(loadBoardDetail);
+onMounted(loadLostItemDetail);
 
 watch(
-  () => boardStore.boardDetail,
+  () => lostStore.getLostDetail(),
   (newVal) => {
     currentItem.value = newVal;
   },
@@ -33,7 +41,7 @@ const newComment = ref("");
 const createComment = async () => {
   await commentStore.createComment(currentId, newComment.value, festivalId);
   newComment.value = "";
-  await loadBoardDetail();
+  await loadLostItemDetail();
 };
 
 const currentImageIndex = ref(0);
@@ -43,19 +51,6 @@ const nextImage = () => {
     currentImageIndex.value =
       (currentImageIndex.value + 1) % currentItem.value.images.length;
   }
-  console.log(2);
-};
-
-const formatDate = (dateString) => {
-  if (!dateString) return ""; // 날짜가 없으면 빈 문자열 반환
-  const date = new Date(dateString);
-  return date.toLocaleString("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 };
 
 const prevImage = () => {
@@ -64,7 +59,11 @@ const prevImage = () => {
       (currentImageIndex.value - 1 + currentItem.value.images.length) %
       currentItem.value.images.length;
   }
-  console.log(1);
+};
+
+// util의 dateFormatWithTime 함수를 사용하여 날짜를 포맷
+const formatDate = (dateString) => {
+  return dateString ? dateFormatWithTime(dateString) : "";
 };
 </script>
 
@@ -73,7 +72,14 @@ const prevImage = () => {
     <backHeader class="header" />
     <div class="a">
       <hr />
-      <div class="title">{{ currentItem?.title || "제목 없음" }}</div>
+      <div class="title">
+        <lostChip
+          v-if="currentItem?.lossType"
+          :type="currentItem.lossType"
+          class="left-chip"
+        />
+        <span class="title-text">{{ currentItem?.title || "제목 없음" }}</span>
+      </div>
       <hr />
 
       <div class="meta-data-bar">
@@ -95,7 +101,6 @@ const prevImage = () => {
 
         <button @click="nextImage" class="nav-button right">▶</button>
       </div>
-
       <div class="content">{{ currentItem?.content || "내용 없음" }}</div>
       <hr />
 
@@ -120,7 +125,7 @@ const prevImage = () => {
             <span class="comment-user">{{ comment.userName }}</span>
             <span class="comment-content">{{ comment.content }}</span>
             <span class="comment-date">
-              {{ new Date(comment.createdAt).toLocaleString("ko-KR") }}
+              {{ formatDate(comment.createdAt) }}
             </span>
           </div>
         </div>
@@ -129,7 +134,6 @@ const prevImage = () => {
     </div>
   </div>
   <div v-else>Loading...</div>
-  <!-- 데이터가 없을 때 로딩 메시지 표시 -->
 </template>
 
 <style scoped>
@@ -148,11 +152,25 @@ const prevImage = () => {
 }
 
 .title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
   text-align: center;
   font-size: 18px;
   font-weight: bold;
   padding: 12px 0;
   color: #333333;
+}
+
+.left-chip {
+  position: absolute;
+  left: 0;
+}
+
+.title-text {
+  flex-grow: 1;
 }
 
 .meta-data-bar {
@@ -170,7 +188,6 @@ const prevImage = () => {
 .main-contents {
   padding: 20px;
   text-align: center;
-  position: relative;
 }
 
 .main-contents img {
@@ -181,27 +198,16 @@ const prevImage = () => {
 }
 
 .comment-section {
-  margin-top: 15px;
-  display: flex;
-  flex-direction: column;
+  margin-top: 20px;
 }
 
 .comment-section textarea {
-  resize: vertical;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
+  width: 100%;
+  height: 60px;
   margin-bottom: 10px;
-}
-
-.comment-section button {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: none;
-  background-color: #3498db;
-  color: white;
-  cursor: pointer;
-  align-self: flex-end;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  padding: 8px;
 }
 
 .comment-list {
@@ -211,11 +217,12 @@ const prevImage = () => {
   margin-top: 20px;
 }
 
-.slider-image {
-  max-width: 100%;
-  height: auto;
-  border-radius: 10px;
-  transition: opacity 0.3s ease-in-out;
+.comment-list div {
+  background-color: #ffffff;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .nav-button {

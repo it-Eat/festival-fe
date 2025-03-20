@@ -5,6 +5,8 @@ import { watch, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useLostStore } from "@/stores/lost";
 import { useCommentStore } from "@/stores/comment";
+// 날짜 포맷 함수 임포트 (경로는 실제 프로젝트 구조에 맞게 조정)
+import { dateFormatWithTime } from "@/util/dateFormat";
 
 const route = useRoute();
 const lostStore = useLostStore();
@@ -51,24 +53,17 @@ const nextImage = () => {
   }
 };
 
-const formatDate = (dateString) => {
-  if (!dateString) return ""; // 날짜가 없으면 빈 문자열 반환
-  const date = new Date(dateString);
-  return date.toLocaleString("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
-
 const prevImage = () => {
   if (currentItem.value.images.length > 0) {
     currentImageIndex.value =
       (currentImageIndex.value - 1 + currentItem.value.images.length) %
       currentItem.value.images.length;
   }
+};
+
+// util의 dateFormatWithTime 함수를 사용하여 날짜를 포맷
+const formatDate = (dateString) => {
+  return dateString ? dateFormatWithTime(dateString) : "";
 };
 </script>
 
@@ -130,7 +125,7 @@ const prevImage = () => {
             <span class="comment-user">{{ comment.userName }}</span>
             <span class="comment-content">{{ comment.content }}</span>
             <span class="comment-date">
-              {{ new Date(comment.createdAt).toLocaleString("ko-KR") }}
+              {{ formatDate(comment.createdAt) }}
             </span>
           </div>
         </div>
@@ -139,7 +134,6 @@ const prevImage = () => {
     </div>
   </div>
   <div v-else>Loading...</div>
-  <!-- 데이터가 없을 때 로딩 메시지 표시 -->
 </template>
 
 <style scoped>
@@ -160,9 +154,14 @@ const prevImage = () => {
 .title {
   display: flex;
   align-items: center;
-  justify-content: center; /* 가운데 정렬 */
-  gap: 8px; /* 제목과 lostChip 간격 */
+  justify-content: center;
+  gap: 8px;
   position: relative;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 12px 0;
+  color: #333333;
 }
 
 .left-chip {
@@ -172,15 +171,6 @@ const prevImage = () => {
 
 .title-text {
   flex-grow: 1;
-  text-align: center;
-}
-
-.title {
-  text-align: center;
-  font-size: 18px;
-  font-weight: bold;
-  padding: 12px 0;
-  color: #333333;
 }
 
 .meta-data-bar {
@@ -233,5 +223,66 @@ const prevImage = () => {
   margin-bottom: 8px;
   border-radius: 6px;
   box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  border-radius: 50%;
+}
+
+.left {
+  left: 10px;
+}
+
+.right {
+  right: 10px;
+}
+
+.comment-list-container {
+  margin-top: 20px;
+}
+
+.comment-header {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.comment-list {
+  border-top: 1px solid #000;
+  margin-top: 10px;
+}
+
+.comment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 10px;
+  border-bottom: 1px solid #000;
+}
+
+.comment-user {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.comment-content {
+  flex: 1;
+  margin-left: 15px;
+  font-size: 15px;
+}
+
+.comment-date {
+  font-size: 14px;
+  color: #666;
+  white-space: nowrap;
 }
 </style>
