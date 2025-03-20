@@ -85,7 +85,7 @@ const closeMenu = (e) => {
       <div class="right-icon-container" v-if="props.showType === true">
         <!-- foodDetail 페이지일 때 장바구니 -->
         <ShoppingCart
-          v-if="props.showType && props.category !== 'home'"
+          v-if="props.showType && props.category === 'foodDetail'"
           class="right-icon"
           @click="goShoppingList"
         />
