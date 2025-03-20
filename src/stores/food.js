@@ -5,7 +5,10 @@ export const useFoodStore = defineStore("itemStore", {
   state: () => ({
     foods: [],
   }),
-  persist: true,
+  persist: {
+    enable : true,
+    storage: sessionStorage,
+  },
   actions: {
     async fetchItems() {
       try {

@@ -5,7 +5,10 @@ export const usePlayingStore = defineStore("playingStore", {
   state: () => ({
     plays: [],
   }),
-  persist: true,
+  persist: {
+    enable : true,
+    storage: sessionStorage,
+  },
   actions: {
     async fetchItems() {
       try {

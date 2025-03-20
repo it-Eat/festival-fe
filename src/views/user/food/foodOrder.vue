@@ -8,7 +8,7 @@
 
       <!-- 중앙 컨텐츠 -->
       <div class="content">
-        <!-- 가게명 표시 (Pinia storeName) -->
+        <!-- 가게명 표시 -->
         <h2 class="store-name">{{ storeName }}</h2>
 
         <!-- 주문 정보 카드 -->
@@ -28,36 +28,54 @@
           <div class="payment-methods">
             <label>결제 수단</label>
             <div class="payment-options">
-              <input
-                type="radio"
-                id="tossPay"
-                name="pay"
-                value="tossPay"
-                v-model="paymentMethod"
-              />
-              <label for="tossPay">토스페이</label>
+              <!-- 토스페이 -->
+              <div class="option">
+                <input
+                  type="radio"
+                  id="tossPay"
+                  name="pay"
+                  value="tossPay"
+                  v-model="paymentMethod"
+                />
+                <label for="tossPay">
+                  <img src="@/assets/toss-pay.png" alt="토스페이" class="pay-icon" />
+                  <span>토스페이</span>
+                </label>
+              </div>
 
-              <input
-                type="radio"
-                id="kakaoPay"
-                name="pay"
-                value="kakaoPay"
-                v-model="paymentMethod"
-              />
-              <label for="kakaoPay">카카오페이</label>
+              <!-- 카카오페이 -->
+              <div class="option">
+                <input
+                  type="radio"
+                  id="kakaoPay"
+                  name="pay"
+                  value="kakaoPay"
+                  v-model="paymentMethod"
+                />
+                <label for="kakaoPay">
+                  <img src="@/assets/kakao-pay.png" alt="카카오페이" class="pay-icon" />
+                  <span>카카오페이</span>
+                </label>
+              </div>
 
-              <input
-                type="radio"
-                id="naverPay"
-                name="pay"
-                value="naverPay"
-                v-model="paymentMethod"
-              />
-              <label for="naverPay">네이버페이</label>
+              <!-- 네이버페이 -->
+              <div class="option">
+                <input
+                  type="radio"
+                  id="naverPay"
+                  name="pay"
+                  value="naverPay"
+                  v-model="paymentMethod"
+                />
+                <label for="naverPay">
+                  <img src="@/assets/naver-pay.png" alt="네이버페이" class="pay-icon" />
+                  <span>네이버페이</span>
+                </label>
+              </div>
             </div>
           </div>
 
-          <!-- 하단 결제 버튼 (카드 내부) -->
+          <!-- 하단 결제 버튼 -->
           <div class="bottom-area">
             <button class="order-button" @click="handlePayment">
               {{ totalPrice.toLocaleString() }}원 결제하기
@@ -69,11 +87,14 @@
   </div>
 </template>
 
+
+
 <script setup>
 import { computed, ref } from "vue";
 import BackHeader from "@/components/common/backHeader.vue";
 import { useCartStore } from "@/stores/cartStores";
 import { useRouter } from "vue-router";
+import api from "@/api/axiosInstance";
 
 // Pinia store (가게명, 장바구니 등)
 const cartStore = useCartStore();
@@ -90,17 +111,58 @@ const totalPrice = computed(() => {
 });
 
 // 입력 폼
-const contact = ref("");
-const paymentMethod = ref("");
+const contact = ref("");       // 주문 연락처
+const paymentMethod = ref(""); // 선택한 결제 수단 (tossPay/kakaoPay/naverPay 등)
 
 // 결제 버튼 클릭 시
-function handlePayment() {
-  // 결제 로직 처리 후 장바구니 비우기
-  cartStore.clearCart();
-  alert("결제가 완료되었습니다. 장바구니를 비웠습니다.");
-  router.push({
-    path: "/user",
-  });
+async function handlePayment() {
+  // 1) 폼 검증
+  if (!contact.value) {
+    alert("연락처를 입력해주세요.");
+    return;
+  }
+  if (!paymentMethod.value) {
+    alert("결제 수단을 선택해주세요.");
+    return;
+  }
+
+  // 2) wishlistIds(장바구니 ID 리스트) 만들기
+  const wishlistIds = cartItems.value.map(item => item.id);
+
+  // 3) payType 매핑
+  //   - BE 요구사항에 맞춰 paymentMethod를 실제 payType으로 변환
+  const payTypeMap = {
+    tossPay: "TOSSPAY",
+    kakaoPay: "KAKAOPAY",
+    naverPay: "NAVERPAY"
+  };
+  const payType = payTypeMap[paymentMethod.value] || "UNKNOWN";
+
+  // 4) POST 요청에 사용할 payload
+  const payload = {
+    wishlistIds,       // 예: [1, 2, 3]
+    totalPrice: totalPrice.value, // 예: 60000
+    payType            // 예: "NAVERPAY"
+    // 필요하다면 contact(연락처)도 함께 전송 가능
+    // contact: contact.value
+  };
+
+  try {
+    // 5) 서버로 결제 정보 전송
+    const response = await api.post("/pay", payload);
+    // 서버에서 성공 응답을 받았다면
+    console.log("결제 응답:", response.data);
+
+    // 6) 결제 완료 후 장바구니 비우기
+    cartStore.clearCart();
+    alert("결제가 완료되었습니다. 장바구니를 비웠습니다.");
+
+    // 7) 결제 후 이동할 페이지로 라우팅
+    router.push({ path: "/user" });
+  } catch (error) {
+    console.error("결제 오류:", error);
+    alert("결제 중 오류가 발생했습니다. 다시 시도해주세요.");
+  }
 }
 </script>
 
@@ -140,7 +202,6 @@ function handlePayment() {
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 16px;
-  text-align: center;
 }
 
 /* 주문 정보 카드 */
@@ -176,11 +237,32 @@ function handlePayment() {
   box-sizing: border-box;
 }
 
-/* 결제 수단 라디오 */
+/* 결제 수단 섹션 */
 .payment-options {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px; /* 결제 옵션 사이 간격 */
+}
+
+/* 각 결제 옵션 */
+.option {
+  display: flex;
+  align-items: center;
+}
+
+/* 라벨 안에서 아이콘과 텍스트가 나란히 오도록 */
+.option label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-left: 8px; /* 라디오 버튼과 아이콘/텍스트 사이 여백 */
+}
+
+/* 결제 아이콘 크기 조절 */
+.pay-icon {
+  width: 24px;
+  height: auto;
+  margin-right: 6px;
 }
 
 /* 하단 결제 버튼 (카드 내부) */

@@ -15,7 +15,10 @@ export const useAuthStore = defineStore("auth", {
       ],
     },
   }),
-  persist: true,
+  persist: {
+    enable : true,
+    storage: sessionStorage,
+  },
   actions: {
     setUserData(userData) {
       console.log("User data received:", userData);

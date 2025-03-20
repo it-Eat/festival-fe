@@ -81,6 +81,7 @@ export const useCommentStore = defineStore("comment", () => {
   persist:{
     enabled: true,
     paths: ["comment"],
+    storage: sessionStorage,
   }
 }
 );

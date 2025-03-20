@@ -9,7 +9,10 @@ export const useLostStore = defineStore("lost", {
     itemsPerPage: 7, // 한 페이지에 보여줄 개수
     currentPage: 1, // 현재 페이지
   }),
-  persist: true,
+  persist: {
+    enable : true,
+    storage: sessionStorage,
+  },
   actions: {
     async fetchItems(page = 1, pageSize = 50) {
       try {
@@ -58,7 +61,7 @@ export const useLostStore = defineStore("lost", {
     getLostDetail: (state) => () => {
       return state.lostDetail || null;
     },
-      
+
     // 현재 페이지에서 보여줄 데이터 7개 필터링
     paginatedLosts: (state) => {
       const start = (state.currentPage - 1) * state.itemsPerPage;

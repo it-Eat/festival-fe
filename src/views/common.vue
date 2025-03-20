@@ -1,11 +1,11 @@
 <script setup>
-// 공통페이지
-import festivalDefault from "@/assets/festivalDefault.png";
-import { getFestivalList } from "@/stores/festival";
 import { ref, onMounted, onUnmounted } from "vue";
 import backHeader from "@/components/common/backHeader.vue";
+import { getFestivalList } from "@/stores/festival";
 import { dateFormat } from "@/util/dateFormat";
-import { useRouter } from "vue-router";
+import { useRouter, RouterLink } from "vue-router";
+import festivalDefault from "@/assets/festivalDefault.png";
+import { useFestivalInfoStore } from "@/stores/festivalInfo"; // 새 Pinia 스토어 import
 
 const isLoading = ref(false);
 const hasMoreData = ref(true);
@@ -15,28 +15,24 @@ const keyword = ref("");
 const festivalItems = ref([]);
 const router = useRouter();
 
+// 스토어 인스턴스 생성
+const festivalInfoStore = useFestivalInfoStore();
+
 function getEventStatus(startDateStr, endDateStr) {
   if (!startDateStr || !endDateStr) return { text: "날짜 미정", color: "gray" };
 
-  // YYYYMMDD 형식의 문자열을 Date 객체로 변환
   const startDate = dateFormat(startDateStr);
   const endDate = dateFormat(endDateStr);
-
   endDate.setHours(23, 59, 59);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // 현재 날짜와 이벤트 날짜 비교
   if (today >= startDate && today <= endDate) {
     return { text: "개최중", color: "#4CAF50" };
   } else if (today < startDate) {
     const daysLeft = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24));
-    if (daysLeft <= 7) {
-      return { text: `D-${daysLeft}`, color: "#FF9800" };
-    } else {
-      return { text: `D-${daysLeft}`, color: "#2196F3" };
-    }
+    return { text: `D-${daysLeft}`, color: daysLeft <= 7 ? "#FF9800" : "#2196F3" };
   } else {
     return { text: "종료됨", color: "#9E9E9E" };
   }
@@ -67,7 +63,6 @@ async function loadMoreData() {
       limit.value,
       keyword.value
     );
-
     if (response.items && response.items.length > 0) {
       festivalItems.value.items = [
         ...festivalItems.value.items,
@@ -84,9 +79,12 @@ async function loadMoreData() {
   }
 }
 
-async function goDetail(id) {
-  // router.push(`/user/${id}`);
-  console.log(id);
+function goDetail(id) {
+  // 선택한 축제 ID를 Pinia 스토어에 저장
+  festivalInfoStore.setFestivalId(id);
+  console.log("선택된 축제 ID:", festivalInfoStore.selectedFestivalId);
+  // 이후 상세 페이지로 이동
+  // 예: router.push(`/festival/${id}`);
 }
 
 function formatDate(dateStr) {
@@ -121,7 +119,6 @@ onUnmounted(() => {
 async function searchFestival() {
   cursor.value = 0;
   hasMoreData.value = true;
-
   isLoading.value = true;
   try {
     const response = await getFestivalList(

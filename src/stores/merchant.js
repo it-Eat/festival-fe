@@ -4,7 +4,10 @@ export const useMerchantStore = defineStore('store', {
   state: () => ({
     storeName: '',
   }),
-  persist: true,
+  persist: {
+    enable : true,
+    storage: sessionStorage,
+  },
   actions: {
     setStoreName(name){
       this.storeName = name;
