@@ -145,6 +145,17 @@ async function getReviews(query) {
   return res.data;
 }
 
+// 리뷰 삭제
+async function deleteReview(reviewId) {
+  try {
+    const response = await local.delete(`review/${reviewId}`);
+    return response;
+  } catch (error) {
+    console.error("리뷰 삭제 실패:", error);
+    throw error;
+  }
+}
+
 // 부스 불러오기
 async function getBooths(festivalId, query) {
   const {
@@ -242,4 +253,5 @@ export {
   getBoothDetail,
   getReviews,
   getMenuList,
+  deleteReview,
 };
