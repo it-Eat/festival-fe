@@ -4,10 +4,11 @@ import { ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useBoardStore } from "@/stores/board";
 import { useCommentStore } from "@/stores/comment";
-
+import { useUserStore } from "@/stores/userStore"; // New import
 const route = useRoute();
 const boardStore = useBoardStore();
 const commentStore = useCommentStore();
+const userStore = useUserStore(); // New initialization
 const currentId = Number(route.params.id);
 const festivalId = 1;
 
@@ -66,6 +67,12 @@ const prevImage = () => {
   }
   console.log(1);
 };
+
+const deleteComment = async (commentId) => {
+  // New method
+  await commentStore.deleteComment(commentId, currentId, festivalId);
+  await loadBoardDetail();
+};
 </script>
 
 <template>
@@ -122,6 +129,13 @@ const prevImage = () => {
             <span class="comment-date">
               {{ new Date(comment.createdAt).toLocaleString("ko-KR") }}
             </span>
+            <button
+              v-if="comment.userName === userStore.user?.userName"
+              @click="deleteComment(comment.id)"
+              class="comment-delete-button"
+            >
+              X
+            </button>
           </div>
         </div>
         <p v-else>등록된 댓글이 없습니다.</p>
@@ -277,5 +291,22 @@ const prevImage = () => {
   font-size: 14px;
   color: #666;
   white-space: nowrap;
+}
+
+.comment-delete-button {
+  /* New styles for delete button */
+  margin-left: 10px;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.comment-delete-button:hover {
+  /* New hover effect */
+  background-color: #d9363e;
 }
 </style>

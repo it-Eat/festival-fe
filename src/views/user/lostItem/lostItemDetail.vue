@@ -5,6 +5,8 @@ import { watch, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useLostStore } from "@/stores/lost";
 import { useCommentStore } from "@/stores/comment";
+import { useUserStore } from "@/stores/userStore"; // Added import for useUserStore
+const userStore = useUserStore(); // Initialized userStore
 
 const route = useRoute();
 const lostStore = useLostStore();
@@ -39,6 +41,11 @@ const newComment = ref("");
 const createComment = async () => {
   await commentStore.createComment(currentId, newComment.value, festivalId);
   newComment.value = "";
+  await loadLostItemDetail();
+};
+
+const deleteComment = async (commentId) => {
+  await commentStore.deleteComment(commentId, currentId, festivalId);
   await loadLostItemDetail();
 };
 
@@ -127,11 +134,22 @@ const prevImage = () => {
             :key="index"
             class="comment-item"
           >
-            <span class="comment-user">{{ comment.userName }}</span>
-            <span class="comment-content">{{ comment.content }}</span>
-            <span class="comment-date">
+            <span style="color: blue" class="comment-user">{{
+              comment.userName
+            }}</span>
+            <span style="margin-left: 8px" class="comment-content">{{
+              comment.content
+            }}</span>
+            <span style="margin-left: 8px; color: green" class="comment-date">
               {{ new Date(comment.createdAt).toLocaleString("ko-KR") }}
             </span>
+            <button
+              v-if="comment.userName === userStore.user?.userName"
+              @click="deleteComment(comment.id)"
+              class="comment-delete-button"
+            >
+              X
+            </button>
           </div>
         </div>
         <p v-else>등록된 댓글이 없습니다.</p>
@@ -233,5 +251,20 @@ const prevImage = () => {
   margin-bottom: 8px;
   border-radius: 6px;
   box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.comment-delete-button {
+  margin-left: 10px;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.comment-delete-button:hover {
+  background-color: #d9363e;
 }
 </style>
