@@ -19,10 +19,20 @@ function logout() {
   logOk.value = false;
   localStorage.removeItem("isLoggedIn");
 
+  deleteAllCookies();
+
   // Pinia 상태 초기화
   authStore.setUserData(null);
 
   router.push({ name: "adminLogin" });
+}
+// 모든 쿠키 삭제 함수
+function deleteAllCookies() {
+  document.cookie.split(";").forEach((cookie) => {
+    const eqPos = cookie.indexOf("=");
+    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+  });
 }
 </script>
 

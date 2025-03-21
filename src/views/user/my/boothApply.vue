@@ -18,6 +18,9 @@
               v-model="name"
               placeholder="부스명을 입력하세요"
             />
+            <p :class="nameValidation.valid ? 'valid-text' : 'error-text'">
+              {{ nameValidation.msg }}
+            </p>
           </div>
 
           <!-- 부스 설명 -->
@@ -29,15 +32,19 @@
               v-model="content"
               placeholder="부스 설명을 입력하세요"
             />
+            <p :class="contentValidation.valid ? 'valid-text' : 'error-text'">
+              {{ contentValidation.msg }}
+            </p>
           </div>
 
           <!-- 유형 -->
           <div class="form-group">
             <label for="boothType">유형</label>
             <select id="boothType" v-model="boothType">
+              <option value="">선택하세요</option>
               <option value="PLAY">PLAY</option>
               <option value="EAT">EAT</option>
-              <!-- 필요 시 다른 옵션 추가 -->
+              <option value="ETC">ETC</option>
             </select>
           </div>
 
@@ -50,6 +57,9 @@
               v-model="typeCategory"
               placeholder="예: 페이스 페인팅"
             />
+            <p :class="typeCategoryValidation.valid ? 'valid-text' : 'error-text'">
+              {{ typeCategoryValidation.msg }}
+            </p>
           </div>
 
           <!-- 계좌번호 -->
@@ -61,6 +71,9 @@
               v-model="accountNumber"
               placeholder="계좌번호를 입력하세요"
             />
+            <p :class="accountNumberValidation.valid ? 'valid-text' : 'error-text'">
+              {{ accountNumberValidation.msg }}
+            </p>
           </div>
 
           <!-- 은행명 -->
@@ -72,9 +85,12 @@
               v-model="bankName"
               placeholder="은행명을 입력하세요"
             />
+            <p :class="bankNameValidation.valid ? 'valid-text' : 'error-text'">
+              {{ bankNameValidation.msg }}
+            </p>
           </div>
 
-          <!-- 사업자 번호 -->
+          <!-- 사업자 번호 (선택) -->
           <div class="form-group">
             <label for="businessNumber">사업자 번호</label>
             <input
@@ -95,25 +111,101 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import BackHeader from '@/components/common/backHeader.vue';
-import api from '@/api/axiosInstance';
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import BackHeader from "@/components/common/backHeader.vue";
+import api from "@/api/axiosInstance";
 
 const router = useRouter();
 
-// 새로 받아야 할 필드들
-const name = ref('');
-const content = ref('');
-const image = ref('');
-const boothType = ref('PLAY'); // 기본값: PLAY
-const typeCategory = ref('');
-const accountNumber = ref('');
-const bankName = ref('');
-const businessNumber = ref('');
+// 입력 필드
+const name = ref("");
+const content = ref("");
+const image = ref("");
+const boothType = ref(""); // 선택 전 빈 문자열
+const typeCategory = ref("");
+const accountNumber = ref("");
+const bankName = ref("");
+const businessNumber = ref("");
 
-// 신청 폼 제출 시 payload 생성 후 POST 요청
+// 자음이 3글자 이상 연속되는지 검사 (예: "ㄴㄴㄴ")
+const hasInvalidPattern = (text) => {
+  return /[ㄱ-ㅎ]{3,}/.test(text);
+};
+
+// 실시간 유효성 검사 컴퓨티드
+
+// 부스명: 필수, 15자 이하, invalid pattern 체크
+const nameValidation = computed(() => {
+  if (!name.value) return { msg: "필수 필드를 채워주세요.", valid: false };
+  if (hasInvalidPattern(name.value))
+    return { msg: "필수 필드를 채워주세요.", valid: false };
+  if (name.value.length > 15)
+    return { msg: "부스 이름은 15자 이하로 입력하세요.", valid: false };
+  return { msg: "사용 가능", valid: true };
+});
+
+// 부스 설명: 필수, 10자 이상 30자 이하, invalid pattern 체크
+const contentValidation = computed(() => {
+  if (!content.value) return { msg: "필수 필드를 채워주세요.", valid: false };
+  if (hasInvalidPattern(content.value))
+    return { msg: "필수 필드를 채워주세요.", valid: false };
+  if (content.value.length < 10 || content.value.length > 30)
+    return { msg: "부스 설명은 10자 이상 30자 이하로 입력하세요.", valid: false };
+  return { msg: "사용 가능", valid: true };
+});
+
+// boothType: 필수, EAT/PLAY/ETC 중 선택
+const boothTypeValidation = computed(() => {
+  if (!boothType.value)
+    return { msg: "필수 필드를 채워주세요.", valid: false };
+  const validTypes = ["EAT", "PLAY", "ETC"];
+  if (!validTypes.includes(boothType.value))
+    return {
+      msg: "부스 타입을 EAT, PLAY, ETC 중에서 선택하세요.",
+      valid: false,
+    };
+  return { msg: "사용 가능", valid: true };
+});
+
+// 카테고리: 10자 이하 (빈 값은 허용)
+const typeCategoryValidation = computed(() => {
+  if (typeCategory.value && typeCategory.value.length > 10)
+    return {
+      msg: "부스타입의 카테고리는 10자 이하로 입력하세요.",
+      valid: false,
+    };
+  return { msg: "사용 가능", valid: true };
+});
+
+// 계좌번호: 필수
+const accountNumberValidation = computed(() => {
+  if (!accountNumber.value)
+    return { msg: "필수 필드를 채워주세요.", valid: false };
+  return { msg: "사용 가능", valid: true };
+});
+
+// 은행명: 필수
+const bankNameValidation = computed(() => {
+  if (!bankName.value)
+    return { msg: "필수 필드를 채워주세요.", valid: false };
+  return { msg: "사용 가능", valid: true };
+});
+
+// 신청 폼 제출 시 (전체 유효성 검사)
 const handleSubmit = async () => {
+  if (
+    !nameValidation.value.valid ||
+    !contentValidation.value.valid ||
+    !boothTypeValidation.value.valid ||
+    !accountNumberValidation.value.valid ||
+    !bankNameValidation.value.valid ||
+    !typeCategoryValidation.value.valid
+  ) {
+    // 하나라도 유효하지 않으면 제출 중단
+    return;
+  }
+
   const payload = {
     name: name.value,
     content: content.value,
@@ -126,11 +218,11 @@ const handleSubmit = async () => {
   };
 
   try {
-    await api.post('booth/1', payload);
+    await api.post("booth/1", payload);
     router.back(); // 성공 후 이전 페이지로 이동
   } catch (error) {
-    console.error('부스 신청 실패:', error);
-    alert('부스 신청 중 오류가 발생했습니다.');
+    console.error("부스 신청 실패:", error);
+    alert("부스 신청 중 오류가 발생했습니다.");
   }
 };
 </script>
@@ -193,6 +285,18 @@ select {
   border-radius: 4px;
   box-sizing: border-box;
   appearance: none;
+}
+
+/* 유효하지 않은 경우 빨간색, 유효한 경우 파란색 */
+.error-text {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+.valid-text {
+  color: blue;
+  font-size: 0.9rem;
+  margin-top: 4px;
 }
 
 .submit-button {

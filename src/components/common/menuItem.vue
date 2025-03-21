@@ -40,11 +40,15 @@ const updownRef = ref(null);
 
 // 장바구니에서 현재 메뉴의 수량을 가져옴
 const initialQuantity = computed(() => {
+  if (!cartStore.cartItems) {
+    return 0;
+  }
   const cartItem = cartStore.cartItems.find(
     (item) => item.id === props.menu.id
   );
   return cartItem ? cartItem.quantity : 0;
 });
+
 
 // 수량 업데이트
 const updateCart = (quantity) => {

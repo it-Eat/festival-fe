@@ -2,13 +2,11 @@
   <div class="board-wrapper">
     <h1>게시판 관리</h1>
 
-    <!-- 상단 검색/달력 영역 -->
     <div class="container-search">
-      <adminCalendar />
-      <searchBar />
+      <adminCalendar @date-selected="handleDateSelected" />
+      <searchBar v-model="filters.keyword" @search="handleSearch" />
     </div>
 
-    <!-- 목록 테이블 영역 -->
     <div class="container-list">
       <hr class="line-strong" />
       <table class="custom-table">
@@ -22,9 +20,8 @@
         </thead>
       </table>
       <hr class="line-light" />
-      <!-- 실제 목록은 adminList 컴포넌트가 렌더링 -->
       <adminList :items="boards" routeName="adminBoardDetail" />
-      <!-- 이전/다음 버튼을 통한 페이지네이션 -->
+
       <div class="pagination-nav">
         <button @click="goToPreviousPage" :disabled="currentPage === 1">
           이전
@@ -46,16 +43,26 @@ import adminCalendar from "@/components/admin/common/adminCalendar.vue";
 import { getBoards } from "@/api/admin.js";
 
 const boards = ref([]);
-
-// 페이지네이션 관련 변수
 const currentPage = ref(1);
 const pageSize = ref(10);
 const totalItems = ref(0);
+
+const filters = ref({
+  startDate: "",
+  endDate: "",
+  keyword: "",
+  typeSelect: "",
+});
 
 // 최대 페이지 계산 (전체 항목 수와 페이지당 개수를 기반)
 const maxPage = computed(() => {
   return Math.ceil(totalItems.value / pageSize.value) || 1;
 });
+
+const handleSearch = () => {
+  currentPage.value = 1; // 검색 시 첫 페이지로
+  getBoardList();
+};
 
 // 게시판 데이터 가져오기
 const getBoardList = async () => {
@@ -66,9 +73,12 @@ const getBoardList = async () => {
       pageSize: pageSize.value,
       orderBy: "recent",
       order: "asc",
-      keyword: "",
+      keyword: filters.value.keyword,
+      startDate: filters.value.startDate,
+      endDate: filters.value.endDate,
     };
     const response = await getBoards(festivalId, query);
+
     if (response && response.total !== undefined) {
       boards.value = response.items;
       totalItems.value = response.total;
@@ -87,6 +97,28 @@ const getBoardList = async () => {
   } catch (error) {
     console.error("API 호출 실패:", error);
   }
+};
+
+// 페이지 이동 함수 추가
+const goToPreviousPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    getBoardList();
+  }
+};
+
+const goToNextPage = () => {
+  if (currentPage.value < maxPage.value) {
+    currentPage.value++;
+    getBoardList();
+  }
+};
+
+const handleDateSelected = (data) => {
+  filters.value.startDate = data.startDate;
+  filters.value.endDate = data.endDate;
+  currentPage.value = data.page; // 초기화
+  getBoardList();
 };
 
 onMounted(() => {
@@ -153,8 +185,8 @@ h1 {
 /* 테이블 스타일 */
 .custom-table {
   width: 100%;
-  border-collapse: separate; /* 셀 간격/분리 스타일 */
-  border-spacing: 0; /* 셀 사이 간격 없애기 (필요시 변경) */
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 1rem;
   text-align: center;
 }

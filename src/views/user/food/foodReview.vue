@@ -3,22 +3,15 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import api from "@/api/axiosInstance";
 import BackHeader from "@/components/common/backHeader.vue";
+import { dateFormatWithTime } from "@/util/dateFormat"; // 유틸 함수 임포트
 
 const route = useRoute();
 const boothId = route.query.boothId;
 const reviews = ref([]);
 
-// 날짜 포맷 함수
+// 기존의 formatDate 함수 대신 dateFormatWithTime 함수를 사용합니다.
 const formatDate = (isoDate) => {
-  const date = new Date(isoDate);
-  // 한국어 로케일, 원하는 옵션에 따라 형식 지정
-  return date.toLocaleString("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return dateFormatWithTime(isoDate);
 };
 
 const fetchReviews = async () => {
@@ -46,6 +39,7 @@ onMounted(() => {
 });
 </script>
 
+
 <template>
   <div class="page">
     <div class="home">
@@ -65,7 +59,7 @@ onMounted(() => {
                   {{ star <= review.score ? "★" : "☆" }}
                 </span>
               </div>
-              <!-- formatDate 함수를 사용하여 작성일 포맷 -->
+              <!-- dateFormatWithTime 함수를 이용해 작성일 포맷 -->
               <span class="review-date">작성일 : {{ formatDate(review.createdAt) }}</span>
             </div>
             <div class="review-content">
@@ -77,6 +71,7 @@ onMounted(() => {
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .page {

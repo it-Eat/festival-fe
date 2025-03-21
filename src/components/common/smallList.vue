@@ -30,6 +30,8 @@ const props = defineProps({
 
 import LostChip from "@/components/common/lostChip.vue";
 import { useRouter } from "vue-router";
+// 유틸리티 함수 임포트 (경로는 실제 프로젝트에 맞게 수정)
+import { dateFormatWithTime } from "@/util/dateFormat";
 
 const router = useRouter();
 
@@ -45,6 +47,11 @@ const goToDetail = () => {
       params: { id: props.board.id },
     });
   }
+};
+
+const formatCreatedAt = (dateStr) => {
+  if (!dateStr) return "날짜 없음";
+  return dateFormatWithTime(dateStr);
 };
 </script>
 
@@ -65,7 +72,7 @@ const goToDetail = () => {
       {{ props.lost?.content || props.board?.content || "내용 없음" }}
     </div>
     <div class="date">
-      {{ props.lost?.createdAt || props.board?.createdAt || "날짜 없음" }}
+      {{ formatCreatedAt(props.lost?.createdAt || props.board?.createdAt) }}
     </div>
   </div>
   <hr v-if="props.lost || props.board" class="divider" />
