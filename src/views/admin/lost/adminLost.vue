@@ -3,8 +3,8 @@
     <h1>분실물 관리</h1>
     <div class="container-search">
       <selectBar :items="lostOption" v-model="selectedType" />
-      <adminCalendar />
-      <searchBar v-model="searchKeyword" />
+      <adminCalendar @date-selected="handleDateSelected" />
+      <searchBar v-model="filters.keyword" @search="handleSearch" />
     </div>
     <div class="container-list">
       <hr style="border: solid 1px" />
@@ -50,12 +50,18 @@ const lostOption = ref([
 ]);
 
 const currentPage = ref(1);
-const pageSize = ref(10); // ✅ 한 페이지당 10개 표시
+const pageSize = ref(10);
 const totalItems = ref(0);
-const orderBy = ref("createdAt");
-const order = ref("acs"); // ✅ 최신순 정렬 (내림차순)
+const orderBy = ref("recent");
+const order = ref("acs");
 const selectedType = ref("lost");
-const searchKeyword = ref("");
+
+const filters = ref({
+  startDate: "",
+  endDate: "",
+  keyword: "",
+  typeSelect: "",
+});
 
 // 최대 페이지 계산 (전체 항목 수 기반)
 const maxPage = computed(() => {
@@ -78,6 +84,11 @@ const goToNextPage = () => {
   }
 };
 
+const handleSearch = () => {
+  currentPage.value = 1; // 검색 시 첫 페이지로
+  onSearch();
+};
+
 // 데이터 로드 함수
 const onSearch = async () => {
   const typeValue =
@@ -90,10 +101,12 @@ const onSearch = async () => {
   const query = {
     page: currentPage.value,
     pageSize: pageSize.value,
-    orderBy: orderBy.value || "createdAt",
-    order: order.value || "acs", // ✅ 최신순 정렬 유지
+    orderBy: orderBy.value || "recent",
+    order: order.value || "acs",
     typeSelect: typeValue,
-    keyword: searchKeyword.value || "",
+    keyword: filters.value.keyword || "",
+    startDate: filters.value.startDate, // ✅ 추가
+    endDate: filters.value.endDate, // ✅ 추가
   };
 
   try {
@@ -114,6 +127,13 @@ const onSearch = async () => {
   } catch (error) {
     console.error("API 호출 실패:", error);
   }
+};
+
+const handleDateSelected = (data) => {
+  filters.value.startDate = data.startDate;
+  filters.value.endDate = data.endDate;
+  currentPage.value = data.page; // 초기화
+  onSearch();
 };
 
 onMounted(() => {

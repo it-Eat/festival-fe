@@ -71,6 +71,9 @@
           <div class="comment-header">
             <h2>리뷰 목록</h2>
           </div>
+          <button class="delete-btn" @click="deleteSelectedReview">
+            🗑 리뷰 삭제
+          </button>
 
           <!-- 리뷰 없으면 안내 문구 -->
           <p v-if="reviews.length === 0">아직 리뷰가 없습니다.</p>
@@ -78,6 +81,7 @@
           <table v-else class="comment-table">
             <thead>
               <tr>
+                <th></th>
                 <th>작성자</th>
                 <th>내용</th>
                 <th>작성일자</th>
@@ -85,6 +89,14 @@
             </thead>
             <tbody>
               <tr v-for="review in reviews" :key="review.id">
+                <td>
+                  <input
+                    type="radio"
+                    name="selectedReview"
+                    :value="review.id"
+                    v-model="selectedReviewId"
+                  />
+                </td>
                 <td>{{ review.user?.userName || "익명" }}</td>
                 <td class="comment-content">{{ review.content }}</td>
                 <td>{{ formatDate(review.createdAt) }}</td>
@@ -124,7 +136,12 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { getBoothDetail, getMenuList, getReviews } from "@/api/admin";
+import {
+  getBoothDetail,
+  getMenuList,
+  getReviews,
+  deleteReview,
+} from "@/api/admin";
 
 const route = useRoute();
 const router = useRouter();
@@ -168,6 +185,8 @@ const fetchBoothDetail = async () => {
   }
 };
 
+const selectedReviewId = ref(null); // 선택된 리뷰 ID
+
 // 메뉴 목록 API 호출
 const fetchMenuList = async () => {
   try {
@@ -203,6 +222,38 @@ const fetchReviews = async () => {
     }
   } catch (err) {
     console.error("리뷰 목록 조회 실패:", err);
+  }
+};
+
+// 리뷰 삭제
+const deleteSelectedReview = async () => {
+  if (!selectedReviewId.value) {
+    alert("삭제할 리뷰를 선택해주세요.");
+    return;
+  }
+
+  try {
+    const response = await deleteReview(selectedReviewId.value);
+
+    if (response.status === 204) {
+      // ✅ 화면에서도 삭제
+      reviews.value = reviews.value.filter(
+        (review) => review.id !== selectedReviewId.value
+      );
+
+      // ✅ 선택 해제
+      selectedReviewId.value = null;
+
+      window.location.reload();
+
+      // ✅ 현재 페이지에 리뷰가 없다면 이전 페이지로
+      if (reviews.value.length === 0 && currentPage.value > 1) {
+        currentPage.value--;
+        await fetchReviews();
+      }
+    }
+  } catch (error) {
+    console.error("리뷰 삭제 실패:", error);
   }
 };
 
@@ -347,6 +398,16 @@ onMounted(() => {
   text-align: left;
   word-break: break-word;
 }
+
+.delete-btn {
+  background-color: #ff6b6b;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 /* 리뷰 페이지네이션 */
 .pagination {
   display: flex;

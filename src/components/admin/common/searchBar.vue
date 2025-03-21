@@ -1,9 +1,22 @@
-<script setup></script>
+<script setup>
+import { ref, watch, defineEmits } from "vue";
+
+const emit = defineEmits(["update:modelValue", "search"]);
+const props = defineProps({
+  modelValue: String,
+});
+
+const keyword = ref(props.modelValue || "");
+
+watch(keyword, (val) => {
+  emit("update:modelValue", val);
+});
+</script>
 
 <template>
   <div class="container">
-    <input type="text" placeholder="검색어입력" />
-    <button class="btn">검색</button>
+    <input type="text" v-model="keyword" placeholder="검색어입력" />
+    <button class="btn" @click="$emit('search')">검색</button>
   </div>
 </template>
 
