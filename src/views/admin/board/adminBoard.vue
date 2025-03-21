@@ -2,13 +2,11 @@
   <div class="board-wrapper">
     <h1>게시판 관리</h1>
 
-    <!-- 상단 검색/달력 영역 -->
     <div class="container-search">
       <adminCalendar @date-selected="handleDateSelected" />
-      <searchBar />
+      <searchBar v-model="filters.keyword" @search="handleSearch" />
     </div>
 
-    <!-- 목록 테이블 영역 -->
     <div class="container-list">
       <hr class="line-strong" />
       <table class="custom-table">
@@ -22,9 +20,8 @@
         </thead>
       </table>
       <hr class="line-light" />
-      <!-- 실제 목록은 adminList 컴포넌트가 렌더링 -->
       <adminList :items="boards" routeName="adminBoardDetail" />
-      <!-- 이전/다음 버튼을 통한 페이지네이션 -->
+
       <div class="pagination-nav">
         <button @click="goToPreviousPage" :disabled="currentPage === 1">
           이전
@@ -61,6 +58,11 @@ const filters = ref({
 const maxPage = computed(() => {
   return Math.ceil(totalItems.value / pageSize.value) || 1;
 });
+
+const handleSearch = () => {
+  currentPage.value = 1; // 검색 시 첫 페이지로
+  getBoardList();
+};
 
 // 게시판 데이터 가져오기
 const getBoardList = async () => {

@@ -4,7 +4,7 @@
     <div class="container-search">
       <selectBar :items="lostOption" v-model="selectedType" />
       <adminCalendar @date-selected="handleDateSelected" />
-      <searchBar v-model="searchKeyword" />
+      <searchBar v-model="filters.keyword" @search="handleSearch" />
     </div>
     <div class="container-list">
       <hr style="border: solid 1px" />
@@ -55,7 +55,6 @@ const totalItems = ref(0);
 const orderBy = ref("recent");
 const order = ref("acs");
 const selectedType = ref("lost");
-const searchKeyword = ref("");
 
 const filters = ref({
   startDate: "",
@@ -85,6 +84,11 @@ const goToNextPage = () => {
   }
 };
 
+const handleSearch = () => {
+  currentPage.value = 1; // 검색 시 첫 페이지로
+  onSearch();
+};
+
 // 데이터 로드 함수
 const onSearch = async () => {
   const typeValue =
@@ -100,7 +104,7 @@ const onSearch = async () => {
     orderBy: orderBy.value || "recent",
     order: order.value || "acs",
     typeSelect: typeValue,
-    keyword: searchKeyword.value || "",
+    keyword: filters.value.keyword || "",
     startDate: filters.value.startDate, // ✅ 추가
     endDate: filters.value.endDate, // ✅ 추가
   };
