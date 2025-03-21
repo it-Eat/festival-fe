@@ -8,6 +8,7 @@ export const useLostStore = defineStore("lost", {
     totalItems: 0, // 총 데이터 개수
     itemsPerPage: 7, // 한 페이지에 보여줄 개수
     currentPage: 1, // 현재 페이지
+    myLosts: [],
   }),
   persist: {
     enable: true,
@@ -26,7 +27,7 @@ export const useLostStore = defineStore("lost", {
           `🔍 API 요청 URL: /board/board-loss/1?page=${page}&pageSize=${pageSize}&orderBy=${orderBy}&order=${order}&keyword=${keyword}`
         );
 
-        const response = await api.get("/board/board-loss/1", {
+        const response = await api.get(`/board/board-loss/1`, {
           params: {
             page: parseInt(page) || 1,
             pageSize: parseInt(pageSize) || 50, // ✅ 50개 요청
@@ -58,6 +59,39 @@ export const useLostStore = defineStore("lost", {
         this.lostDetail = response.data;
       } catch (error) {
         console.error("데이터 가져오기 실패:", error);
+      }
+    },
+
+    async fetchMyItems(
+      page = 1,
+      pageSize = 50,
+      orderBy = "createAt",
+      order = "asc",
+      keyword = ""
+    ) {
+      try {
+        const searchKeyword = keyword || "";
+        console.log(
+          `🔍 API 요청 URL: /board/board-loss/1?page=${page}&pageSize=${pageSize}&orderBy=${orderBy}&order=${order}&keyword=${searchKeyword}`
+        );
+
+        const response = await api.get("/board/board-loss/1", {
+          params: {
+            page: parseInt(page) || 1,
+            pageSize: parseInt(pageSize) || 50, // ✅ 50개 요청
+            // orderBy: orderBy || "createAt",
+            order: order || "asc",
+            keyword: searchKeyword,
+          },
+        });
+
+        this.myLosts = response.data;
+        this.totalItems = response.data.length; // 전체 개수 업데이트
+
+        console.log("🔄 서버에서 받아온 데이터 개수:", response.data.length);
+        console.log("📦 받아온 데이터:", response.data);
+      } catch (error) {
+        console.error("❌ 데이터 가져오기 실패:", error);
       }
     },
   },
