@@ -42,6 +42,8 @@ import FoodCart from "@/views/user/food/foodCart.vue";
 import FoodOrder from "@/views/user/food/foodOrder.vue";
 import LoginCallback from "@/views/user/my/loginCallback.vue";
 import Notice from "@/views/common/notice.vue";
+import MyLostItemList from "@/views/user/my/myLostItemList.vue";
+import MyBoardList from "@/views/user/my/myBoardList.vue";
 
 export default [
   {
@@ -192,6 +194,18 @@ export default [
     path: "/user/lostItem/list",
     name: "lostItemList",
     component: LostItemList,
+  },
+  {
+    path: "/user/my/lostItem/list",
+    name: "myLostItemList",
+    component: MyLostItemList,
+    props: (route) => ({ keyword: route.query.keyword }),
+  },
+  {
+    path: "/user/my/board/list",
+    name: "myBoardList",
+    component: MyBoardList,
+    props: (route) => ({ keyword: route.query.keyword }),
   },
   {
     path: "/user/board/list",

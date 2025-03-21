@@ -5,13 +5,13 @@ import { watch, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useLostStore } from "@/stores/lost";
 import { useCommentStore } from "@/stores/comment";
+import { useUserStore } from "@/stores/userStore"; // New import
 // 날짜 포맷 함수 임포트 (경로는 실제 프로젝트 구조에 맞게 조정)
 import { dateFormatWithTime } from "@/util/dateFormat";
-
 const route = useRoute();
 const lostStore = useLostStore();
 const commentStore = useCommentStore();
-
+const userStore = useUserStore(); // New initialization
 const currentId = Number(route.params.id);
 const festivalId = 1;
 const currentItem = ref(null);
@@ -64,6 +64,12 @@ const prevImage = () => {
 // util의 dateFormatWithTime 함수를 사용하여 날짜를 포맷
 const formatDate = (dateString) => {
   return dateString ? dateFormatWithTime(dateString) : "";
+};
+
+const deleteComment = async (commentId) => {
+  // New method
+  await commentStore.deleteComment(commentId, currentId, festivalId);
+  await loadBoardDetail();
 };
 </script>
 
@@ -127,6 +133,13 @@ const formatDate = (dateString) => {
             <span class="comment-date">
               {{ formatDate(comment.createdAt) }}
             </span>
+            <button
+              v-if="comment.userName === userStore.user?.userName"
+              @click="deleteComment(comment.id)"
+              class="comment-delete-button"
+            >
+              X
+            </button>
           </div>
         </div>
         <p v-else>등록된 댓글이 없습니다.</p>
@@ -284,5 +297,22 @@ const formatDate = (dateString) => {
   font-size: 14px;
   color: #666;
   white-space: nowrap;
+}
+
+.comment-delete-button {
+  /* New styles for delete button */
+  margin-left: 10px;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.comment-delete-button:hover {
+  /* New hover effect */
+  background-color: #d9363e;
 }
 </style>

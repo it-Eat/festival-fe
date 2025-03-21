@@ -33,7 +33,15 @@
           <!-- 자세히 보기 버튼 -->
           <div class="btn-wrapper">
             <button class="detail-button">
-              <router-link to="/user/lostItem/list" class="detail-link">
+              <router-link
+                :to="{
+                  name: 'myLostItemList',
+                  query: {
+                    keyword: userStore.user ? userStore.user.nickname : '',
+                  },
+                }"
+                class="detail-link"
+              >
                 자세히 보기 &gt;
               </router-link>
             </button>
@@ -63,7 +71,18 @@
           <!-- 자세히 보기 버튼 -->
           <div class="btn-wrapper">
             <button class="detail-button">
-              <router-link to="/user/board/list" class="detail-link">
+              <router-link
+                :to="{
+                  name: 'myBoardList',
+                  query: {
+                    keyword: userStore.user ? userStore.user.nickname : '',
+                  },
+                }"
+                class="detail-link"
+                @click="
+                  console.log('✅ keyword 전달됨:', userStore.user.nickname)
+                "
+              >
                 자세히 보기 &gt;
               </router-link>
             </button>

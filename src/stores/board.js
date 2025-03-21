@@ -5,6 +5,7 @@ export const useBoardStore = defineStore("board", {
   state: () => ({
     boards: [],
     boardDetail: {},
+    myBoards: [],
   }),
   persist: {
     enable: true,
@@ -48,6 +49,39 @@ export const useBoardStore = defineStore("board", {
         this.boardDetail = response.data;
       } catch (error) {
         console.error("데이터 가져오기 실패:", error);
+      }
+    },
+
+    async fetchMyItems(
+      page = 1,
+      pageSize = 50,
+      orderBy = "createAt",
+      order = "asc",
+      keyword = ""
+    ) {
+      try {
+        const searchKeyword = keyword || "";
+        console.log(
+          `🔍 API 요청 URL: /board/board/1?page=${page}&pageSize=${pageSize}&orderBy=${orderBy}&order=${order}&keyword=${searchKeyword}`
+        );
+
+        const response = await api.get(`/board/1`, {
+          params: {
+            page: parseInt(page) || 1,
+            pageSize: parseInt(pageSize) || 50, // ✅ 50개 요청
+            // orderBy: orderBy || "createAt",
+            order: order || "asc",
+            keyword: searchKeyword,
+          },
+        });
+
+        this.myBoards = response.data;
+        this.totalItems = response.data.length; // 전체 개수 업데이트
+
+        console.log("🔄 서버에서 받아온 데이터 개수:", response.data.length);
+        console.log("📦 받아온 데이터:", response.data);
+      } catch (error) {
+        console.error("❌ 데이터 가져오기 실패:", error);
       }
     },
   },
