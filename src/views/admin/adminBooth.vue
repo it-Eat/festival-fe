@@ -71,7 +71,7 @@
         <button @click="goToPreviousPage" :disabled="currentPage === 1">
           이전
         </button>
-        <span>페이지 {{ currentPage }} / {{ maxPage }}</span>
+        <span>{{ currentPage }} / {{ maxPage }}</span>
         <button @click="goToNextPage" :disabled="currentPage >= maxPage">
           다음
         </button>
