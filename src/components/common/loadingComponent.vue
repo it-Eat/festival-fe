@@ -33,6 +33,7 @@
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
+  margin-bottom: 24px;
 }
 
 @keyframes spin {

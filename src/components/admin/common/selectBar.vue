@@ -28,13 +28,13 @@ const onSelect = () => {
   </div>
 </template>
 
-<style scoped>
+<style>
 select {
   width: 200px;
   padding: 8px 32px 8px 12px;
   border: 1px solid #fe6f61;
   font-family: "Pretendard";
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   -webkit-appearance: none;
   -moz-appearance: none;

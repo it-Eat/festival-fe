@@ -11,42 +11,56 @@ const keyword = ref(props.modelValue || "");
 watch(keyword, (val) => {
   emit("update:modelValue", val);
 });
+
+const handleSearch = () => {
+  emit("search");
+};
 </script>
 
 <template>
-  <div class="container">
-    <input type="text" v-model="keyword" placeholder="검색어입력" />
-    <button class="btn" @click="$emit('search')">검색</button>
-  </div>
+  <form class="container" @submit.prevent="handleSearch">
+    <input type="text" v-model="keyword" placeholder="검색어를 입력해주세요" />
+    <button class="btn" type="submit">검색</button>
+  </form>
 </template>
 
 <style scoped>
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 input {
-  width: 150px;
+  width: 100%;
   height: 32px;
   font-size: 15px;
   border: 0;
-  border-radius: 5px;
+  border-radius: 8px;
   outline: none;
   padding-left: 10px;
-  margin-right: 10px;
-  background-color: rgb(233, 233, 233);
+  background-color: white;
+  border: 1px solid #ccc;
+}
+
+input:focus {
+  outline: none;
 }
 
 .btn {
   float: right;
-  width: 50px;
-  height: 30px;
-  background-color: #ccc;
-  border-radius: 10px;
-  box-shadow: 3px 3px 3px black;
-  transition-duration: 0.3s;
-  border: none;
+  width: 100px;
+  height: 32px;
+  border: 2px solid #fe6f61;
+  background-color: white;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-.btn:active {
-  margin-left: 5px;
-  margin-top: 5px;
-  box-shadow: none;
+.btn:hover {
+  background-color: #fe6f61;
+  color: white;
+  cursor: pointer;
 }
 </style>

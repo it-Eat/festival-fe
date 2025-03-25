@@ -1,7 +1,4 @@
-// import { localAxios } from "@/util/http-commons";
 import api from "@/api/axiosInstance";
-// withCredentials 활성화된 Axios 인스턴스 생성
-// const local = localAxios();
 
 async function deleteNotice(noticeIds, festivalId) {
   const response = await api.delete(`notice/${noticeIds}/${festivalId}`);
