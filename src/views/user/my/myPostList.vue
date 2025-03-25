@@ -17,10 +17,10 @@
           <hr class="divider" />
 
           <!-- 분실물 리스트가 있고, 0개 이상일 때만 리스트 표시 -->
-          <div v-if="lostStore.lostList && lostStore.lostList.length > 0">
+          <div v-if="lostStore.totalItems > 0">
             <SmallList
               class="list-item"
-              v-for="lostItem in lostStore.lostList.slice(0, 4)"
+              v-for="lostItem in lostStore.myLosts.slice(0, 4)"
               :key="lostItem.id"
               :lost="lostItem"
             />
@@ -36,9 +36,6 @@
               <router-link
                 :to="{
                   name: 'myLostItemList',
-                  query: {
-                    keyword: userStore.user ? userStore.user.nickname : '',
-                  },
                 }"
                 class="detail-link"
               >
@@ -54,10 +51,10 @@
           <hr class="divider" />
 
           <!-- 게시판 리스트가 있고, 0개 이상일 때만 리스트 표시 -->
-          <div v-if="boardStore.boards && boardStore.boards.length > 0">
+          <div v-if="boardStore.totalItems > 0">
             <SmallList
               class="list-item"
-              v-for="boardItem in boardStore.boards.slice(0, 4)"
+              v-for="boardItem in boardStore.myBoards.slice(0, 4)"
               :key="boardItem.id"
               :board="boardItem"
             />
@@ -74,14 +71,8 @@
               <router-link
                 :to="{
                   name: 'myBoardList',
-                  query: {
-                    keyword: userStore.user ? userStore.user.nickname : '',
-                  },
                 }"
                 class="detail-link"
-                @click="
-                  console.log('✅ keyword 전달됨:', userStore.user.nickname)
-                "
               >
                 자세히 보기 &gt;
               </router-link>
@@ -100,52 +91,50 @@ import SmallList from "@/components/common/smallList.vue";
 import { useLostStore } from "@/stores/lost";
 import { useBoardStore } from "@/stores/board";
 import { useUserStore } from "@/stores/userStore";
-import api from "@/api/axiosInstance";
+// import api from "@/api/axiosInstance";
 
 const lostStore = useLostStore();
 const boardStore = useBoardStore();
 const userStore = useUserStore();
 
-const festivalId = 1;
-
-// 게시글 데이터 불러오기 (내 게시물, keyword로 내 닉네임 전달)
-const fetchBoardList = async () => {
-  try {
-    const keyword = userStore.user ? userStore.user.nickname : "";
-    const res = await api.get(`/board/${festivalId}`, { params: { keyword } });
-    // boardList를 세팅
-    if (boardStore.setBoardList) {
-      boardStore.setBoardList(res.data);
-    } else {
-      boardStore.boardList = res.data;
-    }
-  } catch (error) {
-    console.error("Error fetching board list:", error);
-  }
-};
-
-// 분실물 데이터 불러오기 (내 분실물, keyword로 내 닉네임 전달)
-const fetchLostList = async () => {
-  try {
-    const keyword = userStore.user ? userStore.user.nickname : "";
-    const res = await api.get(`/board/board-loss/${festivalId}`, {
-      params: { keyword },
-    });
-    // lostList를 세팅
-    if (lostStore.setLostList) {
-      lostStore.setLostList(res.data);
-    } else {
-      lostStore.lostList = res.data;
-    }
-  } catch (error) {
-    console.error("Error fetching lost list:", error);
-  }
-};
+// const festivalId = 1;
 
 onMounted(() => {
-  fetchBoardList();
-  fetchLostList();
+  boardStore.fetchMyItems();
+  lostStore.fetchMyItems();
 });
+
+// // 게시글 데이터 불러오기 (내 게시물, keyword로 내 닉네임 전달)
+// const fetchBoardList = async () => {
+//   try {
+//     const res = await api.get(`/board/my-board/${festivalId}`);
+//     // boardList를 세팅
+//     if (boardStore.setBoardList) {
+//       boardStore.setBoardList(res.data);
+//     } else {
+//       boardStore.boardList = res.data;
+//     }
+//   } catch (error) {
+//     console.error("Error fetching board list:", error);
+//   }
+// };
+
+// // 분실물 데이터 불러오기 (내 분실물, keyword로 내 닉네임 전달)
+// const fetchLostList = async () => {
+//   try {
+//     const res = await api.get(`/board/my-board/${festivalId}`, {
+//       params: { keyword },
+//     });
+//     // lostList를 세팅
+//     if (lostStore.setLostList) {
+//       lostStore.setLostList(res.data);
+//     } else {
+//       lostStore.lostList = res.data;
+//     }
+//   } catch (error) {
+//     console.error("Error fetching lost list:", error);
+//   }
+// };
 </script>
 
 <style scoped>
