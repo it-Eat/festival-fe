@@ -37,6 +37,10 @@
 import { ref, watch } from "vue";
 import { defineProps, defineEmits } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const festivalId = router.currentRoute.value.params.festivalId;
 
 const props = defineProps({
   isOpen: { type: Boolean, default: false },
@@ -72,7 +76,6 @@ const cancelEdit = () => {
 // 수정 API 호출
 const updateNotice = async () => {
   try {
-    const festivalId = 1;
     const noticeId = props.notice.id;
     const endpoint = `notice/${noticeId}/${festivalId}`;
     const response = await axios.patch(

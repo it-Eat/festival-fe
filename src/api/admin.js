@@ -1,5 +1,10 @@
 import api from "@/api/axiosInstance";
 
+async function deleteNotice(noticeIds, festivalId) {
+  const response = await api.delete(`notice/${noticeIds}/${festivalId}`);
+  return response.data;
+}
+
 async function getFestivalInfo(festivalId) {
   const response = await api.get(`festival/${festivalId}`);
   return response.data;
@@ -263,4 +268,5 @@ export {
   deleteReview,
   getFestivalInfo,
   logout,
+  deleteNotice,
 };

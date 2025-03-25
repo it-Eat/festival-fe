@@ -1,7 +1,11 @@
 <script setup>
 import { ref, defineEmits } from "vue";
 
-const emit = defineEmits(['update:start-date', 'update:end-date', 'selected-date-range']);
+const emit = defineEmits([
+  "update:start-date",
+  "update:end-date",
+  "selected-date-range",
+]);
 
 const startDate = ref("");
 const endDate = ref("");
@@ -19,13 +23,16 @@ const dataChange = (e) => {
     startDate.value = target.value;
     endDate.value = "";
     document.getElementById("end-date").setAttribute("min", target.value);
-    emit('update:start-date', startDate.value); // 양방향 바인딩을 위한 emit
+    emit("update:start-date", startDate.value); // 양방향 바인딩을 위한 emit
   } else if (target.id === "end-date") {
     endDate.value = target.value;
-    emit('update:end-date', endDate.value); // 양방향 바인딩을 위한 emit
+    emit("update:end-date", endDate.value); // 양방향 바인딩을 위한 emit
   }
   if (startDate.value && endDate.value) {
-    emit('selected-date-range', { startDate: startDate.value, endDate: endDate.value });
+    emit("selected-date-range", {
+      startDate: startDate.value,
+      endDate: endDate.value,
+    });
   }
 };
 </script>
@@ -33,7 +40,13 @@ const dataChange = (e) => {
 <template>
   <div>
     시작일:
-    <input id="start-date" type="date" @change="dataChange" :max="today" v-model="startDate" />
+    <input
+      id="start-date"
+      type="date"
+      @change="dataChange"
+      :max="today"
+      v-model="startDate"
+    />
     종료일:
     <input
       id="end-date"

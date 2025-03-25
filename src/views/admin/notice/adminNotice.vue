@@ -5,19 +5,18 @@
     <!-- 검색/달력/버튼 영역 -->
     <div class="container-search">
       <div class="search-left">
-        <adminCalendar />
-        <searchBar />
+        <!-- <adminCalendar /> -->
+        <!-- <searchBar /> -->
       </div>
       <!-- 우측 버튼 -->
       <div class="button-group">
         <button class="create-btn" @click="isWriteOpen = true">작성</button>
-        <button class="delete-btn">삭제</button>
+        <button class="delete-btn" @click="deleteNotices">삭제</button>
       </div>
     </div>
 
     <!-- 공지사항 목록 테이블 -->
     <div class="container-list">
-      <hr class="line-strong" />
       <table class="custom-table">
         <thead>
           <tr>
@@ -34,7 +33,14 @@
             @click="openModal(notice)"
             class="table-row"
           >
-            <td><input type="checkbox" /></td>
+            <td @click.stop>
+              <!-- 클릭 이벤트 전파 중단 -->
+              <input
+                type="checkbox"
+                :checked="selectedNoticeIds.includes(notice.id)"
+                @click="handleCheck($event, notice.id)"
+              />
+            </td>
             <td>관리자</td>
             <td class="notice-content">{{ notice.content }}</td>
             <td>{{ formatDate(notice.createdAt) }}</td>
@@ -47,7 +53,7 @@
         <button @click="goToPreviousPage" :disabled="currentPage === 1">
           이전
         </button>
-        <span>페이지 {{ currentPage }} / {{ maxPage }}</span>
+        <span>{{ currentPage }} / {{ maxPage }}</span>
         <button @click="goToNextPage" :disabled="currentPage >= maxPage">
           다음
         </button>
@@ -74,49 +80,64 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { getNotice } from "@/api/admin"; // 공지사항 API 호출 함수
-import adminCalendar from "@/components/admin/common/adminCalendar.vue";
-import searchBar from "@/components/admin/common/searchBar.vue";
 import adminNoticeDetail from "./adminNoticeDetail.vue";
 import adminNoticeWrite from "./adminNoticeWrite.vue";
+import { useRouter } from "vue-router";
+import { deleteNotice } from "@/api/admin";
+import { dateFormatWithoutTime } from "@/util/dateFormat";
 
+const router = useRouter();
 const notices = ref([]);
 const isModalOpen = ref(false);
 const selectedNotice = ref(null);
 const isWriteOpen = ref(false);
+const selectedNoticeIds = ref([]);
+
+const festivalId = router.currentRoute.value.params.festivalId;
 
 // 페이지네이션 관련 변수
 const currentPage = ref(1);
 const pageSize = ref(10);
 const totalItems = ref(0);
+const maxPage = ref(1);
 
-// 최대 페이지 계산 (전체 항목 수와 페이지당 개수를 기반)
-const maxPage = computed(() => {
-  return Math.ceil(totalItems.value / pageSize.value) || 1;
-});
+const deleteNotices = async () => {
+  try {
+    const deletePromises = selectedNoticeIds.value.map((id) =>
+      deleteNotice([id.toString()], festivalId)
+    );
 
+    // 모든 삭제 요청을 병렬로 처리
+    await Promise.all(deletePromises);
+    getNoticeList();
+    selectedNoticeIds.value = [];
+  } catch (error) {
+    console.error("공지사항 삭제 실패:", error);
+  }
+};
+
+const handleCheck = (event, noticeId) => {
+  console.log(selectedNoticeIds.value);
+  event.stopPropagation();
+  if (event.target.checked) {
+    selectedNoticeIds.value.push(noticeId);
+  } else {
+    selectedNoticeIds.value = selectedNoticeIds.value.filter(
+      (id) => id !== noticeId
+    );
+  }
+};
 // 공지사항 조회 함수
 const getNoticeList = async () => {
   try {
-    const festivalId = 1;
     const query = {
       page: currentPage.value,
       pageSize: pageSize.value,
       orderBy: "recent",
     };
     const response = await getNotice(festivalId, query);
-
-    if (response && response.total !== undefined) {
-      notices.value = response.items;
-      totalItems.value = response.total;
-    } else if (Array.isArray(response)) {
-      notices.value = response;
-      totalItems.value = 50;
-    }
-    // 그 외의 경우 기본값 할당
-    else {
-      notices.value = [];
-      totalItems.value = 0;
-    }
+    maxPage.value = response.totalPages;
+    notices.value = response.data;
   } catch (error) {
     console.error("공지사항 API 호출 실패:", error);
   }
@@ -124,7 +145,7 @@ const getNoticeList = async () => {
 
 const formatDate = (dateString) => {
   if (!dateString) return "-";
-  return new Date(dateString).toLocaleString("ko-KR");
+  return dateFormatWithoutTime(dateString);
 };
 
 const openModal = (notice) => {
@@ -176,8 +197,7 @@ onMounted(() => {
 
 h1 {
   font-size: 2rem;
-  margin-bottom: 30px;
-  text-shadow: 4px 4px rgb(226, 223, 223);
+  margin-bottom: 24px;
 }
 
 .container-search {
@@ -228,16 +248,9 @@ h1 {
 /* 테이블 영역 */
 .container-list {
   background-color: #fff;
-  padding: 20px;
   border-radius: 8px;
 }
 
-/* 진한 선 */
-.line-strong {
-  border: none;
-  border-top: 2px solid #333;
-  margin-bottom: 10px;
-}
 /* 옅은 선 */
 .line-light {
   border: none;
@@ -253,14 +266,22 @@ h1 {
   font-size: 1rem;
   text-align: center;
 }
+.custom-table thead th {
+  padding: 12px;
+  font-weight: 600;
+  background-color: #fff5f4;
+  color: #fe6f61;
+  border-bottom: 2px solid #fe6f61;
+  border-top: 2px solid #fe6f61;
+}
 
 /* 테이블 헤더 */
-.custom-table thead th {
+/* .custom-table thead th {
   border-bottom: 2px solid #333;
   padding: 12px 8px;
   font-weight: 600;
   background-color: #f9f9f9;
-}
+} */
 
 /* 테이블 바디(각 행) */
 .table-row {
@@ -295,20 +316,27 @@ h1 {
 
 .pagination-nav button {
   padding: 8px 16px;
-  border: none;
+  border: 1px solid #fe6f61;
   border-radius: 4px;
-  background-color: #ff6f61;
-  color: white;
+  background-color: white;
+  color: #fe6f61;
   cursor: pointer;
+}
+.pagination-nav button:hover:not(:disabled) {
+  background-color: #fe6f61;
+  color: white;
 }
 
 .pagination-nav button:disabled {
-  background-color: #ccc;
-  cursor: default;
+  border-color: #ddd;
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
 }
 
 .pagination-nav span {
   font-size: 1rem;
-  font-weight: bold;
+  font-weight: 500;
+  color: #333;
 }
 </style>

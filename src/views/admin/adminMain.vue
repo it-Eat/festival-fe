@@ -25,7 +25,7 @@ function handleLogout() {
   <div class="container">
     <div class="menu">
       <menuComponent />
-      <button @click="handleLogout">로그아웃</button>
+      <button class="logout-btn" @click="handleLogout">로그아웃</button>
     </div>
     <div class="content">
       <router-view />
@@ -42,9 +42,9 @@ function handleLogout() {
 }
 
 .menu {
-  background-color: #f0f0f0;
-  padding: 20px;
   border-right: 1px solid #ddd;
+  background-color: #f8f9fa;
+  padding: 30px;
   overflow: hidden;
 }
 
@@ -52,5 +52,17 @@ function handleLogout() {
   padding: 20px;
   background-color: #fff;
   overflow: hidden;
+}
+
+.logout-btn {
+  margin-top: 10px;
+  background-color: #fe6f61;
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
 }
 </style>
