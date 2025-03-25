@@ -30,6 +30,10 @@
 import { ref, watch } from "vue";
 import { defineProps, defineEmits } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const festivalId = router.currentRoute.value.params.festivalId;
 
 const props = defineProps({
   // 모달 열림/닫힘 상태
@@ -66,7 +70,7 @@ const submitNotice = async () => {
     }
 
     // festivalId, API 엔드포인트는 실제 상황에 맞게 수정
-    const festivalId = 1;
+
     const endpoint = `notice/${festivalId}`;
 
     await axios.post(
