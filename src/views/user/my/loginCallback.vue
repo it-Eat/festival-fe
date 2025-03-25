@@ -18,13 +18,12 @@ import { useUserStore } from "@/stores/userStore";
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
-const API_URL = import.meta.env.VITE_VUE_API_URL; // ✅ 환경변수 불러오기
+const API_URL = import.meta.env.VITE_VUE_API_URL; // 환경변수 불러오기
 
 onMounted(async () => {
   const code = route.query.code;
   if (code) {
     try {
-
       const response = await axios.get(
         `${API_URL}/user/auth/kakao/callback?code=${code}`,
         {
@@ -43,18 +42,18 @@ onMounted(async () => {
       setTimeout(() => {
         // role이 SELLER면 merchantHome, 아니면 일반 홈("/")으로 이동
         if (userRole === "SELLER") {
-          router.push("/merchant/merchantHome");
+          router.replace("/merchant/merchantHome");
         } else {
-          router.push("/user");
+          router.replace("/user");
         }
       }, 150);
     } catch (error) {
       console.error("❌ 유저 정보 가져오기 실패:", error);
-      router.push("/user/login");
+      router.replace("/user/login");
     }
   } else {
     console.warn("⚠ 카카오 로그인 코드가 없음. 로그인 페이지로 이동합니다.");
-    router.push("/user/login");
+    router.replace("/user/login");
   }
 });
 </script>

@@ -73,7 +73,7 @@ const closeMenu = (e) => {
         @click="handleNotification"
       /> -->
       <ChevronLeft
-        v-if="props.showType === true"
+        v-if="props.showType && props.category !== 'home'"
         class="left-icon"
         @click="goBack"
       />
@@ -85,7 +85,7 @@ const closeMenu = (e) => {
       <div class="right-icon-container" v-if="props.showType === true">
         <!-- foodDetail 페이지일 때 장바구니 -->
         <ShoppingCart
-          v-if="props.category === 'foodDetail'"
+          v-if="props.showType && props.category === 'foodDetail'"
           class="right-icon"
           @click="goShoppingList"
         />

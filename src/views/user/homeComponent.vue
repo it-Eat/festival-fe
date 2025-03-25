@@ -9,6 +9,7 @@ import backHeader from "@/components/common/backHeader.vue";
     :title="'불꽃놀이 페스티벌'"
     :useUserName="false"
     :category="'home'"
+
   />
   <div class="home">
     <!-- 배너 -->

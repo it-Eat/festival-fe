@@ -3,8 +3,8 @@
     <h1>분실물 관리</h1>
     <div class="container-search">
       <selectBar :items="lostOption" v-model="selectedType" />
-      <adminCalendar />
-      <searchBar v-model="searchKeyword" />
+      <adminCalendar @date-selected="handleDateSelected" />
+      <searchBar v-model="filters.keyword" @search="handleSearch" />
     </div>
     <div class="container-list">
       <hr style="border: solid 1px" />
@@ -22,16 +22,25 @@
       <hr style="border: solid 0.5px" />
       <adminList :items="lost" routeName="adminLostDetail" />
     </div>
-    <pagination />
+
+    <!-- 페이지네이션 추가 -->
+    <div class="pagination-nav">
+      <button @click="goToPreviousPage" :disabled="currentPage === 1">
+        이전
+      </button>
+      <span>페이지 {{ currentPage }} / {{ maxPage }}</span>
+      <button @click="goToNextPage" :disabled="currentPage >= maxPage">
+        다음
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import searchBar from "@/components/admin/common/searchBar.vue";
 import selectBar from "@/components/admin/common/selectBar.vue";
 import adminList from "@/components/admin/common/adminList.vue";
-import pagination from "@/components/common/pagination.vue";
 import adminCalendar from "@/components/admin/common/adminCalendar.vue";
 import { getLostBoards } from "@/api/admin.js";
 
@@ -40,15 +49,47 @@ const lostOption = ref([
   { value: "found", text: "습득" },
 ]);
 
-const page = ref(1);
-const pageSize = ref(4);
-const orderBy = ref("createdAt");
-const order = ref("asc");
+const currentPage = ref(1);
+const pageSize = ref(10);
+const totalItems = ref(0);
+const orderBy = ref("recent");
+const order = ref("acs");
 const selectedType = ref("lost");
-const searchKeyword = ref("");
+
+const filters = ref({
+  startDate: "",
+  endDate: "",
+  keyword: "",
+  typeSelect: "",
+});
+
+// 최대 페이지 계산 (전체 항목 수 기반)
+const maxPage = computed(() => {
+  return Math.ceil(totalItems.value / pageSize.value) || 1;
+});
 
 const lost = ref([]);
 
+// 페이지네이션 이동 함수
+const goToPreviousPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    onSearch();
+  }
+};
+const goToNextPage = () => {
+  if (currentPage.value < maxPage.value) {
+    currentPage.value++;
+    onSearch();
+  }
+};
+
+const handleSearch = () => {
+  currentPage.value = 1; // 검색 시 첫 페이지로
+  onSearch();
+};
+
+// 데이터 로드 함수
 const onSearch = async () => {
   const typeValue =
     selectedType.value === "lost"
@@ -58,22 +99,41 @@ const onSearch = async () => {
       : "";
 
   const query = {
-    page: parseInt(page.value) || 1,
-    pageSize: parseInt(pageSize.value) || 4,
-    orderBy: orderBy.value || "createdAt",
-    order: order.value || "asc",
+    page: currentPage.value,
+    pageSize: pageSize.value,
+    orderBy: orderBy.value || "recent",
+    order: order.value || "acs",
     typeSelect: typeValue,
-    keyword: searchKeyword.value || "",
+    keyword: filters.value.keyword || "",
+    startDate: filters.value.startDate, // ✅ 추가
+    endDate: filters.value.endDate, // ✅ 추가
   };
 
   try {
     const festivalId = 1;
     const response = await getLostBoards(festivalId, query);
     console.log("API 응답 데이터:", response);
-    lost.value = response;
+
+    if (response && response.total !== undefined) {
+      lost.value = response.items;
+      totalItems.value = response.total;
+    } else if (Array.isArray(response)) {
+      lost.value = response;
+      totalItems.value = 50;
+    } else {
+      lost.value = [];
+      totalItems.value = 0;
+    }
   } catch (error) {
     console.error("API 호출 실패:", error);
   }
+};
+
+const handleDateSelected = (data) => {
+  filters.value.startDate = data.startDate;
+  filters.value.endDate = data.endDate;
+  currentPage.value = data.page; // 초기화
+  onSearch();
 };
 
 onMounted(() => {
@@ -85,7 +145,7 @@ onMounted(() => {
 /* 전체 Wrapper */
 .board-wrapper {
   max-width: 2000px;
-  margin: 40px; /* 페이지 가운데 정렬 */
+  margin: 40px;
   padding: 0 20px;
 }
 
@@ -99,22 +159,9 @@ h1 {
 /* 검색/날짜 섹션 */
 .container-search {
   display: flex;
-  justify-content: space-between; /* 양쪽 끝으로 배치 */
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-}
-
-/* 검색 버튼 예시 (원한다면 제거 가능) */
-.search-btn {
-  padding: 8px 16px;
-  background-color: #ff6b6b;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.search-btn:hover {
-  background-color: #ee5c5c;
 }
 
 /* 테이블 영역 */
@@ -124,24 +171,11 @@ h1 {
   border-radius: 8px;
 }
 
-/* 진한 선 */
-.line-strong {
-  border: none;
-  border-top: 2px solid #333;
-  margin-bottom: 10px;
-}
-/* 옅은 선 */
-.line-light {
-  border: none;
-  border-top: 1px solid #aaa;
-  margin-top: 10px;
-}
-
 /* 테이블 스타일 */
 .custom-table {
   width: 100%;
-  border-collapse: separate; /* 셀 간격/분리 스타일 */
-  border-spacing: 0; /* 셀 사이 간격 없애기 (필요시 변경) */
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 1rem;
   text-align: center;
 }
@@ -155,9 +189,30 @@ h1 {
 }
 
 /* 페이지네이션 */
-.pagination-container {
+.pagination-nav {
   margin-top: 20px;
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.pagination-nav button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #ff6f61;
+  color: white;
+  cursor: pointer;
+}
+
+.pagination-nav button:disabled {
+  background-color: #ccc;
+  cursor: default;
+}
+
+.pagination-nav span {
+  font-size: 1rem;
+  font-weight: bold;
 }
 </style>

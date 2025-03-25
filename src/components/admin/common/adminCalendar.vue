@@ -1,11 +1,12 @@
 <script setup>
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
+
+const emit = defineEmits(["date-selected"]);
 
 const startDate = ref("");
 const endDate = ref("");
 const highlightedDates = ref([]);
-
-const today = new Date().toISOString().split("T")[0]; // 현재 일자
+const today = new Date().toISOString().split("T")[0];
 
 const dataChange = (e) => {
   const target = e.target;
@@ -18,12 +19,29 @@ const dataChange = (e) => {
   if (target.type === "date") {
     if (target === document.getElementById("start-date")) {
       startDate.value = target.value;
-      endDate.value = ""; // 종료일 초기화
-      document.getElementById("end-date").setAttribute("min", target.value); // 종료일 최소값 설정
+      endDate.value = "";
+      document.getElementById("end-date").setAttribute("min", target.value);
     } else if (target === document.getElementById("end-date")) {
       endDate.value = target.value;
     }
+
     updateHighlightedDates();
+
+    // 여기서 날짜를 YYYYMMDD로 포맷팅
+    if (startDate.value && endDate.value) {
+      console.log("시작일자 선택: ", startDate.value);
+      console.log("종료료일자 선택: ", endDate.value);
+      emit("date-selected", {
+        page: 1,
+        pageSize: 4,
+        orderBy: "createdAt",
+        order: "asc",
+        startDate: startDate.value,
+        endDate: endDate.value,
+        typeSelect: "",
+        keyword: "",
+      });
+    }
   }
 };
 
@@ -51,9 +69,6 @@ const updateHighlightedDates = () => {
       :disabled="!startDate"
       :max="today"
     />
-    <!-- <div v-if="startDate && endDate">
-      선택한 날짜: {{ startDate }} ~ {{ endDate }}
-    </div> -->
   </div>
 </template>
 
@@ -68,19 +83,5 @@ input[type="date"] {
   border: 1px solid #999;
   border-radius: 8px;
   margin-right: 10px; /* 두 입력 필드 사이의 간격 */
-}
-
-input[type="date"].has-value::before {
-  content: attr(data-placeholder);
-  width: 100%;
-}
-
-/* 날짜 강조 스타일 */
-input[type="date"].highlighted {
-  background-color: #ffeb3b; /* 강조 색상 */
-}
-input[type="date"]::before {
-  content: attr(data-placeholder);
-  width: 100%;
 }
 </style>
