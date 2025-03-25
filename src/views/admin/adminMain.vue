@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import menuComponent from "@/components/admin/menuComponent.vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-
+import { logout } from "@/api/admin";
 const logOk = ref(false);
 const router = useRouter();
 const authStore = useAuthStore();
@@ -15,24 +15,9 @@ onMounted(() => {
 });
 
 // 로그아웃 함수
-function logout() {
-  logOk.value = false;
-  localStorage.removeItem("isLoggedIn");
-
-  deleteAllCookies();
-
-  // Pinia 상태 초기화
-  authStore.setUserData(null);
-
+function handleLogout() {
+  logout();
   router.push({ name: "adminLogin" });
-}
-// 모든 쿠키 삭제 함수
-function deleteAllCookies() {
-  document.cookie.split(";").forEach((cookie) => {
-    const eqPos = cookie.indexOf("=");
-    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
-  });
 }
 </script>
 
@@ -40,7 +25,7 @@ function deleteAllCookies() {
   <div class="container">
     <div class="menu">
       <menuComponent />
-      <button @click="logout">로그아웃</button>
+      <button @click="handleLogout">로그아웃</button>
     </div>
     <div class="content">
       <router-view />

@@ -10,9 +10,10 @@ import adminBoothDetail from "@/views/admin/adminBoothDetail.vue";
 
 export default [
   {
-    path: "/admin",
+    path: "/admin/:festivalId",
     name: "admin",
     component: adminMain,
+    props: true,
     children: [
       {
         path: "adminBoard",

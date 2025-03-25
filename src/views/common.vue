@@ -32,7 +32,10 @@ function getEventStatus(startDateStr, endDateStr) {
     return { text: "개최중", color: "#4CAF50" };
   } else if (today < startDate) {
     const daysLeft = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24));
-    return { text: `D-${daysLeft}`, color: daysLeft <= 7 ? "#FF9800" : "#2196F3" };
+    return {
+      text: `D-${daysLeft}`,
+      color: daysLeft <= 7 ? "#FF9800" : "#2196F3",
+    };
   } else {
     return { text: "종료됨", color: "#9E9E9E" };
   }
