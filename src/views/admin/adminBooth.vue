@@ -2,9 +2,12 @@
   <div class="booth-wrapper">
     <h1>상점 관리</h1>
     <div class="container-search">
-      <selectBar :items="boothOption" v-model="selectedType" />
-      <adminCalendar />
-      <searchBar v-model="keyword" />
+      <selectBar
+        :items="boothOption"
+        v-model="selectedType"
+        @onKeySelect="handleTypeSelect"
+      />
+      <searchBar v-model="keyword" @search="handleSearch" />
     </div>
 
     <!-- 상점 목록 테이블 -->
@@ -40,7 +43,7 @@
               <span
                 v-else-if="booth.accept === 'WAITING'"
                 class="status-badge status-waiting"
-                @click.stop="acceptBooth(booth)"
+                @click.stop="openAcceptModal(booth)"
               >
                 미승인
               </span>
@@ -62,6 +65,16 @@
         </button>
       </div>
     </div>
+
+    <!-- 모달 추가 -->
+    <accept-modal
+      :is-visible="acceptModalVisible"
+      :booth="selectedBooth"
+      @accept="handleAccept"
+      @reject="handleReject"
+      @close="closeModal"
+    />
+    <loading v-if="loadingType !== 'none'" />
   </div>
 </template>
 
@@ -70,16 +83,30 @@ import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import searchBar from "@/components/admin/common/searchBar.vue";
 import selectBar from "@/components/admin/common/selectBar.vue";
-import adminCalendar from "@/components/admin/common/adminCalendar.vue";
 import { getBooths, patchBooth } from "@/api/admin";
 import axios from "axios"; // 추가: /user/change-type 호출을 위해
+import acceptModal from "@/components/admin/acceptModal.vue";
+import loading from "@/components/common/loadingComponent.vue";
 
 const festivalId = 1;
 const router = useRouter();
+const acceptModalVisible = ref(false);
+const selectedBooth = ref(null);
+const loadingType = ref("none");
+
+const openAcceptModal = (booth) => {
+  selectedBooth.value = booth;
+  acceptModalVisible.value = true;
+};
+
+const closeModal = () => {
+  acceptModalVisible.value = false;
+  selectedBooth.value = null;
+};
 
 // selectBar 옵션
 const boothOption = ref([
-  { value: "", text: "전체" },
+  { value: null, text: "전체" },
   { value: "EAT", text: "먹거리" },
   { value: "PLAY", text: "놀거리" },
   { value: "ETC", text: "기타" },
@@ -88,69 +115,102 @@ const boothOption = ref([
 // 검색/필터
 const selectedType = ref("");
 const keyword = ref("");
+const booths = ref([]); // computed에서 ref로 변경
 
 // 페이지네이션
 const currentPage = ref(1);
 const pageSize = ref(10);
 const totalItems = ref(0);
-const maxPage = computed(
-  () => Math.ceil(totalItems.value / pageSize.value) || 1
-);
 
-// 상점 목록
-const booths = ref([]);
+// computed 제거 (filteredBooths, booths)
 
-// 리스트 불러오기
+// fetchBooths 함수 수정
 const fetchBooths = async () => {
   try {
+    loadingType.value = "fetch";
     const query = {
       page: currentPage.value,
       pageSize: pageSize.value,
       orderBy: "recent",
-      keyword: keyword.value,
-      type: selectedType.value,
+      ...(keyword.value && { keyword: keyword.value }),
+      ...(selectedType.value && { type: selectedType.value }),
     };
+
     const response = await getBooths(festivalId, query);
-    if (response && response.total !== undefined) {
-      booths.value = response.items;
+    console.log("API Response:", response); // 디버깅용
+
+    if (response && response.booths) {
+      booths.value = response.booths;
       totalItems.value = response.total;
     } else if (Array.isArray(response)) {
       booths.value = response;
-      totalItems.value = 50; // 임시
+      totalItems.value = response.length;
     } else {
       booths.value = [];
       totalItems.value = 0;
     }
   } catch (error) {
     console.error("상점 API 호출 실패:", error);
+    booths.value = [];
+    totalItems.value = 0;
+  } finally {
+    loadingType.value = "none";
   }
 };
 
-// 미승인 -> 승인 patch API + 추가 /user/change-type 호출
-const acceptBooth = async (booth) => {
-  try {
-    // 1. 기존 부스 승인 patch 요청
-    const payload1 = {
-      location: booth.location || "A-3",
-      type: "ACCEPT",
-    };
-    await patchBooth(festivalId, booth.id, payload1);
+// maxPage 계산 수정
+const maxPage = computed(
+  () => Math.ceil(totalItems.value / pageSize.value) || 1
+);
 
-    // 2. 추가로 /user/change-type patch 요청
-    const payload2 = {
+// 승인 처리
+const handleAccept = async (location) => {
+  try {
+    loadingType.value = "accept";
+    // 1. 부스 승인 요청
+    await patchBooth(festivalId, selectedBooth.value.id, {
+      location: location,
       type: "ACCEPT",
-      boothId: booth.id,
-    };
-    await axios.patch(`/user/change-type`, payload2, {
-      headers: { "Content-Type": "application/json" },
-      withCredentials: true,
     });
 
-    alert("승인 처리되었습니다.");
-    location.reload();
+    // 2. 사용자 타입 변경 요청
+    await axios.patch(
+      "/user/change-type",
+      {
+        type: "ACCEPT",
+        boothId: selectedBooth.value.id,
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      }
+    );
+
+    closeModal();
+    fetchBooths();
   } catch (error) {
-    console.error("부스 승인 API 호출 실패:", error);
+    console.error("승인 처리 실패:", error);
     alert("승인 처리에 실패했습니다.");
+  } finally {
+    loadingType.value = "none";
+  }
+};
+
+// 거절 처리
+const handleReject = async () => {
+  try {
+    loadingType.value = "reject";
+    await patchBooth(festivalId, selectedBooth.value.id, {
+      type: "REJECT",
+    });
+
+    closeModal();
+    fetchBooths(); // 목록 새로고침
+  } catch (error) {
+    console.error("거절 처리 실패:", error);
+    alert("거절 처리에 실패했습니다.");
+  } finally {
+    loadingType.value = "none";
   }
 };
 
@@ -174,6 +234,19 @@ const goToNextPage = () => {
     currentPage.value++;
     fetchBooths();
   }
+};
+
+// 검색 처리
+const handleSearch = () => {
+  currentPage.value = 1;
+  fetchBooths();
+};
+
+// 타입 선택 처리
+const handleTypeSelect = (type) => {
+  selectedType.value = type;
+  currentPage.value = 1;
+  fetchBooths();
 };
 
 onMounted(() => {
