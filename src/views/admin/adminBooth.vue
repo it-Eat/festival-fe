@@ -13,7 +13,12 @@
     <!-- 상점 목록 테이블 -->
     <div class="container-list">
       <hr class="line-strong" />
-      <table class="custom-table">
+      <!-- 부스가 없을 때 메시지 추가 -->
+      <div v-if="!booths.length" class="empty-state">
+        <p>등록된 부스가 없습니다.</p>
+      </div>
+      <!-- 부스가 있을 때만 테이블 표시 -->
+      <table v-else class="custom-table">
         <thead>
           <tr>
             <th style="width: 200px">부스명</th>
@@ -37,6 +42,7 @@
               <span
                 v-if="booth.accept === 'ACCEPT'"
                 class="status-badge status-accept"
+                @click.stop="openAcceptModal(booth)"
               >
                 승인
               </span>
@@ -47,7 +53,13 @@
               >
                 미승인
               </span>
-              <span v-else class="status-badge status-reject"> 거절 </span>
+              <span
+                v-else
+                class="status-badge status-reject"
+                @click.stop="openAcceptModal(booth)"
+              >
+                거절
+              </span>
             </td>
           </tr>
         </tbody>
@@ -137,7 +149,6 @@ const fetchBooths = async () => {
     };
 
     const response = await getBooths(festivalId, query);
-    console.log("API Response:", response); // 디버깅용
 
     if (response && response.booths) {
       booths.value = response.booths;
@@ -257,19 +268,17 @@ onMounted(() => {
 <style scoped>
 .booth-wrapper {
   max-width: 1800px;
-  margin: 50px auto;
   padding: 0 20px;
 }
 
 h1 {
   font-size: 2rem;
-  margin-bottom: 30px;
-  text-shadow: 4px 4px rgb(226, 223, 223);
+  margin-bottom: 24px;
 }
 
 .container-search {
+  width: 100%;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
@@ -278,20 +287,15 @@ h1 {
 
 .container-list {
   background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
+  margin-top: 20px;
 }
 
 .line-strong {
   border: none;
-  border-top: 2px solid #333;
-  margin-bottom: 10px;
 }
 
 .line-light {
   border: none;
-  border-top: 1px solid #aaa;
-  margin-top: 10px;
 }
 
 .custom-table {
@@ -300,46 +304,57 @@ h1 {
   border-spacing: 0;
   font-size: 1rem;
   text-align: center;
+  margin-top: 14px;
 }
 
 .custom-table thead th {
-  border-bottom: 2px solid #333;
-  padding: 12px 8px;
+  padding: 12px;
   font-weight: 600;
-  background-color: #e0e0e0;
+  background-color: #fff5f4;
+  color: #fe6f61;
+  border-bottom: 2px solid #fe6f61;
+  border-top: 2px solid #fe6f61;
 }
 
 .table-row {
-  border-bottom: 1px solid #ddd;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
+
 .table-row:hover {
-  background-color: #f5f5f5;
+  background-color: #fff5f4;
+  cursor: pointer;
 }
+
 .custom-table tbody td {
-  padding: 12px 8px;
-  text-align: center;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
 }
 
 /* 상태 배지 스타일 */
 .status-badge {
-  padding: 5px 10px;
+  padding: 6px 12px;
   border-radius: 20px;
   color: #fff;
   font-size: 0.9rem;
   font-weight: 500;
-  cursor: pointer; /* 클릭 가능 */
+  display: inline-block;
+  min-width: 80px;
 }
+
 .status-accept {
   background-color: #4caf50;
-  cursor: default; /* 승인 상태는 클릭 불가 (원한다면 제거) */
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
 }
+
 .status-waiting {
-  background-color: #f44336;
+  background-color: #fe6f61;
+  box-shadow: 0 2px 4px rgba(254, 111, 97, 0.2);
 }
+
 .status-reject {
   background-color: #9e9e9e;
-  cursor: default;
+  box-shadow: 0 2px 4px rgba(158, 158, 158, 0.2);
 }
 
 /* 페이지네이션 */
@@ -348,22 +363,50 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
 }
+
 .pagination-nav button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  background-color: #ff6f61;
-  color: white;
+  padding: 8px 20px;
+  border: 1px solid #fe6f61;
+  border-radius: 8px;
+  background-color: white;
+  color: #fe6f61;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
+
+.pagination-nav button:hover:not(:disabled) {
+  background-color: #fe6f61;
+  color: white;
+}
+
 .pagination-nav button:disabled {
-  background-color: #ccc;
-  cursor: default;
+  border-color: #ddd;
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
 }
+
 .pagination-nav span {
   font-size: 1rem;
-  font-weight: bold;
+  font-weight: 500;
+  color: #333;
+}
+
+/* 부스 없음 메시지 스타일 */
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+  text-align: center;
+  color: #666;
+  font-size: 1.1rem;
+  background-color: #fff5f4;
+  border-radius: 8px;
+  margin: 20px 0 0 0;
+  height: 425px;
 }
 </style>

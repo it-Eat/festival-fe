@@ -6,7 +6,7 @@ import { RouterView } from "vue-router";
   <RouterView />
 </template>
 
-<style scoped>
+<style>
 * {
   font-family: "Pretendard";
   box-sizing: border-box;
