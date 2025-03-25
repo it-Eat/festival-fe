@@ -11,24 +11,17 @@ const itemsPerPage = 7; // 한 페이지당 게시글 개수
 const totalItems = computed(() => boardStore.boards.length || 50); // 전체 글 수 (서버 데이터 적용 가능)
 
 const route = useRoute();
-const keyword = computed(() => route.query.keyword || "");
 
 // 데이터 가져오기
 onMounted(async () => {
-  console.log("🔍 onMounted - keyword:", keyword.value); // ✅ 로그 추가
-  await boardStore.fetchMyItems(1, 50, "createAt", "asc", keyword.value);
-});
-
-// ✅ keyword 변경 시 API 다시 호출
-watch(keyword, async (newKeyword) => {
-  console.log("🔄 keyword 변경됨:", newKeyword); // ✅ 로그 추가
-  await boardStore.fetchMyItems(1, 50, "createAt", "asc", newKeyword);
+  await boardStore.fetchMyItems();
 });
 
 // 전체 글 목록
 const allBoards = computed(() =>
   Array.isArray(boardStore.myBoards) ? [...boardStore.myBoards] : []
 );
+
 console.log(boardStore.myBoards.length);
 // 현재 페이지의 글 목록 필터링
 const paginatedBoards = computed(() => {

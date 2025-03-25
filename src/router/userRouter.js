@@ -205,7 +205,6 @@ export default [
     path: "/user/my/board/list",
     name: "myBoardList",
     component: MyBoardList,
-    props: (route) => ({ keyword: route.query.keyword }),
   },
   {
     path: "/user/board/list",

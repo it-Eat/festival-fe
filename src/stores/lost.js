@@ -65,23 +65,20 @@ export const useLostStore = defineStore("lost", {
     async fetchMyItems(
       page = 1,
       pageSize = 50,
-      orderBy = "createAt",
-      order = "asc",
-      keyword = ""
+      orderBy = "recent",
+      boardType = "LOSS"
     ) {
       try {
-        const searchKeyword = keyword || "";
         console.log(
-          `🔍 API 요청 URL: /board/board-loss/1?page=${page}&pageSize=${pageSize}&orderBy=${orderBy}&order=${order}&keyword=${searchKeyword}`
+          `🔍 API 요청 URL: /board/my-board/1?page=${page}&pageSize=${pageSize}&orderBy=${orderBy}&boardType=${boardType}`
         );
 
-        const response = await api.get("/board/board-loss/1", {
+        const response = await api.get("/board/my-board/1", {
           params: {
             page: parseInt(page) || 1,
             pageSize: parseInt(pageSize) || 50, // ✅ 50개 요청
-            // orderBy: orderBy || "createAt",
-            order: order || "asc",
-            keyword: searchKeyword,
+            orderBy: orderBy || "recent",
+            boardType: boardType,
           },
         });
 
