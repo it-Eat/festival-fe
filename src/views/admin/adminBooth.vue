@@ -149,17 +149,8 @@ const fetchBooths = async () => {
     };
 
     const response = await getBooths(festivalId, query);
-
-    if (response && response.booths) {
-      booths.value = response.booths;
-      totalItems.value = response.total;
-    } else if (Array.isArray(response)) {
-      booths.value = response;
-      totalItems.value = response.length;
-    } else {
-      booths.value = [];
-      totalItems.value = 0;
-    }
+    booths.value = response.booths;
+    totalItems.value = response.total;
   } catch (error) {
     console.error("상점 API 호출 실패:", error);
     booths.value = [];
