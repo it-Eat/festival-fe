@@ -1,10 +1,7 @@
-import { localAxios } from "@/util/http-commons";
-
-// withCredentials 활성화된 Axios 인스턴스 생성
-const local = localAxios();
+import api from "@/api/axiosInstance";
 
 async function getFestivalInfo(festivalId) {
-  const response = await local.get(`festival/${festivalId}`);
+  const response = await api.get(`festival/${festivalId}`);
   return response.data;
 }
 
@@ -30,7 +27,7 @@ async function getBoards(festivalId, query) {
   if (endDate) params.endDate = endDate;
 
   try {
-    const response = await local.get(`board/admin/${festivalId}`, { params });
+    const response = await api.get(`board/admin/${festivalId}`, { params });
     return response.data;
   } catch (error) {
     console.error("API 호출 에러:", error);
@@ -65,7 +62,7 @@ async function getLostBoards(festivalId, query) {
   if (endDate) params.endDate = endDate;
 
   try {
-    const response = await local.get(`board/admin/${festivalId}`, { params });
+    const response = await api.get(`board/admin/${festivalId}`, { params });
     return response.data;
   } catch (error) {
     console.error("API 호출 에러:", error);
@@ -85,7 +82,7 @@ async function getNotice(festivalId, query) {
   const params = { page, pageSize, orderBy };
 
   try {
-    const response = await local.get(`notice/${festivalId}`, {
+    const response = await api.get(`notice/${festivalId}`, {
       params,
     });
     return response.data;
@@ -98,7 +95,7 @@ async function getNotice(festivalId, query) {
 // 게시글 상세 api
 async function getBoardDetail(boardId, festivalId) {
   try {
-    const response = await local.get(`board/${boardId}/${festivalId}`, {
+    const response = await api.get(`board/${boardId}/${festivalId}`, {
       headers: {
         "Content-Type": "application/json", // JSON 응답 명확히 설정
       },
@@ -134,7 +131,7 @@ async function getBoardDetail(boardId, festivalId) {
 // 댓글 목록 불러오기
 async function getComments(boardId, festivalId) {
   try {
-    const response = await local.get(`comment/${boardId}/${festivalId}`);
+    const response = await api.get(`comment/${boardId}/${festivalId}`);
     return response.data;
   } catch (error) {
     console.error("댓글 API 요청 실패:", error);
@@ -145,7 +142,7 @@ async function getComments(boardId, festivalId) {
 // 리뷰 목록 불러오기
 async function getReviews(query) {
   // query: { page, pageSize, orderBy, boothId, ... }
-  const res = await local.get(`review`, { params: query });
+  const res = await api.get(`review`, { params: query });
   // 응답 예: { items: [...], total: number } or just an array
   return res.data;
 }
@@ -153,7 +150,7 @@ async function getReviews(query) {
 // 리뷰 삭제
 async function deleteReview(reviewId) {
   try {
-    const response = await local.delete(`review/${reviewId}`);
+    const response = await api.delete(`review/${reviewId}`);
     return response;
   } catch (error) {
     console.error("리뷰 삭제 실패:", error);
@@ -175,7 +172,7 @@ async function getBooths(festivalId, query) {
   if (type) params.type = type;
 
   try {
-    const response = await local.get(`booth/admin/${festivalId}`, {
+    const response = await api.get(`booth/admin/${festivalId}`, {
       params,
       headers: { "Content-Type": "application/json" },
       withCredentials: true,
@@ -190,7 +187,7 @@ async function getBooths(festivalId, query) {
 // 부스 상세 api
 async function getBoothDetail(boothId, festivalId) {
   try {
-    const response = await local.get(`booth/${boothId}/${festivalId}`, {
+    const response = await api.get(`booth/${boothId}/${festivalId}`, {
       headers: {
         "Content-Type": "application/json", // JSON 응답 명확히 설정
       },
@@ -225,14 +222,14 @@ async function getBoothDetail(boothId, festivalId) {
 
 // 2) 메뉴 목록
 async function getMenuList(boothId) {
-  const res = await local.get(`menu/${boothId}`);
+  const res = await api.get(`menu/${boothId}`);
   return res.data; // [ { id, name, price }, ... ]
 }
 
 // 부스 승인
 async function patchBooth(festivalId, boothId, payload) {
   try {
-    const response = await local.patch(
+    const response = await api.patch(
       `booth/admin/${festivalId}/${boothId}`,
       payload,
       {
@@ -248,7 +245,7 @@ async function patchBooth(festivalId, boothId, payload) {
 }
 
 async function logout() {
-  const response = await local.post("/user/logout");
+  const response = await api.post("/user/logout");
   return response.data;
 }
 

@@ -53,7 +53,7 @@ export default [
         props: true,
       },
       {
-        path: "adminBoothDetail/:festivalId/:boothId",
+        path: "adminBoothDetail/:boothId",
         name: "adminBoothDetail",
         component: adminBoothDetail,
         props: true,
