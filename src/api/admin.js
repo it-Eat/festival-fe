@@ -3,6 +3,11 @@ import { localAxios } from "@/util/http-commons";
 // withCredentials 활성화된 Axios 인스턴스 생성
 const local = localAxios();
 
+async function getFestivalInfo(festivalId) {
+  const response = await local.get(`festival/${festivalId}`);
+  return response.data;
+}
+
 // 게시판 조회 API (관리자용)
 async function getBoards(festivalId, query) {
   let { page, pageSize, orderBy, order, keyword, startDate, endDate } = query;
@@ -242,6 +247,11 @@ async function patchBooth(festivalId, boothId, payload) {
   }
 }
 
+async function logout() {
+  const response = await local.post("/user/logout");
+  return response.data;
+}
+
 export {
   getBoards,
   getLostBoards,
@@ -254,4 +264,6 @@ export {
   getReviews,
   getMenuList,
   deleteReview,
+  getFestivalInfo,
+  logout,
 };

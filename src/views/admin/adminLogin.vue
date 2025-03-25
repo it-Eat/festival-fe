@@ -77,7 +77,10 @@ const handleLogin = async () => {
       authStore.setUserData(user);
 
       emit("login");
-      router.push({ name: "admin" });
+      router.push({
+        name: "admin",
+        params: { festivalId: user.participation[0].festivalId },
+      });
     } else {
       alert("아이디 또는 비밀번호가 잘못되었습니다.");
     }
