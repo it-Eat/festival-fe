@@ -4,20 +4,14 @@
       <!-- BackHeader에 부스 이름을 동적으로 전달 -->
       <backHeader :title="booth?.name || '부스 상세'" />
       <div class="sub-container" v-if="booth">
-        <div>
-          <div class="logo-image">
-            <img :src="booth.image" :alt="booth.name" />
-          </div>
-        </div>
-
         <div class="main">
-          <div class="booth">
-            <div>
-              [선택된 놀거리 번호]: <strong>{{ booth.id }}</strong>
+          <div>
+            <div class="logo-image">
+              <img :src="booth.image || festivalDefault" :alt="booth.name" />
             </div>
-            <div>
-              [부스 위치]: <strong>{{ booth.location || "없음" }}</strong>
-            </div>
+          </div>
+          <div>
+            <h3 class="value">장소 : {{ booth.location || "없음" }}</h3>
           </div>
           <div class="description">
             <div class="contents">
@@ -35,6 +29,7 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { getBoothDetail } from "@/api/admin"; // 위에서 작성한 API 함수
 import backHeader from "@/components/common/backHeader.vue";
+import festivalDefault from "@/assets/festivalDefault.png";
 
 const route = useRoute();
 // route.params에서 boothId와 festivalId를 받아옵니다.
@@ -59,6 +54,9 @@ onMounted(async () => {
   justify-content: center;
   background-color: #fff;
 }
+.value {
+  color: #ff6f61;
+}
 .container {
   display: flex;
   flex-direction: column;
@@ -69,9 +67,8 @@ onMounted(async () => {
   background-color: #fff;
 }
 .logo-image {
-  background-color: #6b5b95;
-  width: 600px;
-  height: 400px;
+  width: 300px;
+  height: 300px;
   max-height: 100vh;
   margin: 10px;
   display: flex;
@@ -79,33 +76,35 @@ onMounted(async () => {
   align-items: center;
   overflow: hidden;
 }
+
 .logo-image img {
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: contain;
+  object-fit: fill;
+  border-radius: 15%;
 }
 .sub-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 20px;
   flex: 1;
+  margin-top: 30px;
 }
 .main {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  width: 100%;
-}
-.description {
-  display: flex;
-  justify-content: center;
+  /* border: 1px solid #ff6f61; */
+  padding: 10px;
   align-items: center;
   flex: 1;
-  margin: 40px 10px;
-  border-radius: 15%;
+  width: 100%;
+  gap: 30px;
 }
-.contents {
-  background-color: aliceblue;
-  padding: 10px;
+.booth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>
