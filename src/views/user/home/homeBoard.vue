@@ -3,14 +3,17 @@ import SmallList from "@/components/common/smallList.vue";
 import { useLostStore } from "@/stores/lost";
 import { useBoardStore } from "@/stores/board";
 import { onMounted, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-// const router = useRouter();
+const route = useRoute();
+const festivalId = route.params.festivalId;
+
 const lostStore = useLostStore();
 const boardStore = useBoardStore();
 
 onMounted(() => {
-  lostStore.fetchItems();
-  boardStore.fetchItems();
+  lostStore.fetchItems(festivalId);
+  boardStore.fetchItems(festivalId);
 });
 
 const allLosts = computed(() =>
@@ -20,6 +23,11 @@ const allLosts = computed(() =>
 const allBoards = computed(() =>
   Array.isArray(boardStore.boards) ? [...boardStore.boards] : []
 );
+
+const router = useRouter();
+const handleMoreClick = () => {
+  router.push(`/${festivalId}/lostItem/list`);
+};
 </script>
 
 <template>
@@ -36,9 +44,7 @@ const allBoards = computed(() =>
           v-show="allLosts.length > 0"
         />
         <div class="more-button-container">
-          <button class="more-button">
-            <router-link to="/user/lostItem/list">더보기</router-link>
-          </button>
+          <button class="more-button" @click="handleMoreClick">더보기</button>
         </div>
       </div>
 
@@ -54,7 +60,7 @@ const allBoards = computed(() =>
         />
         <div class="more-button-container">
           <button class="more-button">
-            <router-link to="/user/board/list">더보기</router-link>
+            <RouterLink :to="`/${festivalId}/board/list`">더보기</RouterLink>
           </button>
         </div>
       </div>

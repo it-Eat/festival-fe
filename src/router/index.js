@@ -14,7 +14,7 @@ const routes = [
     component: Common,
   },
   {
-    path: "/user",
+    path: "/:festivalId",
     name: "user",
     component: User,
   },

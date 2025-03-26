@@ -13,6 +13,7 @@ export const useBoardStore = defineStore("board", {
   },
   actions: {
     async fetchItems(
+      festivalId,
       page = 1,
       pageSize = 50,
       orderBy = "createdAt",
@@ -24,7 +25,7 @@ export const useBoardStore = defineStore("board", {
           `🔍 API 요청 URL: /board/1?page=${page}&pageSize=${pageSize}&orderBy=${orderBy}&order=${order}&keyword=${keyword}`
         );
 
-        const response = await api.get(`/board/1`, {
+        const response = await api.get(`/board/${festivalId}`, {
           params: {
             page: parseInt(page) || 1,
             pageSize: parseInt(pageSize) || 50, // ✅ 여기가 실제로 50으로 보내지는지 확인

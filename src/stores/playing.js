@@ -6,14 +6,14 @@ export const usePlayingStore = defineStore("playingStore", {
     plays: [],
   }),
   persist: {
-    enable : true,
+    enable: true,
     storage: sessionStorage,
   },
   actions: {
-    async fetchItems() {
+    async fetchItems(festivalId) {
       try {
         const response = await api.get(
-          "booth/1?page=1&pageSize=50&type=PLAY, ETC"
+          `booth/${festivalId}?page=1&pageSize=50&type=PLAY, ETC`
         );
         this.plays = response.data;
       } catch (error) {

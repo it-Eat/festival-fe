@@ -10,6 +10,11 @@ async function getFestivalInfo(festivalId) {
   return response.data;
 }
 
+async function deleteBoard(boardId, festivalId) {
+  const response = await api.delete(`board/${boardId}/${festivalId}`);
+  return response.data;
+}
+
 // 게시판 조회 API (관리자용)
 async function getBoards(festivalId, query) {
   let { page, pageSize, orderBy, order, keyword, startDate, endDate } = query;
@@ -269,4 +274,5 @@ export {
   getFestivalInfo,
   logout,
   deleteNotice,
+  deleteBoard,
 };

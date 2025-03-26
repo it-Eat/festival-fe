@@ -19,7 +19,7 @@ const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
 const API_URL = import.meta.env.VITE_VUE_API_URL; // 환경변수 불러오기
-
+const festivalId = route.params.festivalId;
 onMounted(async () => {
   const code = route.query.code;
   if (code) {
@@ -42,9 +42,9 @@ onMounted(async () => {
       setTimeout(() => {
         // role이 SELLER면 merchantHome, 아니면 일반 홈("/")으로 이동
         if (userRole === "SELLER") {
-          router.replace("/merchant/merchantHome");
+          router.replace(`/${festivalId}/merchant/merchantHome`);
         } else {
-          router.replace("/user");
+          router.replace(`/${festivalId}/userHome/homeFood`);
         }
       }, 150);
     } catch (error) {

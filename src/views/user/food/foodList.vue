@@ -2,18 +2,18 @@
 import BackHeader from "@/components/common/backHeader.vue";
 import { ref, onMounted } from "vue";
 import { useInfiniteScroll } from "@vueuse/core";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import api from "@/api/axiosInstance";
 import noImage from "@/assets/noimage.png"; // fallback 이미지 import
 
 const router = useRouter();
+const route = useRoute();
+const festivalId = route.params.festivalId;
 
 const boothList = ref([]);
 const page = ref(1);
 const isLoading = ref(false);
 const hasMore = ref(true);
-
-const festivalId = 1;
 
 const fetchBooths = async () => {
   if (!hasMore.value || isLoading.value) return;

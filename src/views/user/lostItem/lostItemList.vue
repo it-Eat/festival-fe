@@ -3,15 +3,16 @@ import SmallList from "@/components/common/smallList.vue";
 import { useLostStore } from "@/stores/lost";
 import backHeader from "@/components/common/backHeader.vue";
 import { onMounted, computed, ref } from "vue";
-
+import { useRoute } from "vue-router";
 const lostStore = useLostStore();
 const currentPage = ref(1); // 현재 페이지
 const itemsPerPage = 7; // 한 페이지당 분실물 개수
 const totalItems = computed(() => lostStore.losts.length || 50); // 전체 분실물 개수
-
+const route = useRoute();
+const festivalId = route.params.festivalId;
 // 데이터 가져오기
 onMounted(async () => {
-  await lostStore.fetchItems();
+  await lostStore.fetchItems(festivalId);
   console.log("불러온 분실물 개수:", lostStore.losts.length); // 🔥 데이터 개수 확인
   console.log("전체 데이터:", lostStore.losts); // 🔥 전체 데이터 확인
 });
@@ -81,7 +82,7 @@ const changePage = (page) => {
 
     <!-- 분실물 작성 버튼 -->
     <div class="button-wrapper">
-      <RouterLink to="/user/lostItem/write">
+      <RouterLink :to="`/${festivalId}/lostItem/write`">
         <button class="write-button">분실물 작성하기</button>
       </RouterLink>
     </div>
