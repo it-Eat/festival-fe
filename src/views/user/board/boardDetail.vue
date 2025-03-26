@@ -230,6 +230,7 @@ const deleteComment = async (commentId) => {
   width: 350px;
   height: 250px;
   position: relative;
+  margin: 10px 0;
 }
 
 .main-contents img {
