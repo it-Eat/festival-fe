@@ -37,30 +37,30 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import BackHeader from '@/components/common/backHeader.vue';
-import StarScore from '@/components/common/starScore.vue';
-import api from '@/api/axiosInstance';
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import BackHeader from "@/components/common/backHeader.vue";
+import StarScore from "@/components/common/starScore.vue";
+import api from "@/api/axiosInstance";
 
 const router = useRouter();
 const route = useRoute();
 
 // query로 넘어온 boothId, boothName (안전하게 기본값 지정)
 const boothId = route.query.boothId || null;
-const boothName = route.query.boothName || '상점 이름';
+const boothName = route.query.boothName || "상점 이름";
 
 // 기본 storeName은 boothName으로 설정
 const storeName = ref(boothName);
+const festivalId = route.params.festivalId;
 
 // 부스 정보를 API로 업데이트 (선택 사항)
 const fetchBoothInfo = async () => {
   try {
-    const festivalId = 1; // 예시
     const res = await api.get(`/booth/${boothId}/${festivalId}`);
     storeName.value = res.data.name;
   } catch (error) {
-    console.error('부스 정보 불러오기 실패:', error);
+    console.error("부스 정보 불러오기 실패:", error);
   }
 };
 
@@ -72,14 +72,14 @@ onMounted(() => {
 
 // 별점과 리뷰 내용을 관리할 ref
 const rating = ref(0);
-const reviewText = ref('');
+const reviewText = ref("");
 
 // 리뷰 등록 함수
 const submitReview = async () => {
   try {
     const scoreValue = parseInt(rating.value, 10);
     if (!boothId) {
-      console.error('boothId가 없습니다.');
+      console.error("boothId가 없습니다.");
       return;
     }
     await api.post(`/review/${boothId}`, {
@@ -88,7 +88,7 @@ const submitReview = async () => {
     });
     router.back();
   } catch (error) {
-    console.error('리뷰 작성 실패:', error);
+    console.error("리뷰 작성 실패:", error);
   }
 };
 </script>

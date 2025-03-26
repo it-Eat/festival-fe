@@ -57,7 +57,11 @@
               v-model="typeCategory"
               placeholder="예: 페이스 페인팅"
             />
-            <p :class="typeCategoryValidation.valid ? 'valid-text' : 'error-text'">
+            <p
+              :class="
+                typeCategoryValidation.valid ? 'valid-text' : 'error-text'
+              "
+            >
               {{ typeCategoryValidation.msg }}
             </p>
           </div>
@@ -71,7 +75,11 @@
               v-model="accountNumber"
               placeholder="계좌번호를 입력하세요"
             />
-            <p :class="accountNumberValidation.valid ? 'valid-text' : 'error-text'">
+            <p
+              :class="
+                accountNumberValidation.valid ? 'valid-text' : 'error-text'
+              "
+            >
               {{ accountNumberValidation.msg }}
             </p>
           </div>
@@ -101,9 +109,7 @@
             />
           </div>
 
-          <button type="submit" class="submit-button">
-            신청하기
-          </button>
+          <button type="submit" class="submit-button">신청하기</button>
         </form>
       </div>
     </div>
@@ -112,11 +118,13 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import BackHeader from "@/components/common/backHeader.vue";
 import api from "@/api/axiosInstance";
 
 const router = useRouter();
+const route = useRoute();
+const festivalId = route.params.festivalId;
 
 // 입력 필드
 const name = ref("");
@@ -151,14 +159,16 @@ const contentValidation = computed(() => {
   if (hasInvalidPattern(content.value))
     return { msg: "필수 필드를 채워주세요.", valid: false };
   if (content.value.length < 10 || content.value.length > 30)
-    return { msg: "부스 설명은 10자 이상 30자 이하로 입력하세요.", valid: false };
+    return {
+      msg: "부스 설명은 10자 이상 30자 이하로 입력하세요.",
+      valid: false,
+    };
   return { msg: "사용 가능", valid: true };
 });
 
 // boothType: 필수, EAT/PLAY/ETC 중 선택
 const boothTypeValidation = computed(() => {
-  if (!boothType.value)
-    return { msg: "필수 필드를 채워주세요.", valid: false };
+  if (!boothType.value) return { msg: "필수 필드를 채워주세요.", valid: false };
   const validTypes = ["EAT", "PLAY", "ETC"];
   if (!validTypes.includes(boothType.value))
     return {
@@ -187,8 +197,7 @@ const accountNumberValidation = computed(() => {
 
 // 은행명: 필수
 const bankNameValidation = computed(() => {
-  if (!bankName.value)
-    return { msg: "필수 필드를 채워주세요.", valid: false };
+  if (!bankName.value) return { msg: "필수 필드를 채워주세요.", valid: false };
   return { msg: "사용 가능", valid: true };
 });
 
@@ -218,7 +227,7 @@ const handleSubmit = async () => {
   };
 
   try {
-    await api.post("booth/1", payload);
+    await api.post(`/booth/${festivalId}`, payload);
     router.back(); // 성공 후 이전 페이지로 이동
   } catch (error) {
     console.error("부스 신청 실패:", error);

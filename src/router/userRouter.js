@@ -151,7 +151,7 @@ export default [
     component: FoodOrder,
   },
   {
-    path: "/:festivalId/login",
+    path: "/:festivalId/user/login",
     name: "login",
     component: Login,
   },

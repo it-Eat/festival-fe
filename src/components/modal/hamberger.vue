@@ -1,9 +1,11 @@
 <script setup>
 import { useUserStore } from "@/stores/userStore";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 const userStore = useUserStore();
 const router = useRouter();
+const route = useRoute();
+const festivalId = route.params.festivalId;
 
 // 로컬 메서드: 로그아웃 후 "/user" 페이지로 이동
 function handleLogout() {
@@ -41,7 +43,7 @@ function handleLogout() {
         </li>
         <!-- 비로그인 상태 -->
         <li v-if="!userStore.isAuthenticated">
-          <router-link to="/:festivalId/user/login">
+          <router-link :to="`/${festivalId}/user/login`">
             <span class="home-icon">👤</span>
             로그인
           </router-link>
@@ -67,7 +69,7 @@ function handleLogout() {
           </router-link>
         </li>
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
-          <router-link to="/user/my/myPostList">
+          <router-link :to="`/${festivalId}/my/myPostList`">
             <span class="home-icon">📝</span>
             작성글 보기
           </router-link>
