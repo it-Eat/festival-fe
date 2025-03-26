@@ -31,25 +31,26 @@
         </button>
       </div>
     </div>
+    <loadingComponent v-if="loadingType === 'loading'" />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import searchBar from "@/components/admin/common/searchBar.vue";
 import adminList from "@/components/admin/common/adminList.vue";
 import adminCalendar from "@/components/admin/common/adminCalendar.vue";
 import { getBoards } from "@/api/admin.js";
 import { useRouter } from "vue-router";
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
 const router = useRouter();
 const boards = ref([]);
 const currentPage = ref(1);
 const pageSize = ref(10);
-const totalItems = ref(0);
 const festivalId = router.currentRoute.value.params.festivalId;
 const maxPage = ref(0);
-
+const loadingType = ref("none");
 const filters = ref({
   startDate: "",
   endDate: "",
@@ -65,6 +66,7 @@ const handleSearch = () => {
 // 게시판 데이터 가져오기
 const getBoardList = async () => {
   try {
+    loadingType.value = "loading";
     const query = {
       page: currentPage.value,
       pageSize: pageSize.value,
@@ -82,6 +84,8 @@ const getBoardList = async () => {
     console.log("API 응답 데이터:", response);
   } catch (error) {
     console.error("API 호출 실패:", error);
+  } finally {
+    loadingType.value = "none";
   }
 };
 
@@ -133,30 +137,10 @@ h1 {
   margin-bottom: 20px;
 }
 
-/* 검색 버튼 예시 (원한다면 제거 가능) */
-.search-btn {
-  padding: 8px 16px;
-  background-color: #ff6b6b;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.search-btn:hover {
-  background-color: #ee5c5c;
-}
-
 /* 테이블 영역 */
 .container-list {
   background-color: #fff;
   border-radius: 8px;
-}
-
-/* 옅은 선 */
-.line-light {
-  border: none;
-  border-top: 1px solid #aaa;
-  margin-top: 10px;
 }
 
 /* 테이블 스타일 */
@@ -166,7 +150,6 @@ h1 {
   border-spacing: 0;
   font-size: 1rem;
   text-align: center;
-  margin-bottom: 10px;
 }
 
 /* 테이블 헤더 */

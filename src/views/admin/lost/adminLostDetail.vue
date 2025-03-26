@@ -106,6 +106,14 @@
       </button>
     </div>
     <loadingComponent v-if="loadingType === 'loading'" />
+    <checkModal
+      v-if="isModalOpen"
+      :title="modalConfig.title"
+      :message="modalConfig.message"
+      :confirmText="modalConfig.confirmText"
+      @confirm="handleConfirm"
+      @cancel="handleCancel"
+    />
   </div>
 </template>
 
@@ -116,6 +124,7 @@ import { getComments, deleteBoard } from "@/api/admin";
 import api from "@/api/axiosInstance";
 import loadingComponent from "@/components/common/loadingComponent.vue";
 import { dateFormatWithTime, dateFormatWithoutTime } from "@/util/dateFormat";
+import checkModal from "@/components/common/checkModal.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -127,6 +136,13 @@ const currentImageIndex = ref(0);
 const selectedCommentId = ref(null);
 const festivalId = router.currentRoute.value.params.festivalId;
 const loadingType = ref("none");
+const isModalOpen = ref(false);
+const modalType = ref("");
+const modalConfig = ref({
+  title: "",
+  message: "",
+  confirmText: "삭제",
+});
 
 // 댓글 목록 조회 함수
 const fetchComments = async () => {
@@ -161,42 +177,33 @@ const prevImage = () => {
 // 선택된 댓글 삭제 함수 (DELETE comment/{commentId}/{festivalId})
 const deleteComment = async () => {
   if (!selectedCommentId.value) {
-    alert("삭제할 댓글을 선택해 주세요.");
+    modalType.value = "comment";
+    modalConfig.value = {
+      title: "댓글 삭제",
+      message: "삭제할 댓글을 선택해 주세요.",
+      confirmText: "",
+    };
+    isModalOpen.value = true;
     return;
   }
-  try {
-    loadingType.value = "loading";
-    const response = await api.delete(
-      `comment/${selectedCommentId.value}/${festivalId}`
-    );
-    if (response.status === 204) {
-      // 삭제 성공하면 목록에서 삭제한 댓글 제거
-      comments.value = comments.value.filter(
-        (comment) => comment.id !== selectedCommentId.value
-      );
-      selectedCommentId.value = null;
-    }
-  } catch (error) {
-    console.error("댓글 삭제 실패:", error);
-  } finally {
-    loadingType.value = "none";
-  }
+  modalType.value = "comment";
+  modalConfig.value = {
+    title: "댓글 삭제",
+    message: "선택한 댓글을 삭제하시겠습니까?",
+    confirmText: "삭제",
+  };
+  isModalOpen.value = true;
 };
 
 // 게시글 삭제 함수
 const deleteBoardHandler = async () => {
-  try {
-    loadingType.value = "loading";
-    const response = await deleteBoard(board.value.id, festivalId);
-    if (response) {
-      alert("게시글이 삭제되었습니다.");
-      router.push(`/admin/${festivalId}/adminLost`);
-    }
-  } catch (error) {
-    console.error("게시글 삭제 실패:", error);
-  } finally {
-    loadingType.value = "none";
-  }
+  modalType.value = "loss";
+  modalConfig.value = {
+    title: "분실물 게시글 삭제",
+    message: "분실물 게시글을 삭제하시겠습니까?",
+    confirmText: "삭제",
+  };
+  isModalOpen.value = true;
 };
 
 onMounted(() => {
@@ -209,6 +216,43 @@ onMounted(() => {
   }
   fetchComments();
 });
+
+const handleConfirm = async () => {
+  try {
+    isModalOpen.value = false;
+    loadingType.value = "loading";
+    if (modalType.value === "loss") {
+      await deleteBoard(board.value.id, festivalId);
+      router.push(`/admin/${festivalId}/adminLost`);
+    } else if (modalType.value === "comment") {
+      const response = await api.delete(
+        `comment/${selectedCommentId.value}/${festivalId}`
+      );
+      if (response.status === 204) {
+        comments.value = comments.value.filter(
+          (comment) => comment.id !== selectedCommentId.value
+        );
+        selectedCommentId.value = null;
+      }
+    }
+  } catch (error) {
+    console.error("삭제 실패:", error);
+    modalConfig.value = {
+      title: "삭제 실패",
+      message: "삭제에 실패했습니다.",
+      confirmText: "",
+    };
+    isModalOpen.value = true;
+  } finally {
+    loadingType.value = "none";
+    isModalOpen.value = false;
+  }
+};
+
+// 모달 취소 처리
+const handleCancel = () => {
+  isModalOpen.value = false;
+};
 </script>
 
 <style scoped>

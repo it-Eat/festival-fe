@@ -36,6 +36,7 @@
         <router-link to="/">홈으로 돌아가기 &gt;</router-link>
       </div>
     </div>
+    <loadingComponent v-if="loadingType === 'loading'" />
   </div>
 </template>
 
@@ -44,6 +45,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { useAuthStore } from "@/stores/auth";
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
 // 기존 코드와 동일
 const emit = defineEmits(["login"]);
@@ -51,7 +53,7 @@ const festivalCode = ref("");
 const password = ref("");
 const router = useRouter();
 const authStore = useAuthStore();
-
+const loadingType = ref("none");
 const handleLogin = async () => {
   const loginUser = {
     festivalCode: festivalCode.value,
@@ -59,6 +61,7 @@ const handleLogin = async () => {
   };
 
   try {
+    loadingType.value = "loading";
     const response = await axios.post(
       "https://festival-be.onrender.com/user/admin",
       loginUser,
@@ -87,6 +90,8 @@ const handleLogin = async () => {
   } catch (error) {
     console.error("API 요청 오류", error);
     alert("로그인 실패");
+  } finally {
+    loadingType.value = "none";
   }
 };
 </script>

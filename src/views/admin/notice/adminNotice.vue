@@ -20,7 +20,7 @@
       <table class="custom-table">
         <thead>
           <tr>
-            <th style="width: 60px">✔</th>
+            <th style="width: 60px"></th>
             <th style="width: 120px">작성자</th>
             <th style="width: 500px">내용</th>
             <th style="width: 220px">작성일자</th>
@@ -43,11 +43,10 @@
             </td>
             <td>관리자</td>
             <td class="notice-content">{{ notice.content }}</td>
-            <td>{{ formatDate(notice.createdAt) }}</td>
+            <td>{{ dateFormatWithoutTime(notice.createdAt) }}</td>
           </tr>
         </tbody>
       </table>
-      <hr class="line-light" />
       <!-- 이전/다음 버튼을 통한 페이지네이션 -->
       <div class="pagination-nav">
         <button @click="goToPreviousPage" :disabled="currentPage === 1">
@@ -74,17 +73,28 @@
       @close="isWriteOpen = false"
       @write-success="handleWriteSuccess"
     />
+    <loadingComponent v-if="loadingType !== 'none'" />
+    <checkModal
+      v-if="isCheckModalOpen"
+      :title="checkModalConfig.title"
+      :message="checkModalConfig.message"
+      :confirmText="checkModalConfig.confirmText"
+      @confirm="handleConfirm"
+      @cancel="handleCancel"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import { getNotice } from "@/api/admin"; // 공지사항 API 호출 함수
 import adminNoticeDetail from "./adminNoticeDetail.vue";
 import adminNoticeWrite from "./adminNoticeWrite.vue";
 import { useRouter } from "vue-router";
 import { deleteNotice } from "@/api/admin";
 import { dateFormatWithoutTime } from "@/util/dateFormat";
+import loadingComponent from "@/components/common/loadingComponent.vue";
+import checkModal from "@/components/common/checkModal.vue";
 
 const router = useRouter();
 const notices = ref([]);
@@ -92,28 +102,26 @@ const isModalOpen = ref(false);
 const selectedNotice = ref(null);
 const isWriteOpen = ref(false);
 const selectedNoticeIds = ref([]);
-
+const loadingType = ref("none");
 const festivalId = router.currentRoute.value.params.festivalId;
-
+const isCheckModalOpen = ref(false);
+const checkModalConfig = ref({
+  title: "",
+  message: "",
+  confirmText: "",
+});
 // 페이지네이션 관련 변수
 const currentPage = ref(1);
 const pageSize = ref(10);
-const totalItems = ref(0);
 const maxPage = ref(1);
 
 const deleteNotices = async () => {
-  try {
-    const deletePromises = selectedNoticeIds.value.map((id) =>
-      deleteNotice([id.toString()], festivalId)
-    );
-
-    // 모든 삭제 요청을 병렬로 처리
-    await Promise.all(deletePromises);
-    getNoticeList();
-    selectedNoticeIds.value = [];
-  } catch (error) {
-    console.error("공지사항 삭제 실패:", error);
-  }
+  isCheckModalOpen.value = true;
+  checkModalConfig.value = {
+    title: "공지사항 삭제",
+    message: "선택한 공지사항을 삭제하시겠습니까?",
+    confirmText: "삭제",
+  };
 };
 
 const handleCheck = (event, noticeId) => {
@@ -130,6 +138,7 @@ const handleCheck = (event, noticeId) => {
 // 공지사항 조회 함수
 const getNoticeList = async () => {
   try {
+    loadingType.value = "loading";
     const query = {
       page: currentPage.value,
       pageSize: pageSize.value,
@@ -140,12 +149,9 @@ const getNoticeList = async () => {
     notices.value = response.data;
   } catch (error) {
     console.error("공지사항 API 호출 실패:", error);
+  } finally {
+    loadingType.value = "none";
   }
-};
-
-const formatDate = (dateString) => {
-  if (!dateString) return "-";
-  return dateFormatWithoutTime(dateString);
 };
 
 const openModal = (notice) => {
@@ -186,6 +192,29 @@ const handleWriteSuccess = () => {
 onMounted(() => {
   getNoticeList();
 });
+
+const handleConfirm = async () => {
+  isCheckModalOpen.value = false;
+  try {
+    loadingType.value = "loading";
+    const deletePromises = selectedNoticeIds.value.map((id) =>
+      deleteNotice([id.toString()], festivalId)
+    );
+
+    // 모든 삭제 요청을 병렬로 처리
+    await Promise.all(deletePromises);
+    getNoticeList();
+    selectedNoticeIds.value = [];
+  } catch (error) {
+    console.error("공지사항 삭제 실패:", error);
+  } finally {
+    loadingType.value = "none";
+  }
+};
+
+const handleCancel = () => {
+  isCheckModalOpen.value = false;
+};
 </script>
 
 <style scoped>
@@ -196,7 +225,7 @@ onMounted(() => {
 
 h1 {
   font-size: 2rem;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .container-search {
@@ -220,20 +249,21 @@ h1 {
 
 /* 작성 버튼 (초록색) */
 .create-btn {
-  background-color: #4caf50;
-  color: #fff;
-  border: none;
+  background-color: #fff;
+  color: #fe6f61;
+  border: 1px solid #ff6b6b;
   border-radius: 6px;
   padding: 8px 16px;
   cursor: pointer;
 }
 .create-btn:hover {
-  background-color: #43a047;
+  background-color: #ff6b6b;
+  color: white;
 }
 
 /* 삭제 버튼 (빨간색) */
 .delete-btn {
-  background-color: #f44336;
+  background-color: #ff6b6b;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -241,20 +271,13 @@ h1 {
   cursor: pointer;
 }
 .delete-btn:hover {
-  background-color: #e53935;
+  background-color: #fe6f61;
 }
 
 /* 테이블 영역 */
 .container-list {
   background-color: #fff;
   border-radius: 8px;
-}
-
-/* 옅은 선 */
-.line-light {
-  border: none;
-  border-top: 1px solid #aaa;
-  margin-top: 10px;
 }
 
 /* 테이블 스타일 */
@@ -274,18 +297,9 @@ h1 {
   border-top: 2px solid #fe6f61;
 }
 
-/* 테이블 헤더 */
-/* .custom-table thead th {
-  border-bottom: 2px solid #333;
-  padding: 12px 8px;
-  font-weight: 600;
-  background-color: #f9f9f9;
-} */
-
 /* 테이블 바디(각 행) */
 .table-row {
   cursor: pointer;
-  border-bottom: 1px solid #ddd;
   transition: background-color 0.2s;
 }
 .table-row:hover {
@@ -293,7 +307,8 @@ h1 {
   cursor: pointer;
 }
 .custom-table tbody td {
-  padding: 12px 8px;
+  padding: 17px 8px;
+  border-bottom: 1px solid #eee;
 }
 
 /* 내용 셀 (너무 길면 말줄임) */

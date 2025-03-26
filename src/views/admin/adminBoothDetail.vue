@@ -69,10 +69,10 @@
         <div class="comment-card">
           <div class="comment-header">
             <h2>리뷰 목록</h2>
+            <button class="delete-btn" @click="deleteSelectedReview">
+              리뷰 삭제
+            </button>
           </div>
-          <button class="delete-btn" @click="deleteSelectedReview">
-            리뷰 삭제
-          </button>
 
           <!-- 리뷰 없으면 안내 문구 -->
           <p v-if="reviews.length === 0">아직 리뷰가 없습니다. ಥ_ಥ</p>
@@ -136,6 +136,14 @@
       <button @click="goBack" class="back-btn">← 목록으로 돌아가기</button>
     </div>
     <loadingComponent v-if="loadingType !== 'none'" />
+    <checkModal
+      v-if="isModalOpen"
+      :title="modalConfig.title"
+      :message="modalConfig.message"
+      :confirmText="modalConfig.confirmText"
+      @confirm="handleConfirm"
+      @cancel="handleCancel"
+    />
   </div>
 </template>
 
@@ -150,10 +158,18 @@ import {
 } from "@/api/admin";
 import { dateFormatWithoutTime } from "@/util/dateFormat";
 import loadingComponent from "@/components/common/loadingComponent.vue";
+import checkModal from "@/components/common/checkModal.vue";
 
 const route = useRoute();
 const router = useRouter();
 const loadingType = ref("none"); // 로딩 타입
+const isModalOpen = ref(false);
+const modalType = ref("");
+const modalConfig = ref({
+  title: "",
+  message: "",
+  confirmText: "",
+});
 
 // 1) 부스 상세 정보
 const booth = ref(null);
@@ -169,6 +185,7 @@ const totalReviews = ref(0);
 const maxPage = computed(
   () => Math.ceil(totalReviews.value / pageSize.value) || 1
 );
+const festivalId = router.currentRoute.value.params.festivalId;
 
 // 가격 포맷 함수
 const formatPrice = (price) => {
@@ -239,36 +256,22 @@ const fetchReviews = async () => {
 // 리뷰 삭제
 const deleteSelectedReview = async () => {
   if (!selectedReviewId.value) {
-    alert("삭제할 리뷰를 선택해주세요.");
+    modalType.value = "review";
+    modalConfig.value = {
+      title: "리뷰 삭제",
+      message: "삭제할 리뷰를 선택해주세요.",
+      confirmText: "",
+    };
+    isModalOpen.value = true;
     return;
   }
-
-  try {
-    loadingType.value = "deleteReview";
-    const response = await deleteReview(selectedReviewId.value);
-
-    if (response.status === 204) {
-      // ✅ 화면에서도 삭제
-      reviews.value = reviews.value.filter(
-        (review) => review.id !== selectedReviewId.value
-      );
-
-      // ✅ 선택 해제
-      selectedReviewId.value = null;
-
-      window.location.reload();
-
-      // ✅ 현재 페이지에 리뷰가 없다면 이전 페이지로
-      if (reviews.value.length === 0 && currentPage.value > 1) {
-        currentPage.value--;
-        await fetchReviews();
-      }
-    }
-  } catch (error) {
-    console.error("리뷰 삭제 실패:", error);
-  } finally {
-    loadingType.value = "none";
-  }
+  modalType.value = "review";
+  modalConfig.value = {
+    title: "리뷰 삭제",
+    message: "선택한 리뷰를 삭제하시겠습니까?",
+    confirmText: "삭제",
+  };
+  isModalOpen.value = true;
 };
 
 // 페이지네이션 - 이전 페이지
@@ -288,7 +291,6 @@ const nextPage = () => {
 
 // "목록으로 돌아가기" 버튼 클릭 시 라우터 이동
 const goBack = () => {
-  const festivalId = router.currentRoute.value.params.festivalId;
   router.push(`/admin/${festivalId}/adminBooth`);
 };
 
@@ -297,6 +299,45 @@ onMounted(() => {
   fetchMenuList();
   fetchReviews();
 });
+
+const handleConfirm = async () => {
+  try {
+    isModalOpen.value = false;
+    loadingType.value = "loading";
+    if (modalType.value === "review") {
+      const response = await deleteReview(selectedReviewId.value);
+
+      if (response) {
+        reviews.value = reviews.value.filter(
+          (review) => review.id !== selectedReviewId.value
+        );
+        selectedReviewId.value = null;
+        window.location.reload();
+
+        if (reviews.value.length === 0 && currentPage.value > 1) {
+          currentPage.value--;
+          await fetchReviews();
+        }
+      }
+    }
+  } catch (error) {
+    console.error("삭제 실패:", error);
+    modalConfig.value = {
+      title: "삭제 실패",
+      message: "삭제에 실패했습니다.",
+      confirmText: "",
+    };
+    isModalOpen.value = true;
+  } finally {
+    loadingType.value = "none";
+    isModalOpen.value = false;
+  }
+};
+
+// 모달 취소 처리
+const handleCancel = () => {
+  isModalOpen.value = false;
+};
 </script>
 
 <style scoped>
@@ -416,7 +457,7 @@ onMounted(() => {
 }
 /* 오른쪽 카드 (리뷰 목록) */
 .comment-container {
-  flex: 1;
+  flex: 1.5;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 10px;
