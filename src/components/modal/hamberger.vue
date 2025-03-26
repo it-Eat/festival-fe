@@ -41,7 +41,7 @@ function handleLogout() {
         </li>
         <!-- 비로그인 상태 -->
         <li v-if="!userStore.isAuthenticated">
-          <router-link to="/user/login">
+          <router-link to="/:festivalId/user/login">
             <span class="home-icon">👤</span>
             로그인
           </router-link>

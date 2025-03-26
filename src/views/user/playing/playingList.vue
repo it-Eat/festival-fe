@@ -22,11 +22,15 @@ import backHeader from "@/components/common/backHeader.vue";
 import photoCard from "@/components/common/photoCard.vue";
 import { usePlayingStore } from "@/stores/playing";
 import { onMounted } from "vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+const festivalId = route.params.festivalId;
 
 const playStore = usePlayingStore();
 
 onMounted(() => {
-  playStore.fetchItems();
+  playStore.fetchItems(festivalId);
 });
 </script>
 

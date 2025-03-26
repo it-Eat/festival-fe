@@ -2,12 +2,16 @@
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-
+const festivalId = route.params.festivalId;
 const menuItems = [
-  { name: "먹거리", path: "/user/userHome/homeFood", icon: "🍽️" },
-  { name: "놀거리", path: "/user/userHome/homePlaying", icon: "🎡" },
-  { name: "축제 정보", path: "/user/userHome/homeFestInfo", icon: "ℹ️" },
-  { name: "게시판", path: "/user/userHome/homeBoard", icon: "📝" },
+  { name: "먹거리", path: `/${festivalId}/userHome/homeFood`, icon: "🍽️" },
+  { name: "놀거리", path: `/${festivalId}/userHome/homePlaying`, icon: "🎡" },
+  {
+    name: "축제 정보",
+    path: `/${festivalId}/userHome/homeFestInfo`,
+    icon: "ℹ️",
+  },
+  { name: "게시판", path: `/${festivalId}/userHome/homeBoard`, icon: "📝" },
 ];
 </script>
 

@@ -1,6 +1,4 @@
-import { localAxios } from "@/util/http-commons";
-
-const local = localAxios();
+import api from "@/api/axiosInstance";
 
 async function getFestivalList(cursor, limit, keyword) {
   // URL 파라미터를 저장할 배열
@@ -22,7 +20,7 @@ async function getFestivalList(cursor, limit, keyword) {
   // 쿼리 파라미터 조합
   const queryString = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
 
-  const response = await local.get(`/festival${queryString}`);
+  const response = await api.get(`/festival${queryString}`);
   return response.data;
 }
 

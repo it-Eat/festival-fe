@@ -2,13 +2,12 @@
 import backHeader from "@/components/common/backHeader.vue";
 import { ref } from "vue";
 import axios from "axios";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 const title = ref("");
 const content = ref("");
 const images = ref([]); // 업로드할 이미지 파일들
 const previewImages = ref([]); // 미리보기용 이미지 URL들
-const festivalId = 1;
 const router = useRouter();
 
 // 이미지 추가 함수
@@ -34,6 +33,9 @@ const removeImage = (index) => {
   previewImages.value.splice(index, 1);
 };
 
+const route = useRoute();
+const festivalId = route.params.festivalId;
+
 const submitPost = async () => {
   const formData = new FormData();
   formData.append("title", title.value);
@@ -57,7 +59,7 @@ const submitPost = async () => {
       }
     );
     alert("게시글이 등록되었습니다.");
-    router.push("/user/board/list");
+    router.push(`/${festivalId}/board/list`);
   } catch (error) {
     console.error(error);
   }

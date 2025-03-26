@@ -85,6 +85,7 @@ async function loadMoreData() {
 function goDetail(id) {
   // 선택한 축제 ID를 Pinia 스토어에 저장
   festivalInfoStore.setFestivalId(id);
+  router.push(`/${id}/userHome/homeFood`);
   console.log("선택된 축제 ID:", festivalInfoStore.selectedFestivalId);
   // 이후 상세 페이지로 이동
   // 예: router.push(`/festival/${id}`);

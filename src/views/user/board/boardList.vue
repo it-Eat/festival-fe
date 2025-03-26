@@ -9,9 +9,12 @@ const currentPage = ref(1); // 현재 페이지
 const itemsPerPage = 7; // 한 페이지당 게시글 개수
 const totalItems = computed(() => boardStore.boards.length || 50); // 전체 글 수 (서버 데이터 적용 가능)
 
+const route = useRoute();
+const festivalId = route.params.festivalId;
+
 // 데이터 가져오기
 onMounted(async () => {
-  await boardStore.fetchItems();
+  await boardStore.fetchItems(festivalId);
   console.log("불러온 게시글 개수:", boardStore.boards.length); // 🔥 데이터 개수 확인
   console.log("전체 데이터:", boardStore.boards); // 🔥 전체 데이터 확인
 });
