@@ -149,7 +149,7 @@ const formatDate = (dateString) => {
               comment.userName
             }}</span>
             <span class="comment-content">{{ comment.content }}</span>
-            <span style="color: #777; font-size: 11px" class="comment-date">
+            <span class="comment-date">
               {{ getRelativeTime(comment.createdAt) }}
             </span>
             <button
@@ -157,7 +157,7 @@ const formatDate = (dateString) => {
               @click="deleteComment(comment.id)"
               class="comment-delete-button"
             >
-              X
+              삭제
             </button>
           </div>
         </div>
@@ -237,7 +237,7 @@ const formatDate = (dateString) => {
   width: 100%;
   height: 100%;
   border-radius: 10px;
-  object-fit: cover;
+  object-fit: fill;
 }
 
 .comment-section {
@@ -288,21 +288,22 @@ const formatDate = (dateString) => {
   margin-bottom: 8px;
   border-radius: 6px;
   border: none;
+  display: flex;
+  align-items: flex-end;
 }
 
 .comment-delete-button {
-  margin-left: 10px;
-  background-color: #ff4d4f;
-  color: white;
+  background-color: white;
+  color: #ff6f61;
   border: none;
   border-radius: 4px;
-  padding: 4px 8px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11px;
+  margin-left: 10px;
 }
 
 .comment-delete-button:hover {
-  background-color: #d9363e;
+  color: #e06156;
 }
 .nav-button {
   position: absolute;
@@ -339,7 +340,7 @@ const formatDate = (dateString) => {
   display: flex;
   align-items: flex-end;
   justify-content: flex-start;
-  gap: 12px;
+  gap: 10px;
 }
 
 .comment-user {
@@ -347,8 +348,9 @@ const formatDate = (dateString) => {
 }
 
 .comment-content {
+  flex: 1;
   margin-left: 15px;
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .comment-date {
