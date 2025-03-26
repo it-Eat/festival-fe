@@ -83,7 +83,7 @@ const changePage = (page) => {
 
     <!-- 게시글 작성 버튼 -->
     <div class="button-wrapper">
-      <RouterLink to="/user/board/write">
+      <RouterLink :to="`/${festivalId}/board/write`">
         <button class="write-button">게시글 작성하기</button>
       </RouterLink>
     </div>

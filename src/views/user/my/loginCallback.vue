@@ -44,7 +44,7 @@ onMounted(async () => {
         if (userRole === "SELLER") {
           router.replace(`/${festivalId}/merchant/merchantHome`);
         } else {
-          router.replace(`/${festivalId}/userHome/homeFood`);
+          router.replace(`/`);
         }
       }, 150);
     } catch (error) {

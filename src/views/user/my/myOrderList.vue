@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import BackHeader from "@/components/common/backHeader.vue";
 import Pagination from "@/components/common/pagination.vue";
 import api from "@/api/axiosInstance";
@@ -8,8 +8,8 @@ import { useUserStore } from "@/stores/userStore";
 
 const router = useRouter();
 const userStore = useUserStore();
-
-const festivalId = 1;
+const route = useRoute();
+const festivalId = route.params.festivalId;
 
 // 결제 내역 데이터를 저장할 ref
 const payments = ref([]);
@@ -43,16 +43,23 @@ const navigateToDetail = (payment) => {
 const fetchPayments = async () => {
   if (!userStore.isAuthenticated) return;
   try {
-    const res = await api.get(`/pay/user/${userStore.user.id}`, { withCredentials: true });
+    const res = await api.get(`/pay/user/${userStore.user.id}`, {
+      withCredentials: true,
+    });
     const data = res.data; // 결제 내역 배열
     // 각 결제 항목에 boothName 추가 (wishList가 비어있으면 별도 API 호출)
     for (const payment of data) {
       if (!payment.wishList || payment.wishList.length === 0) {
         try {
-          const boothRes = await api.get(`/booth/${payment.boothId}/${festivalId}`);
+          const boothRes = await api.get(
+            `/booth/${payment.boothId}/${festivalId}`
+          );
           payment.boothName = boothRes.data.name;
         } catch (err) {
-          console.error(`부스 정보 가져오기 실패 (boothId: ${payment.boothId}):`, err);
+          console.error(
+            `부스 정보 가져오기 실패 (boothId: ${payment.boothId}):`,
+            err
+          );
           payment.boothName = "정보 없음";
         }
       } else {
