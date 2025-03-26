@@ -1,8 +1,9 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import BackHeader from '@/components/common/backHeader.vue';
-import api from '@/api/axiosInstance';
+import { ref, computed, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import BackHeader from "@/components/common/backHeader.vue";
+import api from "@/api/axiosInstance";
+import noimage from "@/assets/noimage.png";
 
 const route = useRoute();
 const router = useRouter();
@@ -13,7 +14,7 @@ const menuList = ref([]);
 const enrichedWishList = ref([]);
 
 // storeName를 헤더에 표시할 부스 이름으로 사용
-const storeName = ref('상점 정보 없음');
+const storeName = ref("상점 정보 없음");
 
 // 결제 상세 데이터를 받아오는 함수
 const fetchPaymentDetail = async () => {
@@ -56,8 +57,9 @@ const fetchMenuList = async (boothId) => {
 // wishList와 메뉴 데이터를 결합
 const combineWishListWithMenu = () => {
   if (paymentDetail.value?.wishList) {
-    enrichedWishList.value = paymentDetail.value.wishList.map(item => {
-      const detailedMenu = menuList.value.find(menu => menu.id === item.menu.id) || null;
+    enrichedWishList.value = paymentDetail.value.wishList.map((item) => {
+      const detailedMenu =
+        menuList.value.find((menu) => menu.id === item.menu.id) || null;
       return { ...item, detailedMenu };
     });
   }
@@ -67,9 +69,17 @@ onMounted(() => {
   fetchPaymentDetail();
 });
 
-const totalPrice = computed(() => paymentDetail.value ? paymentDetail.value.price : 0);
-const paymentMethod = computed(() => paymentDetail.value ? paymentDetail.value.payType : '');
-const paymentDate = computed(() => paymentDetail.value ? new Date(paymentDetail.value.createdAt).toLocaleString() : '');
+const totalPrice = computed(() =>
+  paymentDetail.value ? paymentDetail.value.price : 0
+);
+const paymentMethod = computed(() =>
+  paymentDetail.value ? paymentDetail.value.payType : ""
+);
+const paymentDate = computed(() =>
+  paymentDetail.value
+    ? new Date(paymentDetail.value.createdAt).toLocaleString()
+    : ""
+);
 </script>
 
 <template>
@@ -82,18 +92,37 @@ const paymentDate = computed(() => paymentDetail.value ? new Date(paymentDetail.
     <!-- 주문 메뉴 리스트 영역 -->
     <div class="menu-list">
       <div class="menu-item" v-for="item in enrichedWishList" :key="item.id">
-        <img
-          class="menu-image"
-          :src="item.detailedMenu?.image || 'https://via.placeholder.com/50'"
-          alt="메뉴 이미지"
-        />
+        <!-- 메뉴 이미지 섹션 -->
+        <div class="image-container">
+          <img
+            class="menu-image"
+            :src="item.detailedMenu?.image || noimage"
+            :alt="item.detailedMenu?.name || '메뉴 이미지'"
+          />
+        </div>
+
+        <!-- 메뉴 정보 섹션 -->
         <div class="menu-details">
-          <div class="menu-name">
-            {{ item.detailedMenu?.name || item.menu?.name || '메뉴 정보 없음' }}
+          <div class="menu-info">
+            <h3 class="menu-name">
+              {{
+                item.detailedMenu?.name || item.menu?.name || "메뉴 정보 없음"
+              }}
+            </h3>
+            <div class="menu-meta">
+              <span class="quantity-badge">
+                <i class="fas fa-shopping-basket"></i>
+                {{ item.cnt }}개
+              </span>
+            </div>
           </div>
-          <div class="menu-quantity">{{ item.cnt }}개</div>
-          <div class="menu-price">
-            {{ item.detailedMenu?.price ? item.detailedMenu.price + '원' : item.price + '원' }}
+
+          <div class="price-tag">
+            {{
+              item.detailedMenu?.price
+                ? item.detailedMenu.price.toLocaleString()
+                : item.price.toLocaleString()
+            }}원
           </div>
         </div>
       </div>
@@ -105,7 +134,15 @@ const paymentDate = computed(() => paymentDetail.value ? new Date(paymentDetail.
         <div>결제방식: {{ paymentMethod }}</div>
         <div>결제일자: {{ paymentDate }}</div>
       </div>
-      <button class="review-button" @click="router.push({ name: 'writeReview', query: { boothId: paymentDetail?.boothId, boothName: storeName } })">
+      <button
+        class="review-button"
+        @click="
+          router.push({
+            name: 'writeReview',
+            query: { boothId: paymentDetail?.boothId, boothName: storeName },
+          })
+        "
+      >
         리뷰 작성하기
       </button>
     </div>
@@ -135,48 +172,145 @@ const paymentDate = computed(() => paymentDetail.value ? new Date(paymentDetail.
 }
 
 .menu-list {
-  width: 100%;
-  flex-grow: 1;
-  overflow-y: auto;
-  margin-bottom: 20px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
 }
 
 .menu-item {
   display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #f0f0f0;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
 }
 
-.menu-item:last-child {
-  border-bottom: none;
+.menu-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.image-container {
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  overflow: hidden;
 }
 
 .menu-image {
-  width: 50px;
-  height: 50px;
-  border-radius: 8px;
-  margin-right: 10px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.menu-item:hover .menu-image {
+  transform: scale(1.05);
 }
 
 .menu-details {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  flex: 1;
+  justify-content: space-between;
+  padding: 16px;
+  background: linear-gradient(to right, #fff, #f8f9fa);
+}
+
+.menu-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .menu-name {
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
 }
 
-.menu-quantity,
-.menu-price {
+.menu-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quantity-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background-color: #ff6f61;
+  color: white;
+  border-radius: 20px;
   font-size: 14px;
+}
+
+.quantity-badge i {
+  font-size: 12px;
+}
+
+.price-tag {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ff6f61;
+  text-align: right;
+  margin-top: 8px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .menu-item {
+    flex-direction: column;
+  }
+
+  .image-container {
+    width: 100%;
+    height: 200px;
+  }
+
+  .menu-details {
+    padding: 16px;
+  }
+
+  .price-tag {
+    margin-top: 12px;
+  }
+}
+
+/* 스켈레톤 로딩 애니메이션 */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.menu-item.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-item.loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.5s infinite;
+  background-size: 200% 100%;
 }
 
 .payment-info {

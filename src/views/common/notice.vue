@@ -6,34 +6,56 @@
       </div>
 
       <div class="content">
-        <!-- 공지사항 목록 -->
-        <div class="notice-list">
+        <div class="notice-list" v-if="notices.length > 0">
           <div
             v-for="(notice, index) in notices"
             :key="notice.id"
             class="notice-item"
+            :class="{ expanded: expandedItems[index] }"
           >
-            <!-- 제목/내용 영역 -->
+            <!-- 공지사항 헤더 -->
+            <div class="notice-header">
+              <div class="notice-badge">공지</div>
+              <span class="notice-date">{{
+                formatDate(notice.createdAt)
+              }}</span>
+            </div>
+
+            <!-- 공지사항 내용 -->
             <div
               class="notice-content"
-              :class="{
-                truncated: !expandedItems[index],
-                expanded: expandedItems[index],
-              }"
+              :class="{ truncated: !expandedItems[index] }"
             >
               {{ notice.content }}
             </div>
 
-            <!-- 하단 영역(작성일, 작성자, 화살표 버튼) -->
+            <!-- 더보기/접기 버튼 -->
+            <div class="toggle-button" @click="toggleExpand(index)">
+              <span class="toggle-text">
+                {{ expandedItems[index] ? "접기" : "더보기" }}
+              </span>
+              <i
+                class="toggle-icon"
+                :class="
+                  expandedItems[index]
+                    ? 'fas fa-chevron-up'
+                    : 'fas fa-chevron-down'
+                "
+              >
+              </i>
+            </div>
+
+            <!-- 작성자 정보 -->
             <div class="notice-footer">
-              <span class="date">{{ formatDate(notice.createdAt) }}</span>
-              <span class="author">작성자 : 관리자</span>
-              <div class="toggle-arrow" @click.stop="toggleExpand(index)">
-                <span v-if="expandedItems[index]">▲</span>
-                <span v-else>▼</span>
-              </div>
+              <span class="author">작성자: 관리자</span>
             </div>
           </div>
+        </div>
+
+        <!-- 공지사항이 없을 때 -->
+        <div v-else class="no-notices">
+          <i class="fas fa-bell-slash"></i>
+          <p>등록된 공지사항이 없습니다.</p>
         </div>
       </div>
     </div>
@@ -43,137 +65,183 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import BackHeader from "@/components/common/backHeader.vue";
-import { getNotice } from "@/api/user"; // 또는 "@/api/admin" 경로로 수정
+import { getNotice } from "@/api/user";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
+const festivalId = route.params.festivalId;
 const notices = ref([]);
 const expandedItems = ref([]);
 
 onMounted(async () => {
   try {
-    const festivalId = 1;
     const query = {};
     const data = await getNotice(festivalId, query);
-    notices.value = data; // data가 공지사항 배열 [{ id, content, createdAt, ... }, ... ]
-    expandedItems.value = notices.value.map(() => false);
+    notices.value = data.data;
+    expandedItems.value = new Array(data.length).fill(false);
   } catch (error) {
-    console.error("공지사항 API 호출 실패:", error);
+    console.error("공지사항 불러오기 실패:", error);
   }
 });
 
-function toggleExpand(index) {
-  console.log("toggleExpand called, index =", index);
+const toggleExpand = (index) => {
   expandedItems.value[index] = !expandedItems.value[index];
-}
+};
 
-function formatDate(dateString) {
+const formatDate = (dateString) => {
   if (!dateString) return "-";
-  const d = new Date(dateString);
-  return d.toLocaleString("ko-KR");
-}
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+};
 </script>
 
 <style scoped>
 .page {
   display: flex;
   justify-content: center;
-  background-color: #fff;
-}
-.home {
-  display: flex;
-  flex-direction: column;
-  width: 600px;
-  max-height: 100vh;
-  margin: auto;
-  box-sizing: border-box;
-  background-color: #fff;
-}
-@media (max-width: 900px) {
-  .home {
-    width: 100%;
-  }
-}
-.header {
-  width: 100%;
-  margin-bottom: 8px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
 }
 
-/* content 영역에 고정 높이와 스크롤 추가 */
-.content {
+.home {
   width: 100%;
-  padding: 0 16px;
-  box-sizing: border-box;
-  height: calc(100vh - 100px); /* 상단 헤더 높이 등을 감안해 조정 */
+  max-width: 600px;
+  background-color: #fff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+.content {
+  padding: 20px;
+  height: calc(100vh - 60px);
   overflow-y: auto;
 }
 
-/* 공지사항 리스트 */
 .notice-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding-bottom: 16px;
+  gap: 20px;
 }
 
-/* 개별 공지 박스 */
 .notice-item {
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 16px;
-  background-color: #fff;
-  position: relative;
-}
-
-/* 내용 (기본 2줄 말줄임) */
-.notice-content {
-  font-size: 1rem;
-  line-height: 1.4;
-  color: #333;
-  text-align: center;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }
 
-/* 접힌 상태: 2줄 제한 */
-.notice-content.truncated {
-  -webkit-line-clamp: 2;
+.notice-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* 펼쳐진 상태: 전체 표시 */
-.notice-content.expanded {
-  -webkit-line-clamp: unset;
-  overflow: visible;
-}
-
-/* 하단 영역 (작성일, 작성자, 화살표) */
-.notice-footer {
+.notice-header {
   display: flex;
   align-items: center;
-  margin-top: 8px;
-  position: relative;
+  gap: 12px;
+  margin-bottom: 16px;
 }
-.notice-footer .date {
-  flex: 1;
-  font-size: 0.85rem;
-  color: #888;
+
+.notice-badge {
+  background-color: #ff6f61;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
 }
-.notice-footer .author {
-  font-size: 0.85rem;
-  color: #888;
+
+.notice-date {
+  color: #666;
+  font-size: 14px;
 }
-.toggle-arrow {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+
+.notice-content {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.notice-content.truncated {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.toggle-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 8px;
   cursor: pointer;
   color: #ff6f61;
-  font-size: 1.2rem;
+  transition: all 0.2s ease;
 }
-.toggle-arrow:hover {
+
+.toggle-button:hover {
   color: #e65d52;
 }
-.notice-item + .notice-item {
-  border-top: none;
+
+.toggle-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.toggle-icon {
+  transition: transform 0.3s ease;
+}
+
+.notice-item.expanded .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.notice-footer {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.author {
+  color: #666;
+  font-size: 14px;
+}
+
+.no-notices {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: #666;
+  gap: 16px;
+}
+
+.no-notices i {
+  font-size: 48px;
+  color: #ccc;
+}
+
+.no-notices p {
+  font-size: 16px;
+}
+
+@media (max-width: 600px) {
+  .content {
+    padding: 16px;
+  }
+
+  .notice-item {
+    padding: 16px;
+  }
 }
 </style>

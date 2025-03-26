@@ -37,7 +37,7 @@ function handleLogout() {
       <ul>
         <!--공통 상태-->
         <li>
-          <router-link to="/user/notice"
+          <router-link :to="`/${festivalId}/user/notice`"
             ><span class="home-icon">📢</span> 공지사항</router-link
           >
         </li>
@@ -60,10 +60,12 @@ function handleLogout() {
         </li>
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
           <span class="home-icon">📄</span>
-          <router-link to="/user/my/myOrderList"> 주문 내역 </router-link>
+          <router-link :to="`/${festivalId}/user/my/myOrderList`">
+            주문 내역
+          </router-link>
         </li>
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
-          <router-link to="/user/my/boothApply">
+          <router-link :to="`/${festivalId}/user/my/boothApply`">
             <span class="plane-icon">🙏🏻</span>
             부스 신청하기
           </router-link>
