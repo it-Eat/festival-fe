@@ -58,7 +58,7 @@ const updateHighlightedDates = () => {
 </script>
 
 <template>
-  <div>
+  <div class="calendar-container">
     시작일:
     <input id="start-date" type="date" @change="dataChange" :max="today" />
     종료일:
@@ -73,15 +73,22 @@ const updateHighlightedDates = () => {
 </template>
 
 <style>
+.calendar-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 input[type="date"] {
   position: relative;
-  padding: 6px;
-  width: 150px;
-  height: 20px;
+  padding: 8px;
+  width: 120px;
+  height: 32px;
   font-size: 12px;
   color: #201f1f;
-  border: 1px solid #999;
+  border: 1px solid #ff6f61;
   border-radius: 8px;
-  margin-right: 10px; /* 두 입력 필드 사이의 간격 */
+  background-color: #fff;
+  cursor: pointer;
 }
 </style>

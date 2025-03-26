@@ -47,7 +47,16 @@ async function getBoards(festivalId, query) {
 
 // 분실물 조회 API
 async function getLostBoards(festivalId, query) {
-  let { page, pageSize, orderBy, order, keyword, startDate, endDate } = query;
+  let {
+    page,
+    pageSize,
+    orderBy,
+    order,
+    keyword,
+    startDate,
+    endDate,
+    typeSelect,
+  } = query;
 
   page = parseInt(page) || 1;
   pageSize = parseInt(pageSize) || 10;
@@ -60,6 +69,7 @@ async function getLostBoards(festivalId, query) {
     orderBy,
     order,
     boardType: "LOSS",
+    lossType: typeSelect || "", // typeSelect가 없으면 파라미터 자체를 보내지 않음
   };
 
   if (keyword) params.keyword = keyword;
@@ -71,11 +81,9 @@ async function getLostBoards(festivalId, query) {
     return response.data;
   } catch (error) {
     console.error("API 호출 에러:", error);
-
     if (error.response?.status === 401) {
       alert("인증이 만료되었습니다. 다시 로그인해주세요.");
     }
-
     throw error;
   }
 }

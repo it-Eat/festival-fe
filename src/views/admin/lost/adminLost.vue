@@ -2,24 +2,27 @@
   <div class="board-wrapper">
     <h1>분실물 관리</h1>
     <div class="container-search">
-      <selectBar :items="lostOption" v-model="selectedType" />
+      <selectBar
+        :items="lostOption"
+        placeholder="분실물 타입을 선택해주세요"
+        v-model="selectedType"
+        @onKeySelect="handleTypeSelect"
+      />
       <adminCalendar @date-selected="handleDateSelected" />
       <searchBar v-model="filters.keyword" @search="handleSearch" />
     </div>
     <div class="container-list">
-      <hr style="border: solid 1px" />
       <table class="custom-table">
         <thead>
-          <tr>
-            <th style="width: 120px">작성자</th>
-            <th style="width: 100px">구분</th>
-            <th style="width: 120px">제목</th>
-            <th style="width: 500px">내용</th>
-            <th style="width: 200px">작성일자</th>
+          <tr class="custom-table-header">
+            <th style="flex: 1">작성자</th>
+            <th style="flex: 1">구분</th>
+            <th style="flex: 2">제목</th>
+            <th style="flex: 3">내용</th>
+            <th style="flex: 2">작성일자</th>
           </tr>
         </thead>
       </table>
-      <hr style="border: solid 0.5px" />
       <adminList :items="lost" routeName="adminLostDetail" />
     </div>
 
@@ -28,11 +31,12 @@
       <button @click="goToPreviousPage" :disabled="currentPage === 1">
         이전
       </button>
-      <span>페이지 {{ currentPage }} / {{ maxPage }}</span>
+      <span>{{ currentPage }} / {{ maxPage }}</span>
       <button @click="goToNextPage" :disabled="currentPage >= maxPage">
         다음
       </button>
     </div>
+    <loadingComponent v-if="loadingType === 'loading'" />
   </div>
 </template>
 
@@ -43,10 +47,14 @@ import selectBar from "@/components/admin/common/selectBar.vue";
 import adminList from "@/components/admin/common/adminList.vue";
 import adminCalendar from "@/components/admin/common/adminCalendar.vue";
 import { getLostBoards } from "@/api/admin.js";
+import { useRouter } from "vue-router";
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
+const router = useRouter();
 const lostOption = ref([
-  { value: "lost", text: "분실" },
-  { value: "found", text: "습득" },
+  { value: "", text: "전체" },
+  { value: "LOSS", text: "분실" },
+  { value: "GET", text: "습득" },
 ]);
 
 const currentPage = ref(1);
@@ -54,7 +62,8 @@ const pageSize = ref(10);
 const totalItems = ref(0);
 const orderBy = ref("recent");
 const order = ref("acs");
-const selectedType = ref("lost");
+const selectedType = ref("");
+const loadingType = ref("none");
 
 const filters = ref({
   startDate: "",
@@ -65,7 +74,7 @@ const filters = ref({
 
 // 최대 페이지 계산 (전체 항목 수 기반)
 const maxPage = computed(() => {
-  return Math.ceil(totalItems.value / pageSize.value) || 1;
+  return totalItems.value;
 });
 
 const lost = ref([]);
@@ -91,41 +100,28 @@ const handleSearch = () => {
 
 // 데이터 로드 함수
 const onSearch = async () => {
-  const typeValue =
-    selectedType.value === "lost"
-      ? "LOSS"
-      : selectedType.value === "found"
-      ? "GET"
-      : "";
-
   const query = {
     page: currentPage.value,
     pageSize: pageSize.value,
     orderBy: orderBy.value || "recent",
     order: order.value || "acs",
-    typeSelect: typeValue,
+    typeSelect: selectedType.value,
     keyword: filters.value.keyword || "",
-    startDate: filters.value.startDate, // ✅ 추가
-    endDate: filters.value.endDate, // ✅ 추가
+    startDate: filters.value.startDate,
+    endDate: filters.value.endDate,
   };
 
   try {
-    const festivalId = 1;
+    loadingType.value = "loading";
+    const festivalId = router.currentRoute.value.params.festivalId;
     const response = await getLostBoards(festivalId, query);
     console.log("API 응답 데이터:", response);
-
-    if (response && response.total !== undefined) {
-      lost.value = response.items;
-      totalItems.value = response.total;
-    } else if (Array.isArray(response)) {
-      lost.value = response;
-      totalItems.value = 50;
-    } else {
-      lost.value = [];
-      totalItems.value = 0;
-    }
+    lost.value = response.data;
+    totalItems.value = response.totalPage;
   } catch (error) {
     console.error("API 호출 실패:", error);
+  } finally {
+    loadingType.value = "none";
   }
 };
 
@@ -136,6 +132,13 @@ const handleDateSelected = (data) => {
   onSearch();
 };
 
+// 타입 선택 처리 함수 추가
+const handleTypeSelect = (type) => {
+  selectedType.value = type;
+  currentPage.value = 1; // 첫 페이지로 초기화
+  onSearch(); // 검색 실행
+};
+
 onMounted(() => {
   onSearch();
 });
@@ -144,16 +147,14 @@ onMounted(() => {
 <style scoped>
 /* 전체 Wrapper */
 .board-wrapper {
-  max-width: 2000px;
-  margin: 40px;
+  max-width: 1800px;
   padding: 0 20px;
 }
 
 /* 상단 타이틀 */
 h1 {
   font-size: 2rem;
-  margin-bottom: 30px;
-  text-shadow: 4px 4px rgb(226, 223, 223);
+  margin-bottom: 24px;
 }
 
 /* 검색/날짜 섹션 */
@@ -161,14 +162,16 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  width: 100%;
 }
 
 /* 테이블 영역 */
 .container-list {
   background-color: #fff;
-  padding: 20px;
   border-radius: 8px;
+  width: 100%;
+  height: 100%;
 }
 
 /* 테이블 스타일 */
@@ -178,41 +181,59 @@ h1 {
   border-spacing: 0;
   font-size: 1rem;
   text-align: center;
+  height: 100%;
 }
 
+.custom-table-header {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
 /* 테이블 헤더 */
-.custom-table thead th {
-  border-bottom: 2px solid #333;
-  padding: 12px 8px;
+.custom-table thead tr th {
+  padding: 12px;
   font-weight: 600;
-  background-color: #f9f9f9;
+  background-color: #fff5f4;
+  color: #fe6f61;
+  border-bottom: 2px solid #fe6f61;
+  border-top: 2px solid #fe6f61;
+  width: 100%;
 }
 
-/* 페이지네이션 */
 .pagination-nav {
   margin-top: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
 }
 
 .pagination-nav button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  background-color: #ff6f61;
-  color: white;
+  padding: 8px 20px;
+  border: 1px solid #fe6f61;
+  border-radius: 8px;
+  background-color: white;
+  color: #fe6f61;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-nav button:hover:not(:disabled) {
+  background-color: #fe6f61;
+  color: white;
 }
 
 .pagination-nav button:disabled {
-  background-color: #ccc;
-  cursor: default;
+  border-color: #ddd;
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
 }
 
 .pagination-nav span {
   font-size: 1rem;
-  font-weight: bold;
+  font-weight: 500;
+  color: #333;
 }
 </style>
