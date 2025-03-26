@@ -4,20 +4,22 @@ import { useBoardStore } from "@/stores/board";
 import { onMounted, computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import backHeader from "@/components/common/backHeader.vue";
-
+import loadingComponent from "@/components/common/loadingComponent.vue";
 const boardStore = useBoardStore();
 const currentPage = ref(1); // 현재 페이지
-const itemsPerPage = 7; // 한 페이지당 게시글 개수
+const itemsPerPage = 10; // 한 페이지당 게시글 개수
 const totalItems = computed(() => boardStore.boards.length || 50); // 전체 글 수 (서버 데이터 적용 가능)
 
 const route = useRoute();
 const festivalId = route.params.festivalId;
-
+const isLoading = ref(false);
 // 데이터 가져오기
 onMounted(async () => {
+  isLoading.value = true;
   await boardStore.fetchItems(festivalId);
   console.log("불러온 게시글 개수:", boardStore.boards.length); // 🔥 데이터 개수 확인
   console.log("전체 데이터:", boardStore.boards); // 🔥 전체 데이터 확인
+  isLoading.value = false;
 });
 
 // 전체 글 목록
@@ -46,8 +48,6 @@ const changePage = (page) => {
 <template>
   <div class="container">
     <backHeader title="게시판 목록" />
-    <div class="menu">게시판</div>
-    <hr class="divider" />
 
     <!-- 게시글 목록 -->
     <div class="list-wrapper">
@@ -89,6 +89,7 @@ const changePage = (page) => {
         <button class="write-button">게시글 작성하기</button>
       </RouterLink>
     </div>
+    <loadingComponent v-if="isLoading" />
   </div>
 </template>
 
@@ -99,19 +100,17 @@ const changePage = (page) => {
   max-width: 600px;
   margin: 0 auto;
   padding: 15px;
+  gap: 28px;
 }
 
 .list-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 .list-item {
   background-color: white;
-  border-radius: 8px;
-  padding: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #eee;
 }
 
 /* 페이지네이션 스타일 */
@@ -144,30 +143,21 @@ const changePage = (page) => {
 .button-wrapper {
   display: flex;
   justify-content: flex-end;
-  margin-top: 20px;
 }
 
 .write-button {
   padding: 10px 20px;
-  background-color: #ff5a5f;
-  color: white;
-  border: none;
+  background-color: white;
+  color: #ff6f61;
+  border: 1px solid #ff6f61;
   border-radius: 8px;
   cursor: pointer;
   text-decoration: none;
   font-weight: bold;
 }
 
-.menu {
-  font-size: 18px;
-  font-weight: bold;
-  margin: 15px auto;
-}
-
-.divider {
-  border: 0;
-  height: 1px;
-  background-color: black;
-  margin-bottom: 10px;
+.write-button:hover {
+  background-color: #ff6f61;
+  color: white;
 }
 </style>

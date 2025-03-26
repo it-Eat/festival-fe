@@ -4,17 +4,22 @@ import { useLostStore } from "@/stores/lost";
 import backHeader from "@/components/common/backHeader.vue";
 import { onMounted, computed, ref } from "vue";
 import { useRoute } from "vue-router";
+import loadingComponent from "@/components/common/loadingComponent.vue";
+
 const lostStore = useLostStore();
 const currentPage = ref(1); // 현재 페이지
-const itemsPerPage = 7; // 한 페이지당 분실물 개수
+const itemsPerPage = 10; // 한 페이지당 분실물 개수
 const totalItems = computed(() => lostStore.losts.length || 50); // 전체 분실물 개수
 const route = useRoute();
 const festivalId = route.params.festivalId;
+const isLoading = ref(false);
 // 데이터 가져오기
 onMounted(async () => {
+  isLoading.value = true;
   await lostStore.fetchItems(festivalId);
   console.log("불러온 분실물 개수:", lostStore.losts.length); // 🔥 데이터 개수 확인
   console.log("전체 데이터:", lostStore.losts); // 🔥 전체 데이터 확인
+  isLoading.value = false;
 });
 
 // 전체 목록
@@ -43,8 +48,6 @@ const changePage = (page) => {
 <template>
   <div class="container">
     <backHeader title="분실물 목록" />
-    <div class="menu">분실물</div>
-    <hr class="divider" />
 
     <!-- 분실물 목록 -->
     <div class="list-wrapper">
@@ -86,6 +89,7 @@ const changePage = (page) => {
         <button class="write-button">분실물 작성하기</button>
       </RouterLink>
     </div>
+    <loadingComponent v-if="isLoading" />
   </div>
 </template>
 
@@ -96,19 +100,17 @@ const changePage = (page) => {
   max-width: 600px;
   margin: 0 auto;
   padding: 15px;
+  gap: 28px;
 }
 
 .list-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 .list-item {
   background-color: white;
-  border-radius: 8px;
-  padding: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #eee;
 }
 
 /* 페이지네이션 스타일 */
@@ -141,30 +143,21 @@ const changePage = (page) => {
 .button-wrapper {
   display: flex;
   justify-content: flex-end;
-  margin-top: 20px;
 }
 
 .write-button {
   padding: 10px 20px;
-  background-color: #ff5a5f;
-  color: white;
-  border: none;
+  background-color: white;
+  color: #ff6f61;
+  border: 1px solid #ff6f61;
   border-radius: 8px;
   cursor: pointer;
   text-decoration: none;
   font-weight: bold;
 }
 
-.menu {
-  font-size: 18px;
-  font-weight: bold;
-  margin: 15px auto;
-}
-
-.divider {
-  border: 0;
-  height: 1px;
-  background-color: black;
-  margin-bottom: 10px;
+.write-button:hover {
+  background-color: #ff6f61;
+  color: white;
 }
 </style>
