@@ -5,11 +5,13 @@ import BackHeader from "@/components/common/backHeader.vue";
 import Pagination from "@/components/common/pagination.vue";
 import api from "@/api/axiosInstance";
 import { useUserStore } from "@/stores/userStore";
+import Loading from "@/components/common/loadingComponent.vue";
 
 const router = useRouter();
 const userStore = useUserStore();
 const route = useRoute();
 const festivalId = route.params.festivalId;
+const lodingType = ref("none");
 
 // 결제 내역 데이터를 저장할 ref
 const payments = ref([]);
@@ -42,6 +44,7 @@ const navigateToDetail = (payment) => {
 
 const fetchPayments = async () => {
   if (!userStore.isAuthenticated) return;
+  lodingType.value = "loading";
   try {
     const res = await api.get(`/pay/user/${userStore.user.id}`, {
       withCredentials: true,
@@ -67,6 +70,7 @@ const fetchPayments = async () => {
       }
     }
     payments.value = data;
+    lodingType.value = "none";
   } catch (error) {
     console.error("Error fetching payments:", error);
   }
@@ -78,6 +82,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <Loading v-if="lodingType === 'loading'" />
   <div class="page">
     <div class="home">
       <div class="header">
@@ -104,14 +109,12 @@ onMounted(() => {
         </tbody>
       </table>
 
-      <div class="footer">
-        <Pagination
-          :total-items="payments.length"
-          :items-per-page="itemsPerPage"
-          :current-page="currentPage"
-          @page-changed="handlePageChange"
-        />
-      </div>
+      <Pagination
+        :total-items="payments.length"
+        :items-per-page="itemsPerPage"
+        :current-page="currentPage"
+        @page-changed="handlePageChange"
+      />
     </div>
   </div>
 </template>
@@ -150,19 +153,19 @@ onMounted(() => {
   text-align: center;
 }
 
-.order-table th,
-.order-table td {
-  padding: 10px;
-  font-size: 16px;
-  border-bottom: 1px solid #000;
-  border-top: none;
-  border-left: none;
-  border-right: none;
+.order-table thead th {
+  padding: 12px;
+  font-weight: 600;
+  background-color: #fff5f4;
+  color: #fe6f61;
+  border-bottom: 2px solid #fe6f61;
+  border-top: 2px solid #fe6f61;
 }
-
-.order-table th {
-  background-color: #f0f0f0;
-  font-weight: bold;
+.order-table tbody td {
+  padding: 17px 8px;
+  font-size: 1rem;
+  text-align: center;
+  padding: 20px;
 }
 
 .order-row {
@@ -170,7 +173,8 @@ onMounted(() => {
 }
 
 .order-row:hover {
-  background-color: #f5f5f5;
+  background-color: #fff5f4;
+  cursor: pointer;
 }
 
 .footer {

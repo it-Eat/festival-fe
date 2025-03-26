@@ -1,17 +1,10 @@
 <template>
-  <nav class="pagination">
+  <nav class="pagination-nav">
     <button :disabled="currentPage === 1" @click="changePage(currentPage - 1)">
       이전
     </button>
 
-    <button
-      v-for="page in visiblePages"
-      :key="page"
-      :class="{ active: page === currentPage }"
-      @click="changePage(page)"
-    >
-      {{ page }}
-    </button>
+    <span>{{ currentPage }} / {{ totalPages }}</span>
 
     <button
       :disabled="currentPage === totalPages"
@@ -62,21 +55,40 @@ export default {
 </script>
 
 <style scoped>
-.pagination {
+.pagination-nav {
+  margin-top: 20px;
   display: flex;
-  gap: 5px;
-  justify-content: center; /* 버튼들을 수평으로 중앙 정렬 */
-  align-items: center; /* 버튼들이 세로로 중앙 정렬 */
-  margin-top: 20px; /* 위쪽 여백 추가 */
-  margin-bottom: 20px; /* 아래쪽 여백 추가 */
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
 }
 
-button.active {
-  font-weight: bold;
+.pagination-nav button {
+  padding: 8px 20px;
+  border: 1px solid #fe6f61;
+  border-radius: 8px;
+  background-color: white;
+  color: #fe6f61;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-button:disabled {
-  opacity: 0.5;
+.pagination-nav button:hover:not(:disabled) {
+  background-color: #fe6f61;
+  color: white;
+}
+
+.pagination-nav button:disabled {
+  border-color: #ddd;
+  background-color: #f5f5f5;
+  color: #999;
   cursor: not-allowed;
+}
+
+.pagination-nav span {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
 }
 </style>

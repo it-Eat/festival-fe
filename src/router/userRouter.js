@@ -124,7 +124,7 @@ export default [
     props: true,
   },
   {
-    path: "/:festivalId/my/myOrderList",
+    path: "/:festivalId/user/my/myOrderList",
     name: "myOrderList",
     component: MyOrderList,
     meta: { title: "결제내역", useUserName: true },
@@ -173,7 +173,7 @@ export default [
     meta: { title: "게시글보기", useUserName: true },
   },
   {
-    path: "/:festivalId/my/boothApply",
+    path: "/:festivalId/user/my/boothApply",
     name: "boothApply",
     component: BoothApply,
     meta: { title: "부스 신청하기" },
@@ -228,7 +228,7 @@ export default [
     meta: { title: "리뷰 작성하기" },
   },
   {
-    path: "/:festivalId/notice",
+    path: "/:festivalId/user/notice",
     name: "notice",
     component: Notice,
   },

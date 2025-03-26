@@ -29,4 +29,9 @@ async function getFestivalDetail(festivalId) {
   return response.data;
 }
 
-export { getFestivalList, getFestivalDetail };
+async function joinFestival(festivalId) {
+  const response = await api.post(`/participation/${festivalId}`);
+  return response.data;
+}
+
+export { getFestivalList, getFestivalDetail, joinFestival };
