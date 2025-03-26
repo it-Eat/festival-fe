@@ -1,13 +1,9 @@
 <template>
   <div class="menu-card">
-    <img
-      :src="menu.image || noimage"
-      :alt="menu.name"
-      class="menu-image"
-    />
+    <img :src="menu.image || noimage" :alt="menu.name" class="menu-image" />
     <div class="menu-info">
       <span class="menu-name">{{ menu.name }}</span>
-      <span class="menu-price">{{ menu.price }}원</span>
+      <span class="menu-price">{{ priceFormat(menu.price) }}원</span>
     </div>
 
     <!-- 품절 상태 표시 -->
@@ -35,6 +31,10 @@ const props = defineProps({
   showButton: { type: Boolean, default: false },
 });
 
+const priceFormat = (price) => {
+  return price.toLocaleString("ko-KR");
+};
+
 const cartStore = useCartStore();
 const updownRef = ref(null);
 
@@ -48,7 +48,6 @@ const initialQuantity = computed(() => {
   );
   return cartItem ? cartItem.quantity : 0;
 });
-
 
 // 수량 업데이트
 const updateCart = (quantity) => {
@@ -70,14 +69,16 @@ const updateCart = (quantity) => {
 .menu-image {
   width: 80px;
   height: 80px;
-  margin-right: 10px;
+  margin-right: 14px;
   object-fit: cover;
+  border-radius: 12px;
 }
 
 .menu-info {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  gap: 18px;
 }
 
 .menu-name {

@@ -5,10 +5,12 @@ import { useInfiniteScroll } from "@vueuse/core";
 import { useRouter, useRoute } from "vue-router";
 import api from "@/api/axiosInstance";
 import noImage from "@/assets/noimage.png"; // fallback 이미지 import
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
 const router = useRouter();
 const route = useRoute();
 const festivalId = route.params.festivalId;
+const loading = ref(false);
 
 const boothList = ref([]);
 const page = ref(1);
@@ -20,6 +22,7 @@ const fetchBooths = async () => {
 
   try {
     isLoading.value = true;
+    loading.value = true;
     const res = await api.get(`/booth/${festivalId}`, {
       params: {
         page: page.value,
@@ -47,6 +50,7 @@ const fetchBooths = async () => {
     console.error("fetchBooths error:", error);
   } finally {
     isLoading.value = false;
+    loading.value = false;
   }
 };
 
@@ -110,7 +114,7 @@ onMounted(() => {
         </div>
 
         <!-- 무한스크롤 로딩 -->
-        <div ref="target" class="load-more" v-if="isLoading">로딩 중...</div>
+        <loadingComponent v-if="loading" />
       </div>
     </div>
   </div>

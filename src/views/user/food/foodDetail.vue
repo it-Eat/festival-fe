@@ -13,11 +13,13 @@
       <div class="content" v-if="storeInfo">
         <!-- 대표 이미지 -->
         <div class="main-image-container">
-          <img
-            :src="storeInfo.image || 'https://via.placeholder.com/600x300'"
-            alt="대표 이미지"
-            class="mainImg"
-          />
+          <div>
+            <img
+              :src="storeInfo.image || noImage"
+              alt="대표 이미지"
+              class="mainImg"
+            />
+          </div>
         </div>
 
         <!-- 가게 정보 -->
@@ -51,7 +53,7 @@
 
       <!-- 로딩 화면 -->
       <div v-else class="loading">
-        <p>가게 정보를 불러오는 중...</p>
+        <loadingComponent />
       </div>
     </div>
   </div>
@@ -64,6 +66,8 @@ import api from "@/api/axiosInstance";
 import BackHeader from "@/components/common/backHeader.vue";
 import MenuItem from "@/components/common/menuItem.vue";
 import { useCartStore } from "@/stores/cartStores";
+import noImage from "@/assets/noimage.png";
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -155,11 +159,7 @@ onMounted(() => {
   margin: auto;
   box-sizing: border-box;
 }
-@media (max-width: 900px) {
-  .home {
-    width: 100%;
-  }
-}
+
 .header {
   width: 100%;
   margin-bottom: 8px;
@@ -173,13 +173,18 @@ onMounted(() => {
   width: 100%;
   border-radius: 4px;
   overflow: hidden;
-  margin-bottom: 16px;
+  margin: 16px 0 38px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
-.main-image-container img {
+.mainImg {
   width: 100%;
   display: block;
-  object-fit: cover;
+  object-fit: fill;
   max-height: 300px;
+  border-radius: 12px;
 }
 .store-info {
   margin-bottom: 20px;
@@ -238,5 +243,11 @@ onMounted(() => {
   padding: 20px;
   font-size: 1rem;
   color: #555;
+}
+
+@media (max-width: 600px) {
+  .home {
+    width: 100%;
+  }
 }
 </style>
