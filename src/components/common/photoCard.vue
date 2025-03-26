@@ -1,7 +1,10 @@
 <script setup>
 import { defineProps } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import noImage from "@/assets/noimage.png"; // fallback 이미지 import
+
+const route = useRoute();
+const festivalId = route.params.festivalId;
 
 const props = defineProps({
   item: {

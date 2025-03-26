@@ -2,12 +2,14 @@
 import backHeader from "@/components/common/backHeader.vue";
 import { ref } from "vue";
 import axios from "axios";
-
+import { useRoute } from "vue-router";
 const title = ref("");
 const content = ref([]);
 const lossType = ref([]);
 const images = ref([]);
-const festivalId = 1; // 실제 festivalId로 변경 필요
+
+const route = useRoute();
+const festivalId = route.params.festivalId;
 
 const submitPost = async () => {
   const formData = new FormData();

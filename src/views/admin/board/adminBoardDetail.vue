@@ -5,7 +5,13 @@
       <!-- 게시글 카드 -->
       <div class="board-container">
         <div class="board-card">
-          <h2 class="board-title">{{ board?.title || "제목 없음" }}</h2>
+          <div class="board-header">
+            <h2 class="board-title">{{ board?.title || "제목 없음" }}</h2>
+            <button class="delete-btn" @click="handleDeleteBoard">
+              🗑 삭제
+            </button>
+          </div>
+
           <div class="board-info">
             <p>
               <strong>작성자:</strong> {{ board?.userName || "알 수 없음" }}
@@ -95,7 +101,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { getBoardDetail, getComments } from "@/api/admin";
+import { getBoardDetail, getComments, deleteBoard } from "@/api/admin";
 import api from "@/api/axiosInstance";
 
 const route = useRoute();
@@ -105,7 +111,7 @@ const comments = ref([]);
 // 현재 이미지 인덱스
 const currentImageIndex = ref(0);
 const selectedCommentId = ref(null);
-
+const festivalId = router.currentRoute.value.params.festivalId;
 // 날짜 포맷팅 함수
 const formatDate = (dateString) => {
   if (!dateString) return "-";
@@ -161,7 +167,16 @@ const fetchComments = async () => {
     console.error("댓글 API 호출 실패:", error);
   }
 };
-
+const handleDeleteBoard = async () => {
+  try {
+    const response = await deleteBoard(board.value.id, festivalId);
+    if (response) {
+      router.push(`/admin/${festivalId}/adminBoard`);
+    }
+  } catch (error) {
+    console.error("게시글 삭제 실패:", error);
+  }
+};
 // 선택된 댓글 삭제 처리 함수
 const deleteComment = async () => {
   if (!selectedCommentId.value) {
@@ -187,7 +202,7 @@ const deleteComment = async () => {
 };
 
 const goBack = () => {
-  router.push("/admin/adminBoard");
+  router.push(`/admin/${festivalId}/adminBoard`);
 };
 
 const nextImage = () => {
@@ -218,6 +233,11 @@ onMounted(() => {
   max-width: 1500px;
   margin: 40px auto;
   padding: 0 20px;
+}
+.board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* 게시글(왼쪽) & 댓글(오른쪽)을 가로로 나란히 배치 */

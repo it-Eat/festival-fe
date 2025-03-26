@@ -5,17 +5,18 @@ import { useFoodStore } from "@/stores/food";
 import { onMounted, computed } from "vue";
 
 const router = useRouter();
+const festivalId = router.currentRoute.value.params.festivalId;
 
 const foodStore = useFoodStore();
 
 onMounted(() => {
-  foodStore.fetchItems();
+  foodStore.fetchItems(festivalId);
 });
 
 const allFoods = computed(() => [...foodStore.foods]);
 
 const goToFoodList = () => {
-  router.push("/user/food/FoodList");
+  router.push(`/${festivalId}/food/FoodList`);
 };
 </script>
 

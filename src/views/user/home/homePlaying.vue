@@ -1,15 +1,17 @@
 <script setup>
-import { useRouter } from "vue-router";
 import photoCard from "@/components/common/photoCard.vue";
 import { usePlayingStore } from "@/stores/playing";
 import { onMounted, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
+const route = useRoute();
 const router = useRouter();
+const festivalId = route.params.festivalId;
 
 const playingStore = usePlayingStore();
 
 onMounted(() => {
-  playingStore.fetchItems();
+  playingStore.fetchItems(festivalId);
 });
 
 // 서버 데이터 + 더미 데이터 합치기
@@ -18,7 +20,7 @@ const allPlays = computed(() =>
 );
 
 const goToPlayingList = () => {
-  router.push("/user/playing/playingList");
+  router.push(`/${festivalId}/playing/playingList`);
 };
 </script>
 

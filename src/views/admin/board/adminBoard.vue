@@ -8,25 +8,24 @@
     </div>
 
     <div class="container-list">
-      <hr class="line-strong" />
       <table class="custom-table">
         <thead>
           <tr>
-            <th style="width: 120px">작성자</th>
-            <th style="width: 160px">제목</th>
-            <th style="width: 470px">내용</th>
-            <th style="width: 200px">작성일자</th>
+            <th style="width: 20%">작성자</th>
+            <th style="width: 25%">제목</th>
+            <th style="width: 35%">내용</th>
+            <th style="width: 20%">작성일자</th>
           </tr>
         </thead>
       </table>
-      <hr class="line-light" />
+
       <adminList :items="boards" routeName="adminBoardDetail" />
 
       <div class="pagination-nav">
         <button @click="goToPreviousPage" :disabled="currentPage === 1">
           이전
         </button>
-        <span>페이지 {{ currentPage }} / {{ maxPage }}</span>
+        <span>{{ currentPage }} / {{ maxPage }}</span>
         <button @click="goToNextPage" :disabled="currentPage >= maxPage">
           다음
         </button>
@@ -41,22 +40,21 @@ import searchBar from "@/components/admin/common/searchBar.vue";
 import adminList from "@/components/admin/common/adminList.vue";
 import adminCalendar from "@/components/admin/common/adminCalendar.vue";
 import { getBoards } from "@/api/admin.js";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const boards = ref([]);
 const currentPage = ref(1);
 const pageSize = ref(10);
 const totalItems = ref(0);
+const festivalId = router.currentRoute.value.params.festivalId;
+const maxPage = ref(0);
 
 const filters = ref({
   startDate: "",
   endDate: "",
   keyword: "",
   typeSelect: "",
-});
-
-// 최대 페이지 계산 (전체 항목 수와 페이지당 개수를 기반)
-const maxPage = computed(() => {
-  return Math.ceil(totalItems.value / pageSize.value) || 1;
 });
 
 const handleSearch = () => {
@@ -67,7 +65,6 @@ const handleSearch = () => {
 // 게시판 데이터 가져오기
 const getBoardList = async () => {
   try {
-    const festivalId = 1;
     const query = {
       page: currentPage.value,
       pageSize: pageSize.value,
@@ -79,21 +76,10 @@ const getBoardList = async () => {
     };
     const response = await getBoards(festivalId, query);
 
-    if (response && response.total !== undefined) {
-      boards.value = response.items;
-      totalItems.value = response.total;
-    } else if (Array.isArray(response)) {
-      boards.value = response;
-      totalItems.value = 50;
-    }
-    // 그 외의 경우 기본값 할당
-    else {
-      boards.value = [];
-      totalItems.value = 0;
-    }
+    maxPage.value = response.totalPage;
+    boards.value = response.data;
 
     console.log("API 응답 데이터:", response);
-    boards.value = response;
   } catch (error) {
     console.error("API 호출 실패:", error);
   }
@@ -130,7 +116,6 @@ onMounted(() => {
 /* 전체 Wrapper */
 .board-wrapper {
   max-width: 2000px;
-  margin: 40px; /* 페이지 가운데 정렬 */
   padding: 0 20px;
 }
 
@@ -138,7 +123,6 @@ onMounted(() => {
 h1 {
   font-size: 2rem;
   margin-bottom: 30px;
-  text-shadow: 4px 4px rgb(226, 223, 223);
 }
 
 /* 검색/날짜 섹션 */
@@ -165,16 +149,9 @@ h1 {
 /* 테이블 영역 */
 .container-list {
   background-color: #fff;
-  padding: 20px;
   border-radius: 8px;
 }
 
-/* 진한 선 */
-.line-strong {
-  border: none;
-  border-top: 2px solid #333;
-  margin-bottom: 10px;
-}
 /* 옅은 선 */
 .line-light {
   border: none;
@@ -189,14 +166,17 @@ h1 {
   border-spacing: 0;
   font-size: 1rem;
   text-align: center;
+  margin-bottom: 10px;
 }
 
 /* 테이블 헤더 */
 .custom-table thead th {
-  border-bottom: 2px solid #333;
-  padding: 12px 8px;
+  padding: 12px;
   font-weight: 600;
-  background-color: #f9f9f9;
+  background-color: #fff5f4;
+  color: #fe6f61;
+  border-bottom: 2px solid #fe6f61;
+  border-top: 2px solid #fe6f61;
 }
 
 /* 페이지네이션 */
@@ -210,20 +190,27 @@ h1 {
 
 .pagination-nav button {
   padding: 8px 16px;
-  border: none;
+  border: 1px solid #fe6f61;
   border-radius: 4px;
-  background-color: #ff6f61;
-  color: white;
+  background-color: white;
+  color: #fe6f61;
   cursor: pointer;
 }
 
+.pagination-nav button:hover:not(:disabled) {
+  background-color: #fe6f61;
+  color: white;
+}
 .pagination-nav button:disabled {
-  background-color: #ccc;
-  cursor: default;
+  border-color: #ddd;
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
 }
 
 .pagination-nav span {
   font-size: 1rem;
-  font-weight: bold;
+  font-weight: 500;
+  color: #333;
 }
 </style>

@@ -3,7 +3,10 @@
     <div class="home">
       <!-- 상단 헤더 -->
       <div class="header">
-        <BackHeader :title="storeInfo?.name || '로딩 중...'" category="foodDetail" />
+        <BackHeader
+          :title="storeInfo?.name || '로딩 중...'"
+          category="foodDetail"
+        />
       </div>
 
       <!-- 컨텐츠 영역 -->
@@ -21,10 +24,14 @@
         <div class="store-info">
           <h2 class="store-name">{{ storeInfo.name }}</h2>
           <div class="store-details">
-            <span class="store-location">위치 : {{ storeInfo.location || "정보 없음" }}</span>
+            <span class="store-location"
+              >위치 : {{ storeInfo.location || "정보 없음" }}</span
+            >
             <div class="store-rating">
               <span class="star">★ {{ averageRating }}</span>
-              <span class="review" @click="goToReview">리뷰 {{ reviewCount }}개</span>
+              <span class="review" @click="goToReview"
+                >리뷰 {{ reviewCount }}개</span
+              >
             </div>
           </div>
           <div class="store-desc">{{ storeInfo.content }}</div>
@@ -63,7 +70,7 @@ const router = useRouter();
 const cartStore = useCartStore();
 
 const boothId = route.params.id;
-const festivalId = 1;
+const festivalId = route.params.festivalId;
 
 const storeInfo = ref(null);
 const menus = ref([]);

@@ -91,4 +91,5 @@ input[type="date"] {
   background-color: #fff;
   cursor: pointer;
 }
+
 </style>

@@ -16,6 +16,7 @@ export const useLostStore = defineStore("lost", {
   },
   actions: {
     async fetchItems(
+      festivalId,
       page = 1,
       pageSize = 50,
       orderBy = "createAt",
@@ -24,10 +25,10 @@ export const useLostStore = defineStore("lost", {
     ) {
       try {
         console.log(
-          `🔍 API 요청 URL: /board/board-loss/1?page=${page}&pageSize=${pageSize}&orderBy=${orderBy}&order=${order}&keyword=${keyword}`
+          `🔍 API 요청 URL: /board/board-loss/${festivalId}?page=${page}&pageSize=${pageSize}&orderBy=${orderBy}&order=${order}&keyword=${keyword}`
         );
 
-        const response = await api.get(`/board/board-loss/1`, {
+        const response = await api.get(`/board/board-loss/${festivalId}`, {
           params: {
             page: parseInt(page) || 1,
             pageSize: parseInt(pageSize) || 50, // ✅ 50개 요청

@@ -1,10 +1,8 @@
-import { localAxios } from "@/util/http-commons";
-
-const local = localAxios();
+import api from "@/api/axiosInstance";
 
 async function kakaoLogin() {
   try {
-    const response = await local.get(`user/auth/kakao/url`);
+    const response = await api.get(`user/auth/kakao/url`);
 
     if (!response.data || !response.data.continue) {
       throw new Error("카카오 로그인 URL을 받아오지 못했습니다.");
@@ -19,9 +17,8 @@ async function kakaoLogin() {
 }
 
 async function processKakaoCallback(code) {
-  const local = localAxios();
   try {
-    const response = await local.get(`/user/auth/kakao/callback?code=${code}`, {
+    const response = await api.get(`/user/auth/kakao/callback?code=${code}`, {
       withCredentials: true,
       headers: { "Content-Type": "application/json" },
     });
@@ -40,7 +37,7 @@ async function getNotice(festivalId, query) {
       ...query,
       pageSize: 50,
     };
-    const response = await local.get(`notice/${festivalId}`, {
+    const response = await api.get(`notice/${festivalId}`, {
       params,
       withCredentials: true,
       headers: { "Content-Type": "application/json" },
@@ -54,7 +51,7 @@ async function getNotice(festivalId, query) {
 
 async function getBoothDetail(boothId, festivalId) {
   try {
-    const response = await local.get(`booth/${boothId}/${festivalId}`, {
+    const response = await api.get(`booth/${boothId}/${festivalId}`, {
       withCredentials: true,
       headers: { "Content-Type": "application/json" },
     });
