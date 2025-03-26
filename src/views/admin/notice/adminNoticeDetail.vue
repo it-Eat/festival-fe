@@ -12,7 +12,6 @@
           <button class="close-btn" @click="closeModal">✕</button>
         </div>
       </div>
-      <hr />
 
       <!-- 모달 본문 -->
       <div class="modal-body">
@@ -30,6 +29,13 @@
         </template>
       </div>
     </div>
+    <loadingComponent v-if="loadingType !== 'none'" />
+    <checkModal
+      v-if="isModalOpen"
+      :modalType="modalType"
+      :modalConfig="modalConfig"
+      @cancel="handleCancel"
+    />
   </div>
 </template>
 
@@ -38,6 +44,8 @@ import { ref, watch } from "vue";
 import { defineProps, defineEmits } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
+import checkModal from "@/components/common/checkModal.vue";
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
 const router = useRouter();
 const festivalId = router.currentRoute.value.params.festivalId;
@@ -50,7 +58,14 @@ const emits = defineEmits(["close", "update-success"]);
 
 const isEditing = ref(false);
 const editedContent = ref("");
-
+const isModalOpen = ref(false);
+const modalType = ref("");
+const modalConfig = ref({
+  title: "",
+  message: "",
+  confirmText: "",
+});
+const loadingType = ref("none");
 // notice 값이 바뀔 때마다 편집용 내용을 초기화
 watch(
   () => props.notice,
@@ -76,9 +91,10 @@ const cancelEdit = () => {
 // 수정 API 호출
 const updateNotice = async () => {
   try {
+    loadingType.value = "loading";
     const noticeId = props.notice.id;
     const endpoint = `notice/${noticeId}/${festivalId}`;
-    const response = await axios.patch(
+    await axios.patch(
       endpoint,
       { content: editedContent.value },
       {
@@ -91,8 +107,21 @@ const updateNotice = async () => {
     closeModal();
   } catch (error) {
     console.error("공지사항 수정 실패", error);
-    alert("공지사항 수정에 실패했습니다.");
+    isModalOpen.value = true;
+    modalType.value = "notice";
+    modalConfig.value = {
+      title: "공지사항 수정 실패",
+      message: "공지사항 수정에 실패했습니다.",
+      confirmText: "",
+    };
+  } finally {
+    loadingType.value = "none";
   }
+};
+
+const handleCancel = () => {
+  isModalOpen.value = false;
+  isEditing.value = false;
 };
 
 // 모달 닫기
@@ -134,46 +163,41 @@ const closeModal = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 28px;
 }
 
 /* 버튼 그룹 (수정/닫기) */
 .button-group {
   display: flex;
-  gap: 8px;
+  gap: 24px;
 }
 
 /* 수정 버튼 스타일 */
 .edit-btn {
-  background-color: #835af1;
-  color: #fff;
-  border: none;
+  background-color: #fff;
+  color: #ff6b6b;
+  border: 1px solid #ff6b6b;
   border-radius: 4px;
   padding: 6px 12px;
   cursor: pointer;
 }
 .edit-btn:hover {
-  background-color: #6c42e1;
+  background-color: #ff6b6b;
+  color: white;
 }
 
 /* 닫기 버튼 */
 .close-btn {
   background: transparent;
   border: none;
-  font-size: 1.2rem;
+  font-size: 18px;
   cursor: pointer;
   color: #333;
 }
 
-/* 구분선 */
-.modal-content hr {
-  margin: 12px 0;
-  border: none;
-  border-top: 1px solid #ddd;
-}
-
 /* 모달 바디 */
 .modal-body {
-  max-height: 60vh;
+  max-height: 90%;
   /* 세로 스크롤은 유지, 가로 스크롤은 숨김 */
   overflow-y: auto;
   overflow-x: hidden;
@@ -182,14 +206,17 @@ const closeModal = () => {
   white-space: pre-wrap;
   word-wrap: break-word; /* 또는 overflow-wrap: break-word; */
 
-  font-size: 1rem;
+  font-size: 16px;
   line-height: 1.5;
+  scrollbar-width: thin;
+  scrollbar-color: #ff6b6be0 transparent;
 }
 
 /* 고정 사이즈의 수정 모드 textarea */
 .edit-textarea {
-  width: 95%;
-  height: 200px; /* 고정 높이 */
+  width: 100%;
+  max-height: 500px;
+  min-height: 500px;
   padding: 10px;
   font-size: 1rem;
   border: 1px solid #ddd;
@@ -199,10 +226,15 @@ const closeModal = () => {
   /* 세로 스크롤은 자동, 가로 스크롤은 숨김 */
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-width: thin;
 
   /* 긴 문자열 자동 줄바꿈 */
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+
+.edit-textarea:focus {
+  outline: none;
 }
 
 /* 수정 모드 버튼 그룹 */
@@ -214,19 +246,27 @@ const closeModal = () => {
 }
 
 .update-btn {
-  background-color: #835af1;
+  background-color: #ff6b6b;
   color: #fff;
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
 }
+.update-btn:hover {
+  background-color: #e96161;
+  color: white;
+}
 .cancel-btn {
   background-color: #ccc;
-  color: #333;
+  color: #000;
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
+}
+.cancel-btn:hover {
+  background-color: #b8b8b8;
+  color: white;
 }
 </style>

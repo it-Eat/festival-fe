@@ -52,14 +52,15 @@ input:focus {
   float: right;
   width: 100px;
   height: 32px;
-  border: 2px solid #fe6f61;
+  border: 1px solid #ff6b6b;
   background-color: white;
   border-radius: 8px;
   cursor: pointer;
+  color: #ff6b6b;
 }
 
 .btn:hover {
-  background-color: #fe6f61;
+  background-color: #ff6b6b;
   color: white;
   cursor: pointer;
 }

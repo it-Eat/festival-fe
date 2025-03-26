@@ -2,11 +2,9 @@
 import { ref, onMounted } from "vue";
 import menuComponent from "@/components/admin/menuComponent.vue";
 import { useRouter } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
 import { logout } from "@/api/admin";
 const logOk = ref(false);
 const router = useRouter();
-const authStore = useAuthStore();
 
 // 페이지 로드 시 로그인 상태 확인
 onMounted(() => {
@@ -56,7 +54,7 @@ function handleLogout() {
 
 .logout-btn {
   margin-top: 10px;
-  background-color: #fe6f61;
+  background-color: #ff6b6b;
   width: 100%;
   height: 50px;
   border: none;
@@ -64,5 +62,13 @@ function handleLogout() {
   color: white;
   font-size: 16px;
   font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #f0675b;
+  transform: scale(1.02);
+  transition: all 0.3s ease;
 }
 </style>

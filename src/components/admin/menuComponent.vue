@@ -60,21 +60,16 @@ function goToNotice() {
       <h2>축제 관리자님</h2>
     </div>
 
-    <div class="menu-item" @click="goToBooth">
-      <h3>상점 관리</h3>
-    </div>
+    <div class="menu-item" @click="goToBooth">상점 관리</div>
 
     <div class="menu-section">
-      <p class="section-title">게시판 관리</p>
-      <ul class="submenu">
-        <li @click="goToLost">분실물</li>
-        <li @click="goToBoard">게시판</li>
-      </ul>
+      <!-- <ul class="submenu"> -->
+      <h4 class="menu-item-list" @click="goToLost">분실물 관리</h4>
+      <h4 class="menu-item-list" @click="goToBoard">게시판 관리</h4>
+      <!-- </ul> -->
     </div>
 
-    <div class="menu-item" @click="goToNotice">
-      <h3>공지사항</h3>
-    </div>
+    <div class="menu-item" @click="goToNotice">공지사항</div>
   </div>
 </template>
 
@@ -85,7 +80,7 @@ function goToNotice() {
 }
 
 .admin-info {
-  padding: 20px 0;
+  padding: 0 0 28px 0;
   border-bottom: 2px solid #e9ecef;
   margin-bottom: 20px;
 }
@@ -95,64 +90,42 @@ function goToNotice() {
   color: #343a40;
   margin: 0;
   word-break: keep-all;
+  line-height: 1.3;
 }
 
 .menu-item {
   padding: 15px;
-  margin: 5px 0;
-  border-radius: 8px;
+  margin: 24px 0;
   cursor: pointer;
   transition: all 0.3s ease;
-}
-
-.menu-item:hover {
-  background-color: #e9ecef;
-  transform: translateX(5px);
-}
-
-.menu-item h3 {
-  margin: 0;
   font-size: 1rem;
   color: #495057;
+  font-weight: bold;
+}
+
+.menu-item-list {
+  padding: 15px;
+  margin: 24px 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #495057;
+}
+
+.menu-item:hover,
+.menu-item-list:hover {
+  background-color: #e9ecef;
+  transform: translateX(5px);
+  color: #ff6b6b;
 }
 
 .menu-section {
   margin: 20px 0;
 }
 
-.section-title {
-  font-size: 1rem;
-  color: #6c757d;
-  margin: 0;
-  padding: 15px;
-  font-weight: bold;
-}
-
-.submenu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.submenu li {
-  padding: 12px 25px;
-  color: #495057;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border-radius: 4px;
-  margin: 2px 0;
-}
-
-.submenu li:hover {
-  background-color: #e9ecef;
-  color: #228be6;
-  transform: translateX(5px);
-}
-
 /* 활성 메뉴 스타일 */
 .active {
   background-color: #e9ecef;
-  color: #228be6 !important;
+  color: #ff6b6b !important;
 }
 
 /* 반응형 디자인 */
