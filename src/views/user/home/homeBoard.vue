@@ -2,18 +2,21 @@
 import SmallList from "@/components/common/smallList.vue";
 import { useLostStore } from "@/stores/lost";
 import { useBoardStore } from "@/stores/board";
-import { onMounted, computed } from "vue";
+import { onMounted, computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import loading from "@/components/common/loadingComponent.vue";
 
 const route = useRoute();
 const festivalId = route.params.festivalId;
 
 const lostStore = useLostStore();
 const boardStore = useBoardStore();
-
+const loadingType = ref("none");
 onMounted(() => {
+  loadingType.value = "loading";
   lostStore.fetchItems(festivalId);
   boardStore.fetchItems(festivalId);
+  loadingType.value = "none";
 });
 
 const allLosts = computed(() =>
@@ -31,11 +34,12 @@ const handleMoreClick = () => {
 </script>
 
 <template>
+  <loading v-if="loadingType === 'loading'" />
   <div class="content-area">
     <div class="container">
       <div class="section">
         <div class="menu">분실물</div>
-        <hr class="divider" />
+
         <SmallList
           class="list-item"
           v-for="lostItem in allLosts.slice(0, 3)"
@@ -50,7 +54,7 @@ const handleMoreClick = () => {
 
       <div class="section">
         <div class="menu">게시판</div>
-        <hr class="divider" />
+
         <SmallList
           class="list-item"
           v-for="boardItem in allBoards.slice(0, 3)"
@@ -78,6 +82,7 @@ const handleMoreClick = () => {
   max-width: 600px;
   padding: 10px;
   box-sizing: border-box;
+  gap: 24px;
 }
 
 .content-area {
@@ -110,9 +115,9 @@ const handleMoreClick = () => {
   margin-bottom: 8px;
   width: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
   overflow: hidden;
+  justify-content: space-between;
 }
 
 .menu {
@@ -125,7 +130,7 @@ const handleMoreClick = () => {
   border: none;
   height: 1px;
   background-color: black;
-  margin: 4px 0; /* Reduced margin for spacing */
+  margin-bottom: 20px;
 }
 
 .more-button-container {
