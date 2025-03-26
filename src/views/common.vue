@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 import backHeader from "@/components/common/backHeader.vue";
 import { getFestivalList } from "@/stores/festival";
 import { dateFormat } from "@/util/dateFormat";
-import { useRouter, RouterLink } from "vue-router";
+import { useRouter } from "vue-router";
 import festivalDefault from "@/assets/festivalDefault.png";
 import { useFestivalInfoStore } from "@/stores/festivalInfo"; // 새 Pinia 스토어 import
 import loadingComponent from "@/components/common/loadingComponent.vue";
@@ -154,11 +154,6 @@ async function searchFestival() {
         :category="'home'"
         :showType="false"
       />
-      <div class="body-header-link-btn">
-        <p>일단 상단에 배치했고, 햄버거 수정이 없으면 하겠슴다!</p>
-        <br />
-        <RouterLink to="/user" class="router-link">사용자</RouterLink>
-      </div>
 
       <form class="body-header" @submit.prevent="searchFestival">
         <input

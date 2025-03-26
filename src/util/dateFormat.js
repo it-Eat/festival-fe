@@ -36,3 +36,34 @@ export const dateFormatWithTime2 = (dateStr) => {
     minute: "2-digit",
   });
 };
+
+// 상대적 시간 표시 함수 추가
+export const getRelativeTime = (dateStr) => {
+  const now = new Date();
+  const past = new Date(dateStr);
+  const diff = now - past; // 밀리초 단위 차이
+
+  // 시간 단위 정의 (밀리초 기준)
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+  const week = 7 * day;
+  const month = 30 * day;
+  const year = 365 * day;
+
+  if (diff < minute) {
+    return "방금 전";
+  } else if (diff < hour) {
+    return `${Math.floor(diff / minute)}분 전`;
+  } else if (diff < day) {
+    return `${Math.floor(diff / hour)}시간 전`;
+  } else if (diff < week) {
+    return `${Math.floor(diff / day)}일 전`;
+  } else if (diff < month) {
+    return `${Math.floor(diff / week)}주 전`;
+  } else if (diff < year) {
+    return `${Math.floor(diff / month)}개월 전`;
+  } else {
+    return `${Math.floor(diff / year)}년 전`;
+  }
+};

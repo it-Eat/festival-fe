@@ -1,35 +1,40 @@
 <script setup>
 import backHeader from "@/components/common/backHeader.vue";
-import lostChip from "@/components/common/lostChip.vue";
 import { watch, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { useLostStore } from "@/stores/lost";
+import { useBoardStore } from "@/stores/board";
 import { useCommentStore } from "@/stores/comment";
 import { useUserStore } from "@/stores/userStore"; // New import
 // 날짜 포맷 함수 임포트 (경로는 실제 프로젝트 구조에 맞게 조정)
-import { dateFormatWithTime } from "@/util/dateFormat";
+import { dateFormatWithTime, getRelativeTime } from "@/util/dateFormat";
+import loadingComponent from "@/components/common/loadingComponent.vue";
+
 const route = useRoute();
-const lostStore = useLostStore();
+const boardStore = useBoardStore();
 const commentStore = useCommentStore();
 const userStore = useUserStore(); // New initialization
 const currentId = Number(route.params.id);
 const festivalId = 1;
 const currentItem = ref(null);
+const isLoading = ref(false);
 
-const loadLostItemDetail = async () => {
+const loadBoardDetail = async () => {
   try {
-    await lostStore.fetchDetailItems(currentId, festivalId);
+    isLoading.value = true;
+    await boardStore.fetchDetailItems(currentId, festivalId);
     await commentStore.fetchComments(currentId, festivalId);
-    currentItem.value = lostStore.getLostDetail();
+    currentItem.value = boardStore.getBoardDetail();
   } catch (error) {
     console.error("데이터 로드 실패:", error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
-onMounted(loadLostItemDetail);
+onMounted(loadBoardDetail);
 
 watch(
-  () => lostStore.getLostDetail(),
+  () => boardStore.getBoardDetail(),
   (newVal) => {
     currentItem.value = newVal;
   },
@@ -39,9 +44,11 @@ watch(
 const newComment = ref("");
 
 const createComment = async () => {
+  isLoading.value = true;
   await commentStore.createComment(currentId, newComment.value, festivalId);
   newComment.value = "";
-  await loadLostItemDetail();
+  await loadBoardDetail();
+  isLoading.value = false;
 };
 
 const currentImageIndex = ref(0);
@@ -67,9 +74,16 @@ const formatDate = (dateString) => {
 };
 
 const deleteComment = async (commentId) => {
-  // New method
-  await commentStore.deleteComment(commentId, currentId, festivalId);
-  await loadBoardDetail();
+  try {
+    isLoading.value = true;
+    // New method
+    await commentStore.deleteComment(commentId, currentId, festivalId);
+    await loadBoardDetail();
+  } catch (error) {
+    console.error("댓글 삭제 실패:", error);
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 
@@ -77,19 +91,12 @@ const deleteComment = async (commentId) => {
   <div v-if="currentItem">
     <backHeader class="header" />
     <div class="a">
-      <hr />
       <div class="title">
-        <lostChip
-          v-if="currentItem?.lossType"
-          :type="currentItem.lossType"
-          class="left-chip"
-        />
         <span class="title-text">{{ currentItem?.title || "제목 없음" }}</span>
       </div>
-      <hr />
 
       <div class="meta-data-bar">
-        <div>{{ currentItem?.userName || "이름 없음" }}</div>
+        <div>작성자 : {{ currentItem?.userName || "이름 없음" }}</div>
         <div>{{ formatDate(currentItem?.createdAt) || "날짜 없음" }}</div>
       </div>
 
@@ -97,30 +104,43 @@ const deleteComment = async (commentId) => {
         class="main-contents"
         v-if="currentItem?.images && currentItem.images.length"
       >
-        <button @click="prevImage" class="nav-button left">◀</button>
+        <div class="image-container">
+          <button
+            v-if="currentImageIndex > 0"
+            @click="prevImage"
+            class="nav-button left"
+          >
+            ◀
+          </button>
 
-        <img
-          :src="currentItem.images[currentImageIndex]"
-          :alt="currentItem?.title || '이미지 없음'"
-          class="slider-image"
-        />
+          <img
+            :src="currentItem.images[currentImageIndex]"
+            :alt="currentItem?.title || '이미지 없음'"
+            class="slider-image"
+          />
 
-        <button @click="nextImage" class="nav-button right">▶</button>
+          <button
+            v-if="currentImageIndex < currentItem.images.length - 1"
+            @click="nextImage"
+            class="nav-button right"
+          >
+            ▶
+          </button>
+        </div>
       </div>
       <div class="content">{{ currentItem?.content || "내용 없음" }}</div>
-      <hr />
 
       <div class="comment-section">
         <textarea
           v-model="newComment"
           placeholder="댓글을 입력하세요"
         ></textarea>
-        <button @click="createComment">댓글 작성</button>
+        <button class="comment-button" @click="createComment">댓글 작성</button>
       </div>
 
       <div class="comment-list-container">
         <p class="comment-header">
-          댓글 수: {{ commentStore.commentList.length }}
+          댓글 수 : {{ commentStore.commentList.length }}
         </p>
         <div class="comment-list" v-if="commentStore.commentList.length > 0">
           <div
@@ -131,14 +151,14 @@ const deleteComment = async (commentId) => {
             <span class="comment-user">{{ comment.userName }}</span>
             <span class="comment-content">{{ comment.content }}</span>
             <span class="comment-date">
-              {{ formatDate(comment.createdAt) }}
+              {{ getRelativeTime(comment.createdAt) }}
             </span>
             <button
               v-if="comment.userName === userStore.user?.userName"
               @click="deleteComment(comment.id)"
               class="comment-delete-button"
             >
-              X
+              삭제
             </button>
           </div>
         </div>
@@ -146,14 +166,14 @@ const deleteComment = async (commentId) => {
       </div>
     </div>
   </div>
-  <div v-else>Loading...</div>
+  <loadingComponent v-if="isLoading" />
 </template>
 
 <style scoped>
 .a {
   max-width: 600px;
-  margin: 20px auto;
-  padding: 15px;
+  margin: 32px auto;
+  padding: 18px;
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -161,14 +181,13 @@ const deleteComment = async (commentId) => {
 
 .header {
   max-width: 600px;
-  margin: 0 auto 15px auto;
+  margin: 15px auto;
 }
 
 .title {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   position: relative;
   text-align: center;
   font-size: 18px;
@@ -177,65 +196,97 @@ const deleteComment = async (commentId) => {
   color: #333333;
 }
 
-.left-chip {
-  position: absolute;
-  left: 0;
-}
-
 .title-text {
   flex-grow: 1;
 }
 
 .meta-data-bar {
-  background-color: #f5f7fa;
-  padding: 10px 15px;
+  padding: 18px 0;
   border-radius: 8px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   display: flex;
   justify-content: space-between;
-  color: #555555;
+  color: #666;
   margin-top: 10px;
 }
 
+.content {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 500;
+  word-break: break-word;
+  line-height: 1.5;
+}
 .main-contents {
-  padding: 20px;
-  text-align: center;
+  width: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-container {
+  width: 350px;
+  height: 250px;
+  position: relative;
+  margin: 10px 0;
 }
 
 .main-contents img {
-  max-width: 100%;
-  height: auto;
+  width: 100%;
+  height: 100%;
   border-radius: 10px;
-  margin: 20px auto;
+  object-fit: fill;
 }
 
 .comment-section {
-  margin-top: 20px;
+  margin-top: 32px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .comment-section textarea {
   width: 100%;
-  height: 60px;
+  height: 37px;
   margin-bottom: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
   padding: 8px;
+  resize: none;
+}
+.comment-section textarea:focus {
+  outline: none;
 }
 
+.comment-button {
+  background-color: white;
+  color: #ff6f61;
+  border: 1px solid #ff6f61;
+  border-radius: 5px;
+  padding: 0 16px;
+  white-space: nowrap;
+  height: 35px;
+}
+.comment-button:hover {
+  background-color: #ff6f61;
+  color: white;
+}
 .comment-list {
-  background-color: #f8f9fa;
-  padding: 10px;
-  border-radius: 8px;
-  margin-top: 20px;
+  padding: 10px 0;
+  border: none;
 }
 
 .comment-list div {
-  background-color: #ffffff;
-  padding: 8px;
+  padding: 8px 0;
   margin-bottom: 8px;
   border-radius: 6px;
-  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.08);
+  border: none;
+  display: flex;
+  align-items: flex-end;
 }
 
 .nav-button {
@@ -245,10 +296,11 @@ const deleteComment = async (commentId) => {
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
-  padding: 10px;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
   border-radius: 50%;
+  width: 35px;
+  height: 35px;
 }
 
 .left {
@@ -260,59 +312,49 @@ const deleteComment = async (commentId) => {
 }
 
 .comment-list-container {
-  margin-top: 20px;
+  margin-top: 12px;
+  border: none;
 }
 
 .comment-header {
   font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.comment-list {
-  border-top: 1px solid #000;
-  margin-top: 10px;
 }
 
 .comment-item {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px 10px;
-  border-bottom: 1px solid #000;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 10px;
 }
 
 .comment-user {
-  font-weight: bold;
+  color: #ff6f61;
   font-size: 16px;
 }
 
 .comment-content {
   flex: 1;
   margin-left: 15px;
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .comment-date {
   font-size: 14px;
-  color: #666;
+  color: #777;
   white-space: nowrap;
 }
 
 .comment-delete-button {
-  /* New styles for delete button */
-  margin-left: 10px;
-  background-color: #ff4d4f;
-  color: white;
+  background-color: white;
+  color: #ff6f61;
   border: none;
   border-radius: 4px;
-  padding: 4px 8px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11px;
+  margin-left: 10px;
 }
 
 .comment-delete-button:hover {
-  /* New hover effect */
-  background-color: #d9363e;
+  color: #e06156;
 }
 </style>
