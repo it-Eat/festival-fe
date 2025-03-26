@@ -6,6 +6,7 @@ import { dateFormat } from "@/util/dateFormat";
 import { useRouter, RouterLink } from "vue-router";
 import festivalDefault from "@/assets/festivalDefault.png";
 import { useFestivalInfoStore } from "@/stores/festivalInfo"; // 새 Pinia 스토어 import
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
 const isLoading = ref(false);
 const hasMoreData = ref(true);
@@ -14,6 +15,7 @@ const limit = ref(9);
 const keyword = ref("");
 const festivalItems = ref([]);
 const router = useRouter();
+const loading = ref(false);
 
 // 스토어 인스턴스 생성
 const festivalInfoStore = useFestivalInfoStore();
@@ -59,6 +61,7 @@ async function loadMoreData() {
   if (isLoading.value || !festivalItems.value.nextCursor) return;
 
   isLoading.value = true;
+  loading.value = true;
   try {
     cursor.value = festivalItems.value.nextCursor;
     const response = await getFestivalList(
@@ -79,6 +82,7 @@ async function loadMoreData() {
     console.error("추가 데이터 로드 실패:", error);
   } finally {
     isLoading.value = false;
+    loading.value = false;
   }
 }
 
@@ -100,6 +104,7 @@ function formatDate(dateStr) {
 onMounted(() => {
   const fetchInitialData = async () => {
     isLoading.value = true;
+    loading.value = true;
     try {
       const response = await getFestivalList(
         cursor.value,
@@ -109,6 +114,7 @@ onMounted(() => {
       festivalItems.value = response;
     } finally {
       isLoading.value = false;
+      loading.value = false;
     }
   };
 
@@ -124,6 +130,7 @@ async function searchFestival() {
   cursor.value = 0;
   hasMoreData.value = true;
   isLoading.value = true;
+  loading.value = true;
   try {
     const response = await getFestivalList(
       cursor.value,
@@ -133,6 +140,7 @@ async function searchFestival() {
     festivalItems.value = response;
   } finally {
     isLoading.value = false;
+    loading.value = false;
   }
 }
 </script>
@@ -202,7 +210,6 @@ async function searchFestival() {
       </div>
     </div>
 
-    <div v-if="isLoading" class="loading">데이터 로딩 중...</div>
     <div
       v-if="
         !hasMoreData && festivalItems.items && festivalItems.items.length > 0
@@ -211,6 +218,7 @@ async function searchFestival() {
     >
       더 이상 표시할 축제가 없습니다.
     </div>
+    <loadingComponent v-if="loading && isLoading" />
   </div>
 </template>
 

@@ -1,22 +1,66 @@
 <script setup>
 import HomeMenu from "@/components/home/homeMenu.vue";
 import backHeader from "@/components/common/backHeader.vue";
+import { getFestivalDetail } from "@/stores/festival";
+import { useRoute } from "vue-router";
+import { ref, onMounted, computed } from "vue";
+import loadingComponent from "@/components/common/loadingComponent.vue";
+import { dateFormat } from "@/util/dateFormat";
+
+const route = useRoute();
+const festivalId = route.params.festivalId;
+const festivalInfo = ref(null);
+const loading = ref("none");
+
+// 포맷된 날짜를 계산하는 computed 속성들
+const formattedStartDate = computed(() => {
+  if (!festivalInfo.value?.eventStartDate) return "날짜 미정";
+  return dateFormat(festivalInfo.value.eventStartDate)
+    .toLocaleString()
+    .split("오")[0];
+});
+
+const formattedEndDate = computed(() => {
+  if (!festivalInfo.value?.eventEndDate) return "날짜 미정";
+  return dateFormat(festivalInfo.value.eventEndDate)
+    .toLocaleString()
+    .split("오")[0];
+});
+
+// festival 정보를 가져오는 함수
+const fetchFestivalInfo = async () => {
+  try {
+    loading.value = "block";
+    const response = await getFestivalDetail(festivalId);
+    festivalInfo.value = response;
+  } catch (error) {
+    console.error("Festival 정보 로드 실패:", error);
+  } finally {
+    loading.value = "none";
+  }
+};
+
+onMounted(() => {
+  fetchFestivalInfo();
+});
 </script>
 
 <template>
   <backHeader
     class="header"
-    :title="'불꽃놀이 페스티벌'"
+    :title="festivalInfo?.festivalName || '축제'"
     :useUserName="false"
     :category="'home'"
-
   />
   <div class="home">
     <!-- 배너 -->
     <div class="banner">
-      <h2>2030.5.4</h2>
-      <h1>불꽃놀이 페스티벌</h1>
-      <p>화려하게 밤하늘을 물들이는 축제에 여러분을 초대합니다.</p>
+      <h4>축제 기간</h4>
+      <h2 v-if="festivalInfo">
+        {{ formattedStartDate }} ~ {{ formattedEndDate }}
+      </h2>
+      <h2 v-else>날짜 미정</h2>
+      <h1>{{ festivalInfo?.festivalName || "축제 이름" }}</h1>
     </div>
 
     <!-- 📌 homeMenu가 존재하는지 확인 -->
@@ -24,6 +68,7 @@ import backHeader from "@/components/common/backHeader.vue";
 
     <!-- 📌 Router-view는 homeMenu 아래에 위치해야 합니다 -->
     <router-view class="content-area" />
+    <loadingComponent v-if="loading === 'block'" />
   </div>
 </template>
 
@@ -48,11 +93,19 @@ import backHeader from "@/components/common/backHeader.vue";
   box-sizing: border-box;
   height: auto;
   max-height: 150px;
-  background: linear-gradient(to bottom, #4b0082, #ff6f61);
-  color: white;
-  padding: 12px;
+  background-image: url("@/assets/festivalBanner.jpg");
+  background-size: cover;
+  background-position: center 92%;
+  background-repeat: no-repeat;
+  color: #fff;
+  padding: 24px;
   text-align: center;
   border-radius: 0 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .banner h2 {

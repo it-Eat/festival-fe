@@ -53,13 +53,14 @@ const goToFoodList = () => {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   grid-auto-rows: minmax(120px, auto);
-  gap: 16px;
+  gap: 32px;
   width: 100%;
-  max-width: 450px;
+  max-width: 500px;
   padding: 10px;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   text-align: center;
+  justify-items: center;
 }
 
 .photoCard {
@@ -70,19 +71,6 @@ const goToFoodList = () => {
   text-align: center;
   width: 100%;
   height: 100%;
-}
-
-/* 먹거리 목록 스타일 (3행 2열) */
-.food-list {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3열 구성 */
-  grid-auto-rows: minmax(120px, auto); /* 행 크기 자동 조정 */
-  gap: 16px; /* 여백 증가 */
-  width: 100%;
-  max-width: 500px; /* 부모 요소와 일치 */
-  padding: 10px;
-  justify-content: space-between; /* 카드 간격 균등 배분 */
-  justify-items: center;
 }
 
 .more-button {
@@ -97,7 +85,7 @@ const goToFoodList = () => {
   justify-content: center;
   width: 180px;
   max-width: 200px;
-  margin-top: 20px;
+  margin-top: 32px;
   transition: background 0.3s;
 }
 
