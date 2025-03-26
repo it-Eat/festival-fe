@@ -191,7 +191,6 @@ onMounted(() => {
 <style scoped>
 .notice-wrapper {
   max-width: 2000px;
-  margin: 40px;
   padding: 0 20px;
 }
 
@@ -290,7 +289,8 @@ h1 {
   transition: background-color 0.2s;
 }
 .table-row:hover {
-  background-color: #f5f5f5;
+  background-color: #fff5f4;
+  cursor: pointer;
 }
 .custom-table tbody td {
   padding: 12px 8px;

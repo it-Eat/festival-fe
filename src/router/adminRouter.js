@@ -41,13 +41,13 @@ export default [
         component: adminNotice,
       },
       {
-        path: "adminBoardDetail/:boardId/:festivalId",
+        path: "adminBoardDetail/:boardId",
         name: "adminBoardDetail",
         component: adminBoardDetail,
         props: true,
       },
       {
-        path: "adminLostDetail/:boardId/:festivalId",
+        path: "adminLostDetail/:boardId",
         name: "adminLostDetail",
         component: adminLostDetail,
         props: true,

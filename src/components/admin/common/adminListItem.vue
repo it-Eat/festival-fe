@@ -1,6 +1,7 @@
 <script setup>
 import { defineProps } from "vue";
 import { useRouter } from "vue-router";
+import { dateFormatWithoutTime } from "@/util/dateFormat";
 const props = defineProps({
   item: Object,
   routeName: {
@@ -32,17 +33,25 @@ const goToDetail = () => {
 </script>
 
 <template>
-  <div class="list-item" @click="goToDetail" style="cursor: pointer">
-    <!-- 공통 항목 -->
-    <div style="margin-left: 80px; width: 100px">{{ item.userName }}</div>
-    <!-- LOSS 타입일 경우에만 표시할 항목 -->
-    <div style="width: 100px" v-if="item.boardType === 'LOSS'">
-      <div>{{ item.lossType === "LOSS" ? "분실" : "습득" }}</div>
+  <div class="list-item" @click="goToDetail">
+    <div class="item-cell user-name">
+      <div class="text-wrapper">{{ item.userName }}</div>
     </div>
-    <div style="width: 300px">{{ item.title }}</div>
-    <div style="width: 400px">{{ item.content }}</div>
-    <div style="width: 250px">
-      {{ new Date(item.createdAt).toLocaleString() }}
+    <div class="item-cell loss-type" v-if="item.boardType === 'LOSS'">
+      <div class="text-wrapper">
+        {{ item.lossType === "LOSS" ? "분실" : "습득" }}
+      </div>
+    </div>
+    <div class="item-cell title">
+      <div class="text-wrapper">{{ item.title }}</div>
+    </div>
+    <div class="item-cell content">
+      <div class="text-wrapper">{{ item.content }}</div>
+    </div>
+    <div class="item-cell date">
+      <div class="text-wrapper">
+        {{ dateFormatWithoutTime(item.createdAt) }}
+      </div>
     </div>
   </div>
 </template>
@@ -51,13 +60,50 @@ const goToDetail = () => {
 .list-item {
   display: flex;
   align-items: center;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ddd;
+  width: 100%;
+  border-bottom: 1px solid #ddd;
   border-radius: 4px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.list-item:hover {
+  background-color: #fff5f4;
+  cursor: pointer;
 }
 
-.list-item > div {
-  margin-right: 1rem; /* 각 요소 간 간격을 위해 추가 */
+.item-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.user-name {
+  width: 20%;
+}
+
+.loss-type {
+  width: 25%;
+}
+
+.title {
+  width: 25%;
+}
+
+.content {
+  width: 35%;
+}
+
+.date {
+  width: 20%;
+}
+
+/* 텍스트 래퍼에 말줄임표 스타일 적용 */
+.text-wrapper {
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
