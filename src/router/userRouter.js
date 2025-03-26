@@ -2,7 +2,7 @@ import boardList from "@/views/user/board/boardList.vue";
 import boardDetail from "@/views/user/board/boardDetail.vue";
 import boardWrite from "@/views/user/board/boardWrite.vue";
 import homeBoard from "@/views/user/home/homeBoard.vue";
-import homeFestInfo from "@/views/user/home/homeFestInfo.vue";
+import homeIntroduction from "@/views/user/home/homeIntroduction.vue";
 import homeFood from "@/views/user/home/homeFood.vue";
 import homePlaying from "@/views/user/home/homePlaying.vue";
 import homeComponent from "@/views/user/homeComponent.vue";
@@ -76,9 +76,9 @@ export default [
       },
       {
         // 홈화면 소형 축제정보
-        path: "homeFestInfo",
-        name: "homeFestInfo",
-        component: homeFestInfo,
+        path: "homeIntroduction",
+        name: "homeIntroduction",
+        component: homeIntroduction,
       },
       {
         // 홈화면 소형 먹거리
