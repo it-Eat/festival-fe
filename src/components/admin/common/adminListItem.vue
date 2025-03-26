@@ -1,7 +1,8 @@
 <script setup>
 import { defineProps } from "vue";
 import { useRouter } from "vue-router";
-import { dateFormatWithoutTime } from "@/util/dateFormat";
+import { dateFormatWithoutTime } from "../../../util/dateFormat.js";
+
 const props = defineProps({
   item: Object,
   routeName: {
@@ -33,77 +34,49 @@ const goToDetail = () => {
 </script>
 
 <template>
-  <div class="list-item" @click="goToDetail">
-    <div class="item-cell user-name">
-      <div class="text-wrapper">{{ item.userName }}</div>
-    </div>
-    <div class="item-cell loss-type" v-if="item.boardType === 'LOSS'">
-      <div class="text-wrapper">
-        {{ item.lossType === "LOSS" ? "분실" : "습득" }}
-      </div>
-    </div>
-    <div class="item-cell title">
-      <div class="text-wrapper">{{ item.title }}</div>
-    </div>
-    <div class="item-cell content">
-      <div class="text-wrapper">{{ item.content }}</div>
-    </div>
-    <div class="item-cell date">
-      <div class="text-wrapper">
-        {{ dateFormatWithoutTime(item.createdAt) }}
-      </div>
-    </div>
-  </div>
+  <tr class="list-item" @click="goToDetail">
+    <!-- 공통 항목 -->
+    <td style="flex: 1">{{ item.userName }}</td>
+    <!-- LOSS 타입일 경우에만 표시할 항목 -->
+    <td style="flex: 1" v-if="item.boardType === 'LOSS'">
+      <div>{{ item.lossType === "LOSS" ? "분실" : "습득" }}</div>
+    </td>
+    <td style="flex: 2">
+      {{
+        item.title.length > 12 ? item.title.slice(0, 10) + "..." : item.title
+      }}
+    </td>
+    <td style="flex: 3">
+      {{
+        item.content.length > 12
+          ? item.content.slice(0, 16) + "..."
+          : item.content
+      }}
+    </td>
+    <td style="flex: 2">
+      {{ dateFormatWithoutTime(item.createdAt) }}
+    </td>
+  </tr>
 </template>
 
 <style scoped>
 .list-item {
   display: flex;
   align-items: center;
-  width: 100%;
-  border-bottom: 1px solid #ddd;
-  border-radius: 4px;
-  transition: all 0.2s ease;
   cursor: pointer;
+  transition: all 0.2s ease;
+  justify-content: space-between;
+  width: 100%;
 }
+
+.list-item td {
+  padding: 17px 12px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
 .list-item:hover {
   background-color: #fff5f4;
   cursor: pointer;
-}
-
-.item-cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.user-name {
-  width: 20%;
-}
-
-.loss-type {
-  width: 25%;
-}
-
-.title {
-  width: 25%;
-}
-
-.content {
-  width: 35%;
-}
-
-.date {
-  width: 20%;
-}
-
-/* 텍스트 래퍼에 말줄임표 스타일 적용 */
-.text-wrapper {
-  width: 100%;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 </style>

@@ -7,6 +7,10 @@ defineProps({
     type: Array,
     required: true,
   },
+  placeholder: {
+    type: String,
+    required: true,
+  },
 });
 
 const key = ref("");
@@ -20,7 +24,7 @@ const onSelect = () => {
 <template>
   <div class="custom-select-container">
     <select class="custom-select" @change="onSelect">
-      <option value="" disabled selected>부스 타입을 선택해주세요</option>
+      <option value="" disabled selected>{{ placeholder }}</option>
       <option v-for="option in items" :key="option.value" :value="option.value">
         {{ option.text }}
       </option>

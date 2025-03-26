@@ -1,5 +1,6 @@
 <template>
   <div class="wrapper">
+    <h1>분실물 게시글 상세</h1>
     <!-- 게시글 카드 + 댓글 카드 -->
     <div v-if="board" class="detail-container">
       <div class="board-container">
@@ -9,10 +10,9 @@
             <p><strong>작성자:</strong> {{ board.userName }}</p>
             <p>
               <strong>작성일자:</strong>
-              {{ new Date(board.createdAt).toLocaleString("ko-KR") }}
+              {{ dateFormatWithTime(board.createdAt) }}
             </p>
           </div>
-          <hr />
           <!-- 이미지 영역: 이미지가 여러 개면 좌우 버튼으로 전환 -->
           <div class="image-wrapper">
             <div v-if="board.images.length > 0">
@@ -29,9 +29,7 @@
                 </div>
               </div>
             </div>
-            <div v-else class="no-image">
-              <p>📸 첨부된 이미지가 없습니다.</p>
-            </div>
+            <div v-else class="no-image">📸 첨부된 이미지가 없습니다.</div>
           </div>
           <div class="board-content">
             <p>{{ board?.content || "내용이 없습니다." }}</p>
@@ -45,15 +43,15 @@
           <div class="comment-header">
             <h2>💬 댓글 목록</h2>
             <!-- 삭제 버튼: 클릭 시 deleteComment 함수 호출 -->
-            <button class="delete-btn" @click="deleteComment">🗑 삭제</button>
+            <button class="delete-btn" @click="deleteComment">댓글 삭제</button>
           </div>
 
-          <p v-if="comments.length === 0">아직 댓글이 없습니다.</p>
+          <p v-if="comments.length === 0">아직 댓글이 없습니다. ಥ_ಥ</p>
 
           <table v-else class="comment-table">
             <thead>
               <tr>
-                <th>✔</th>
+                <th></th>
                 <th>작성자</th>
                 <th>내용</th>
                 <th>작성일자</th>
@@ -70,9 +68,19 @@
                     v-model="selectedCommentId"
                   />
                 </td>
-                <td>{{ comment?.user?.userName || "익명" }}</td>
-                <td class="comment-content">{{ comment?.content || "-" }}</td>
-                <td>{{ formatDate(comment?.createdAt) || "-" }}</td>
+                <td class="comment-user-name">
+                  {{ comment?.user?.userName || "익명" }}
+                </td>
+                <td class="comment-content">
+                  {{
+                    comment.content.length > 12
+                      ? comment.content.slice(0, 12) + "..."
+                      : comment.content
+                  }}
+                </td>
+                <td class="comment-date">
+                  {{ dateFormatWithoutTime(comment?.createdAt) || "-" }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -87,18 +95,27 @@
       </div>
     </div>
     <div class="back-btn-container">
-      <button @click="router.push('/admin/adminLost')" class="back-btn">
-        목록으로 돌아가기
+      <button
+        @click="router.push(`/admin/${festivalId}/adminLost`)"
+        class="back-btn"
+      >
+        ← 목록으로 돌아가기
+      </button>
+      <button @click="deleteBoardHandler" class="del-btn">
+        게시글 삭제하기
       </button>
     </div>
+    <loadingComponent v-if="loadingType === 'loading'" />
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { getComments } from "@/api/admin";
+import { getComments, deleteBoard } from "@/api/admin";
 import api from "@/api/axiosInstance";
+import loadingComponent from "@/components/common/loadingComponent.vue";
+import { dateFormatWithTime, dateFormatWithoutTime } from "@/util/dateFormat";
 
 const route = useRoute();
 const router = useRouter();
@@ -108,22 +125,20 @@ const comments = ref([]);
 const currentImageIndex = ref(0);
 // 삭제할 댓글의 id를 단일 선택으로 관리
 const selectedCommentId = ref(null);
-
-// 날짜 포맷팅 함수
-const formatDate = (dateString) => {
-  if (!dateString) return "-";
-  const date = new Date(dateString);
-  return date.toLocaleString("ko-KR");
-};
+const festivalId = router.currentRoute.value.params.festivalId;
+const loadingType = ref("none");
 
 // 댓글 목록 조회 함수
 const fetchComments = async () => {
   try {
+    loadingType.value = "loading";
     const { boardId, festivalId } = route.params;
     const response = await getComments(boardId, festivalId);
     comments.value = response || [];
   } catch (error) {
     console.error("댓글 API 호출 실패:", error);
+  } finally {
+    loadingType.value = "none";
   }
 };
 
@@ -150,7 +165,7 @@ const deleteComment = async () => {
     return;
   }
   try {
-    const { festivalId } = route.params;
+    loadingType.value = "loading";
     const response = await api.delete(
       `comment/${selectedCommentId.value}/${festivalId}`
     );
@@ -163,6 +178,24 @@ const deleteComment = async () => {
     }
   } catch (error) {
     console.error("댓글 삭제 실패:", error);
+  } finally {
+    loadingType.value = "none";
+  }
+};
+
+// 게시글 삭제 함수
+const deleteBoardHandler = async () => {
+  try {
+    loadingType.value = "loading";
+    const response = await deleteBoard(board.value.id, festivalId);
+    if (response) {
+      alert("게시글이 삭제되었습니다.");
+      router.push(`/admin/${festivalId}/adminLost`);
+    }
+  } catch (error) {
+    console.error("게시글 삭제 실패:", error);
+  } finally {
+    loadingType.value = "none";
   }
 };
 
@@ -172,7 +205,7 @@ onMounted(() => {
     board.value = JSON.parse(history.state.item);
   } else {
     console.error("데이터 없음");
-    router.push("/admin/lost");
+    router.push(`/admin/${festivalId}/adminLost`);
   }
   fetchComments();
 });
@@ -181,54 +214,57 @@ onMounted(() => {
 <style scoped>
 /* 전체 페이지 중앙 정렬 및 상하 여백 */
 .wrapper {
-  max-width: 1500px;
-  margin: 40px auto;
+  max-width: 1800px;
   padding: 0 20px;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 24px;
 }
 
 /* 게시글(왼쪽) & 댓글(오른쪽)을 가로로 배치 */
 .detail-container {
   display: flex;
-  flex-direction: row;
   gap: 20px;
+  margin: 24px 0;
 }
 
 /* 게시글 카드와 댓글 카드의 기본 스타일 */
 .board-container,
 .comment-container {
-  flex: 1;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 10px;
   padding: 20px;
 }
 
+.board-container {
+  flex: 1;
+}
+
+.comment-container {
+  flex: 1.5;
+}
+
 /* 게시글 카드 */
 .board-card {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 28px;
 }
 
 .board-title {
-  font-size: 1.5rem;
+  font-size: 24px;
   font-weight: bold;
   text-align: center;
-  margin-bottom: 8px;
 }
 
 .board-info {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  color: #555;
-  font-size: 0.9rem;
-}
-
-.board-info + hr {
-  margin: 8px 0;
-  border: none;
-  border-top: 1px solid #eee;
+  font-size: 16px;
+  gap: 30px;
 }
 
 /* 이미지 영역 */
@@ -261,25 +297,24 @@ onMounted(() => {
 }
 
 .no-image {
+  width: 100%;
   text-align: center;
-  font-size: 0.95rem;
+  font-size: 18px;
   color: #999;
   border: 1px dashed #ccc;
-  border-radius: 6px;
-  padding: 20px;
+  border-radius: 8px;
+  padding: 70px;
 }
 
 .board-content {
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: 18px;
 }
 
 /* 댓글 카드 */
 .comment-card {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  background-color: #fff;
+  gap: 24px;
 }
 
 .comment-header {
@@ -289,45 +324,60 @@ onMounted(() => {
 }
 
 .comment-header h2 {
-  font-size: 1.2rem;
-  margin: 0;
+  font-size: 24px;
 }
 
 .delete-btn {
-  background-color: #ff6b6b;
-  color: #fff;
-  border: none;
+  background-color: #fff;
+  color: black;
+  border: 1px solid #ff6b6b;
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  width: 100px;
+  height: 40px;
+  font-size: 15px;
+}
+
+.delete-btn:hover {
+  background-color: #ff6b6b;
+  color: white;
 }
 
 /* 댓글 테이블 */
 .comment-table {
   width: 100%;
-  border-collapse: collapse;
+  font-size: 18px;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
-.comment-table th,
 .comment-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  font-size: 0.9rem;
+  border-bottom: 1px solid #ddd;
+  padding: 8px;
   text-align: center;
 }
 
 .comment-table th {
-  background-color: #f9f9f9;
+  padding: 8px;
   font-weight: 600;
-}
-
-.comment-table tr:nth-child(even) {
-  background-color: #fcfcfc;
+  font-size: 17px;
+  background-color: #fff5f4;
+  color: #fe6f61;
+  border-bottom: 2px solid #fe6f61;
+  border-top: 2px solid #fe6f61;
+  text-align: center;
 }
 
 .comment-content {
   text-align: left;
   word-break: break-word;
+  font-size: 16px;
+}
+
+.comment-user-name,
+.comment-date {
+  font-size: 16px;
 }
 
 /* 페이지네이션 */
@@ -358,6 +408,7 @@ onMounted(() => {
   margin-top: 20px;
   display: flex;
   justify-content: flex-start;
+  gap: 24px;
 }
 
 .back-btn {
@@ -373,8 +424,23 @@ onMounted(() => {
   cursor: pointer;
 }
 
+.del-btn:hover,
 .back-btn:hover {
   background-color: #ee5c5c;
+  color: #fff;
+}
+
+.del-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #fff;
+  color: black;
+  border: 1px solid #ff6b6b;
+  padding: 12px 16px;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 /* Carousel 버튼 스타일 */
@@ -385,7 +451,7 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   transform: translateY(-50%);
-  padding: 0 20px;
+  padding: 0 10px;
 }
 
 .carousel-btn {
@@ -394,6 +460,6 @@ onMounted(() => {
   color: #fff;
   padding: 5px 10px;
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 </style>

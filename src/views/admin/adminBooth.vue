@@ -4,6 +4,7 @@
     <div class="container-search">
       <selectBar
         :items="boothOption"
+        placeholder="부스 타입을 선택해주세요"
         v-model="selectedType"
         @onKeySelect="handleTypeSelect"
       />
@@ -12,7 +13,6 @@
 
     <!-- 상점 목록 테이블 -->
     <div class="container-list">
-      <hr class="line-strong" />
       <!-- 부스가 없을 때 메시지 추가 -->
       <div v-if="!booths.length" class="empty-state">
         <p>등록된 부스가 없습니다.</p>
@@ -64,7 +64,6 @@
           </tr>
         </tbody>
       </table>
-      <hr class="line-light" />
 
       <!-- 페이지네이션 -->
       <div class="pagination-nav">
@@ -100,8 +99,8 @@ import axios from "axios"; // 추가: /user/change-type 호출을 위해
 import acceptModal from "@/components/admin/acceptModal.vue";
 import loading from "@/components/common/loadingComponent.vue";
 
-const festivalId = 1;
 const router = useRouter();
+const festivalId = router.currentRoute.value.params.festivalId;
 const acceptModalVisible = ref(false);
 const selectedBooth = ref(null);
 const loadingType = ref("none");
@@ -278,15 +277,7 @@ h1 {
 
 .container-list {
   background-color: #fff;
-  margin-top: 20px;
-}
-
-.line-strong {
-  border: none;
-}
-
-.line-light {
-  border: none;
+  margin-top: 24px;
 }
 
 .custom-table {
@@ -295,7 +286,6 @@ h1 {
   border-spacing: 0;
   font-size: 1rem;
   text-align: center;
-  margin-top: 14px;
 }
 
 .custom-table thead th {

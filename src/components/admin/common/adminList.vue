@@ -15,14 +15,21 @@ defineProps({
 </script>
 
 <template>
-  <div>
+  <tbody class="admin-list">
     <adminListItem
       v-for="item in items"
       :key="item.id"
       :item="item"
       :routeName="routeName"
     ></adminListItem>
-  </div>
+  </tbody>
 </template>
 
-<style scoped></style>
+<style scoped>
+.admin-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+</style>

@@ -462,9 +462,9 @@ onMounted(() => {
 }
 
 .delete-btn {
-  background-color: #ff6b6b;
-  color: #fff;
-  border: none;
+  background-color: #fff;
+  color: black;
+  border: 1px solid #ff6b6b;
   padding: 8px 12px;
   border-radius: 8px;
   cursor: pointer;
@@ -473,7 +473,8 @@ onMounted(() => {
   font-size: 15px;
 }
 .delete-btn:hover {
-  background-color: #ee5c5c;
+  background-color: #ff6b6b;
+  color: white;
 }
 
 /* 리뷰 페이지네이션 */

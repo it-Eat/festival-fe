@@ -73,6 +73,12 @@ const updateHighlightedDates = () => {
 </template>
 
 <style>
+.calendar-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 input[type="date"] {
   position: relative;
   padding: 8px;
@@ -86,9 +92,4 @@ input[type="date"] {
   cursor: pointer;
 }
 
-.calendar-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 </style>
