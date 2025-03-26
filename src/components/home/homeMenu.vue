@@ -6,12 +6,12 @@ const festivalId = route.params.festivalId;
 const menuItems = [
   { name: "먹거리", path: `/${festivalId}/userHome/homeFood`, icon: "🍽️" },
   { name: "놀거리", path: `/${festivalId}/userHome/homePlaying`, icon: "🎡" },
-  {
-    name: "축제 정보",
-    path: `/${festivalId}/userHome/homeFestInfo`,
-    icon: "ℹ️",
-  },
   { name: "게시판", path: `/${festivalId}/userHome/homeBoard`, icon: "📝" },
+  {
+    name: "축제 참여하기",
+    path: `/${festivalId}/userHome/homeIntroduction`,
+    icon: "👀",
+  },
 ];
 </script>
 

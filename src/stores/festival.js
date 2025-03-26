@@ -24,4 +24,9 @@ async function getFestivalList(cursor, limit, keyword) {
   return response.data;
 }
 
-export { getFestivalList };
+async function getFestivalDetail(festivalId) {
+  const response = await api.get(`/festival/${festivalId}`);
+  return response.data;
+}
+
+export { getFestivalList, getFestivalDetail };

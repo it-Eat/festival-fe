@@ -1,10 +1,10 @@
 <script setup>
 import { defineProps } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter /*, useRoute*/ } from "vue-router";
 import noImage from "@/assets/noimage.png"; // fallback 이미지 import
 
-const route = useRoute();
-const festivalId = route.params.festivalId;
+// const route = useRoute();
+// const festivalId = route.params.festivalId;
 
 const props = defineProps({
   item: {
@@ -54,7 +54,7 @@ const goToDetail = () => {
 
 <style scoped>
 .photo-card {
-  width: 60px; /* 기본 크기 */
+  width: 150px; /* 기본 크기 */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -65,12 +65,13 @@ const goToDetail = () => {
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   transition: transform 0.2s;
+  gap: 12px;
 }
 
 .photo-card img {
-  width: 100%;
+  width: 130px;
   aspect-ratio: 1 / 1;
-  object-fit: cover;
+  object-fit: filled;
   border-radius: 8px;
 }
 
@@ -79,9 +80,8 @@ const goToDetail = () => {
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin-top: 8px;
-  color: #333;
-  font-size: 11px;
+  color: #000000;
+  font-size: 16px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -89,17 +89,5 @@ const goToDetail = () => {
 
 .photo-card:hover {
   transform: translateY(-5px);
-}
-
-/* 사이즈가 large일 때 */
-.photo-card.large {
-  width: 120px; /* 원하는 큰 사이즈 */
-}
-
-.photo-card.large img {
-  /* 필요하다면 이미지를 좀 더 크게 */
-}
-.photo-card.large .card-name {
-  font-size: 14px; /* 텍스트도 좀 더 크게 */
 }
 </style>
