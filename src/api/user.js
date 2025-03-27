@@ -62,4 +62,22 @@ async function getBoothDetail(boothId, festivalId) {
   }
 }
 
-export { kakaoLogin, processKakaoCallback, getNotice, getBoothDetail };
+// 장바구니 담기
+async function createWishlist(boothId, festivalId, data) {
+  try {
+    const response = await api.post(`wishlist/${boothId}/${festivalId}`, data, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("장바구니 담기 API 호출 실패:", error);
+    throw error;
+  }
+}
+export {
+  kakaoLogin,
+  processKakaoCallback,
+  getNotice,
+  getBoothDetail,
+  createWishlist,
+};

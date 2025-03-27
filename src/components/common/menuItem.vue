@@ -13,17 +13,16 @@
     <div class="button" v-if="showButton && !menu.soldOut">
       <UpdownButton
         ref="updownRef"
-        :initialValue="initialQuantity"
-        @update:modelValue="updateCart"
+        :initialValue="0"
+        @update:modelValue="updateQuantity"
       />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import UpdownButton from "./updownButton.vue";
-import { useCartStore } from "@/stores/cartStores";
 import noimage from "@/assets/noimage.png";
 
 const props = defineProps({
@@ -31,28 +30,28 @@ const props = defineProps({
   showButton: { type: Boolean, default: false },
 });
 
+const emit = defineEmits(["updateSelectedMenu"]);
+const updownRef = ref(null);
+
 const priceFormat = (price) => {
   return price.toLocaleString("ko-KR");
 };
 
-const cartStore = useCartStore();
-const updownRef = ref(null);
-
-// 장바구니에서 현재 메뉴의 수량을 가져옴
-const initialQuantity = computed(() => {
-  if (!cartStore.cartItems) {
-    return 0;
-  }
-  const cartItem = cartStore.cartItems.find(
-    (item) => item.id === props.menu.id
-  );
-  return cartItem ? cartItem.quantity : 0;
-});
-
-// 수량 업데이트
-const updateCart = (quantity) => {
-  cartStore.addToCart(props.menu, quantity);
+const updateQuantity = (quantity) => {
+  emit("updateSelectedMenu", {
+    menuId: props.menu.id,
+    cnt: quantity,
+    price: props.menu.price,
+  });
 };
+
+const resetQuantity = () => {
+  if (updownRef.value) {
+    updownRef.value.reset();
+  }
+};
+
+defineExpose({ resetQuantity });
 </script>
 
 <style scoped>

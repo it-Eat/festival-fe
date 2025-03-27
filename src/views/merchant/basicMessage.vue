@@ -58,24 +58,38 @@
         </div>
       </div>
     </div>
+    <checkModal
+      v-if="showModal"
+      :title="modalConfig.title"
+      :message="modalConfig.message"
+      :confirmText="modalConfig.confirmText"
+      @cancel="closeModal"
+    />
+    <loadingComponent v-if="loading" />
   </div>
 </template>
 
 <script setup>
 import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { useCartStore } from "@/stores/cartStores"; // cartStore 가져오기
 import BackHeader from "@/components/common/backHeader.vue";
 import api from "@/api/axiosInstance";
+import loadingComponent from "@/components/common/loadingComponent.vue";
+import checkModal from "@/components/common/checkModal.vue";
 
-// cartStore 사용
-const cartStore = useCartStore();
 const router = useRouter();
 
 // boothId는 cartStore에서, festivalId는 1로 고정
-const boothId = cartStore.boothId;
-const festivalId = 1;
+const boothId = router.currentRoute.value.params.boothId;
+const festivalId = router.currentRoute.value.params.festivalId;
 
+const loading = ref(false);
+const showModal = ref(false);
+const modalConfig = ref({
+  title: "",
+  message: "",
+  confirmText: "",
+});
 // 선택된 메시지
 const selectedMessage = ref(null);
 
@@ -116,12 +130,18 @@ watch(maxTime, (newVal) => {
 // 확인 버튼 클릭 시 실행
 const confirm = async () => {
   if (!selectedMessage.value) {
-    alert("메세지를 선택해주세요.");
+    showModal.value = true;
+    modalConfig.value = {
+      title: "메세지를 선택해주세요.",
+      message: "메세지를 선택해주세요.",
+      confirmText: "",
+    };
     return;
   }
 
   try {
     // FormData 생성
+    loading.value = true;
     const formData = new FormData();
 
     // 두 번째 메시지를 선택했을 경우에는 minTime, maxTime 값으로 문자열을 조합
@@ -135,17 +155,25 @@ const confirm = async () => {
     }
 
     // 서버에 POST 요청
-    const response = await api.patch(`/booth/${boothId}/${festivalId}`, formData);
-
-    console.log("서버 응답:", response.data);
-    alert("전송 성공!");
+    await api.patch(`/booth/${boothId}/${festivalId}`, formData);
 
     // 이전 화면으로 돌아가기
     router.back();
   } catch (error) {
     console.error("전송 실패:", error);
-    alert("전송 실패!");
+    showModal.value = true;
+    modalConfig.value = {
+      title: "전송 실패!",
+      message: "전송 실패!",
+      confirmText: "",
+    };
+  } finally {
+    loading.value = false;
   }
+};
+
+const closeModal = () => {
+  showModal.value = false;
 };
 </script>
 
@@ -200,9 +228,9 @@ const confirm = async () => {
 }
 .message-options button {
   background-color: #fff;
-  color: #FF6F61;
+  color: #ff6f61;
   padding: 15px 25px;
-  border: 2px solid #FF6F61;
+  border: 2px solid #ff6f61;
   border-radius: 10px;
   cursor: pointer;
   font-size: 1.1em;
@@ -213,7 +241,7 @@ const confirm = async () => {
   transform: translateY(-2px);
 }
 .message-options button.selected {
-  background-color: #FF6F61;
+  background-color: #ff6f61;
   color: #fff;
   transform: none;
   box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.2);
@@ -254,7 +282,7 @@ const confirm = async () => {
 
 /* 확인 버튼 스타일 */
 .confirm-button {
-  background-color: #FF6F61;
+  background-color: #ff6f61;
   color: #fff;
   padding: 15px 30px;
   border: none;
