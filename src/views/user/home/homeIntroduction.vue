@@ -4,10 +4,18 @@ import { joinFestival } from "@/stores/festival";
 import { useFestivalInfoStore } from "@/stores/festivalInfo";
 import { ref } from "vue";
 import loading from "@/components/common/loadingComponent.vue";
+import checkModal from "@/components/common/checkModal.vue";
 const router = useRouter();
 const festivalId = router.currentRoute.value.params.festivalId;
 const loadingType = ref("none");
 const festivalInfoStore = useFestivalInfoStore();
+const isModalOpen = ref(false);
+const modalConfig = ref({
+  title: "축제 참여",
+  message: "축제에 참여하시겠습니까?",
+  confirmText: "참여",
+  cancelText: "취소",
+});
 const festivalJoin = async () => {
   loadingType.value = "loading";
   await joinFestival(festivalId);
@@ -54,12 +62,21 @@ const festivalJoin = async () => {
           <p>축제 정보, 이벤트, 부스 현황에 대한 알림을 즉시 수신 가능</p>
         </div>
       </div>
-      <button class="join-button" @click="festivalJoin">참여하기</button>
+      <button class="join-button" @click="isModalOpen = true">참여하기</button>
     </div>
 
     <div class="footer">
       Festival Companion과 함께 기다림 없는 축제와 다양한 정보를 경험하세요! 🎊
     </div>
+    <checkModal
+      v-if="isModalOpen"
+      :title="modalConfig.title"
+      :message="modalConfig.message"
+      :confirmText="modalConfig.confirmText"
+      :cancelText="modalConfig.cancelText"
+      @confirm="festivalJoin"
+      @cancel="isModalOpen = false"
+    />
   </div>
 </template>
 
