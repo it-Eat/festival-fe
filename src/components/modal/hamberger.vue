@@ -94,6 +94,7 @@ function handleLogout() {
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'SELLER'">
           <router-link :to="`/${festivalId}/merchant/salesList/${boothId}`">
             <span class="home-icon">💰</span>
+
             매출 확인
           </router-link>
         </li>

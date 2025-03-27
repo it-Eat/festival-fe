@@ -1,4 +1,5 @@
 <template>
+  <Loading v-if="loadingType !== 'none'" />
   <div class="page">
     <div class="home">
       <!-- 상단 헤더 -->
@@ -7,14 +8,12 @@
       </div>
 
       <!-- 내용 영역 -->
+
       <div class="content">
         <!-- (옵션) 총 매출 금액 표시 -->
         <div style="margin-bottom: 10px; font-weight: bold">
-          총 {{ totalSales.toLocaleString() }}원
+          총 {{ salesData.totalPrice || 0 }}원
         </div>
-
-        <!-- 날짜 선택 컴포넌트 (Calender.vue) -->
-        <!-- v-model:start-date="calendarStartDate" 등으로 부모-자식 바인딩 가능 -->
         <div class="search-bar" style="margin-bottom: 20px">
           <Calender
             @selected-date-range="handleDateRangeChange"
@@ -29,32 +28,18 @@
             <thead>
               <tr>
                 <th>주문자명</th>
-                <th>주문ID</th>
                 <th>주문메뉴</th>
                 <th>주문금액</th>
                 <th>주문일자</th>
               </tr>
             </thead>
             <tbody>
-              <!-- 날짜 필터 X, 데이터도 없을 때 -->
-              <tr v-if="displayedSales.length === 0 && !filteredByDate">
-                <td colspan="5" style="text-align: center">
-                  매출 기록이 없습니다.
-                </td>
-              </tr>
-              <!-- 날짜 필터 O, 해당 데이터 없을 때 -->
-              <tr v-else-if="displayedSales.length === 0 && filteredByDate">
-                <td colspan="5" style="text-align: center">
-                  해당 날짜에 매출 기록이 없습니다.
-                </td>
-              </tr>
               <!-- 데이터 렌더링 -->
-              <tr v-else v-for="sale in displayedSales" :key="sale.orderId">
-                <td>{{ sale.customerName }}</td>
-                <td>{{ sale.orderId }}</td>
-                <td>{{ sale.menu }}</td>
-                <td>{{ sale.amount.toLocaleString() }}원</td>
-                <td>{{ sale.orderDate }}</td>
+              <tr v-for="sale in salesData.payData" :key="sale.orderId">
+                <td>{{ sale.user.nickname }}</td>
+                <td>{{ sale.wishList[0].menu.name }}</td>
+                <td>{{ sale.wishList[0].menu.price || 0 }}원</td>
+                <td>{{ dateFormatWithoutTime(sale.createdAt) }}</td>
               </tr>
             </tbody>
           </table>
@@ -62,7 +47,7 @@
 
         <!-- 페이지네이션 -->
         <Pagination
-          :total-items="filteredSales.length"
+          :total-items="1"
           :items-per-page="itemsPerPage"
           :current-page="currentPage"
           @page-changed="handlePageChange"
@@ -73,26 +58,26 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import BackHeader from "@/components/common/backHeader.vue";
 import Pagination from "@/components/common/pagination.vue";
-import Calender from "@/components/modal/calender.vue"; // 위에서 만든 Calender
 import api from "@/api/axiosInstance";
 import { useCartStore } from "@/stores/cartStores";
-
+import { dateFormatWithoutTime } from "@/util/dateFormat";
+import Calender from "@/components/modal/calender.vue"; // 위에서 만든 Calender
+import Loading from "@/components/common/loadingComponent.vue";
 // Pinia store
 const cartStore = useCartStore();
+const loadingType = ref("none");
 
 // (1) 상태 변수들
 const salesData = ref([]); // 테이블에 뿌릴 전체 데이터
 const currentPage = ref(1); // 현재 페이지
 const itemsPerPage = 10; // 페이지당 아이템 수
-const totalSales = ref(0); // 총 매출 금액 (옵션)
 
 // (2) 날짜 범위: Calender.vue와 v-model로 연결
 const calendarStartDate = ref("");
 const calendarEndDate = ref("");
-const filteredByDate = ref(false);
 
 // (3) 컴포넌트 마운트 시 API 호출
 onMounted(() => {
@@ -102,93 +87,40 @@ onMounted(() => {
     console.warn("boothId가 설정되지 않았습니다.");
   }
 });
+const handleDateRangeChange = async (range) => {
+  calendarStartDate.value = range.startDate;
+  calendarEndDate.value = range.endDate;
+  console.log(calendarStartDate.value, calendarEndDate.value);
+  try {
+    loadingType.value = "loading";
+    const response = await api.get(
+      `/pay/seller/${cartStore.boothId}?startDate=${calendarStartDate.value}&endDate=${calendarEndDate.value}`
+    );
+    const data = response.data;
+    salesData.value = data;
+  } catch (error) {
+    console.error("매출 데이터 불러오기 실패:", error);
+  } finally {
+    loadingType.value = "none";
+  }
+};
 
 /**
- * (4) wishlist/{boothId}/1 호출 -> salesData 변환
+ * (4) pay/seller/{boothId} 호출 -> salesData 변환
  */
 async function fetchWishlistData(boothId) {
   try {
-    const response = await api.get(`/wishlist/${boothId}/1`);
+    loadingType.value = "loading";
+    const response = await api.get(`/pay/seller/${boothId}`);
     const data = response.data;
 
-    // 총 매출 금액 (옵션)
-    const sum = data.reduce((acc, item) => acc + item.price, 0);
-    totalSales.value = sum;
-
+    salesData.value = data;
     // salesData 변환
-    salesData.value = data.map((item) => ({
-      customerName: `유저${item.userId}`,
-      orderId: `ORDER-${item.id}`,
-      menu: `${item.menu.name} x ${item.cnt}`,
-      amount: item.price,
-      orderDate: formatDate(item.createdAt),
-    }));
   } catch (error) {
     console.error("매출 데이터 불러오기 실패:", error);
+  } finally {
+    loadingType.value = "none";
   }
-}
-
-/**
- * (5) 날짜 포맷 함수 (ISO -> "YYYY-MM-DD HH:mm:ss")
- */
-function formatDate(isoString) {
-  const date = new Date(isoString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
-
-/**
- * (6) 날짜 범위 + 필터
- */
-const filteredSales = computed(() => {
-  let filtered = salesData.value;
-
-  if (calendarStartDate.value && calendarEndDate.value) {
-    filteredByDate.value = true;
-
-    const startDate = new Date(calendarStartDate.value);
-    const endDate = new Date(calendarEndDate.value);
-
-    filtered = filtered.filter((sale) => {
-      const saleDate = new Date(sale.orderDate.split(" ")[0]);
-      return saleDate >= startDate && saleDate <= endDate;
-    });
-  } else {
-    filteredByDate.value = false;
-  }
-
-  return filtered;
-});
-
-/**
- * (7) 페이지네이션 적용
- */
-const displayedSales = computed(() => {
-  const startIndex = (currentPage.value - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  return filteredSales.value.slice(startIndex, endIndex);
-});
-
-/**
- * (8) 페이지 변경 핸들러
- */
-function handlePageChange(page) {
-  currentPage.value = page;
-}
-
-/**
- * (9) Calender에서 날짜 범위가 선택되었을 때
- */
-function handleDateRangeChange(range) {
-  // range = { startDate, endDate }
-  calendarStartDate.value = range.startDate;
-  calendarEndDate.value = range.endDate;
-  currentPage.value = 1;
 }
 </script>
 
@@ -227,20 +159,38 @@ function handleDateRangeChange(range) {
   overflow-y: auto;
 }
 
-.sales-table {
-  border: 1px solid #ccc;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
 .sales-table table {
   width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.sales-table thead {
+  padding: 12px;
+  font-weight: 600;
+  background-color: #fff5f4;
+  color: #fe6f61;
+}
+
+.sales-table th {
+  border-bottom: 2px solid #fe6f61;
+  border-top: 2px solid #fe6f61;
+  padding: 12px;
+  text-align: center;
+}
+
+.sales-table td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
 }
 
 .sales-table th,
 .sales-table td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: center;
+  vertical-align: middle;
+}
+
+.sales-table tr:hover {
+  background-color: #fff5f4;
 }
 </style>

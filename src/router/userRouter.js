@@ -241,7 +241,7 @@ export default [
     component: MerchantHome,
   },
   {
-    path: "/:festivalId/merchant/salesList/:boothId",
+    path: "/:festivalId/merchant/salesList",
     name: "salesList",
     component: SalesList,
     meta: { title: "매출 확인" },
