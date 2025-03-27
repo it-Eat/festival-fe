@@ -64,6 +64,7 @@ const updateCart = (quantity) => {
   border-bottom: 1px solid #eee;
   box-sizing: border-box;
   justify-content: space-between;
+  margin-bottom: 10px;
 }
 
 .menu-image {

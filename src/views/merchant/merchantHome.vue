@@ -10,28 +10,33 @@
       <div class="content" v-if="storeInfo">
         <!-- 대표 이미지 영역 -->
         <div class="main-image-container">
-          <img
-            :src="storeInfo.image || noimage"
-            alt="대표 이미지"
-            class="mainImg"
-          />
-          <!-- 오른쪽 상단 수정 버튼 -->
-          <Wrench class="edit-button" @click="goToModify" />
+          <div class="main-image-container-img">
+            <img
+              :src="storeInfo.image || noimage"
+              alt="대표 이미지"
+              class="mainImg"
+            />
+
+            <!-- 오른쪽 상단 수정 버튼 -->
+            <Wrench class="edit-button" @click="goToModify" />
+          </div>
         </div>
 
         <!-- 가게 정보 영역 -->
         <div class="store-info">
-          <h2 class="store-name">{{ storeInfo.name }}</h2>
           <div class="store-details">
-            <span class="store-location">
-              위치 : {{ storeInfo.location || "정보 없음" }}
-            </span>
+            <h2 class="store-name">{{ storeInfo.name }}</h2>
             <div class="store-rating">
               <span class="star">★ {{ averageRating }}</span>
               <span class="review" @click="goToReview">
                 리뷰 {{ reviewCount }}개
               </span>
             </div>
+          </div>
+          <div class="store-details">
+            <span class="store-location">
+              위치 : {{ storeInfo.location || "정보 없음" }}
+            </span>
           </div>
           <div class="store-desc">{{ storeInfo.content }}</div>
         </div>
@@ -49,44 +54,42 @@
       </div>
 
       <!-- 로딩 화면 -->
-      <div v-else class="loading">
-        <p>가게 정보를 불러오는 중...</p>
-      </div>
+      <loadingComponent v-if="loading" />
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import api from "@/api/axiosInstance";
 import BackHeader from "@/components/common/backHeader.vue";
 import MenuItem from "@/components/common/menuItem.vue";
 import { Wrench } from "lucide-vue-next";
 import { useCartStore } from "@/stores/cartStores";
 import noimage from "@/assets/noimage.png";
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
-const route = useRoute();
 const router = useRouter();
 const cartStore = useCartStore();
 
-// URL 파라미터에서 boothId를 가져오거나 기본값 1 사용 (API 호출용)
-const initialBoothId = route.params.id || 1;
-const festivalId = 1;
-
+// URL 파라미터에서 festivalId와 boothId 가져오기
+const festivalId = localStorage.getItem("festivalId");
+const boothId = router.currentRoute.value.params.boothId;
 const storeInfo = ref(null);
 const menus = ref([]);
 const reviews = ref([]);
+const loading = ref(false);
 
-// 부스 상세 정보 불러오기: /booth/my-booth/{boothId}
+// 부스 상세 정보 불러오기
 const fetchBoothDetail = async () => {
   try {
-    const res = await api.get(`/booth/my-booth/${initialBoothId}`);
+    loading.value = true;
+    const res = await api.get(`/booth/my-booth/${festivalId}`);
+
     storeInfo.value = res.data;
-    // 서버 응답의 id를 사용해 cartStore에 저장 (예: id: 20)
     if (storeInfo.value?.id) {
       cartStore.setBoothId(storeInfo.value.id);
-      // 메뉴와 리뷰는 서버 응답의 id를 사용
       fetchMenuList(storeInfo.value.id);
       fetchReviews(storeInfo.value.id);
     }
@@ -95,22 +98,28 @@ const fetchBoothDetail = async () => {
     }
   } catch (error) {
     console.error("부스 상세 정보 불러오기 실패:", error);
+  } finally {
+    loading.value = false;
   }
 };
 
 // 메뉴 목록 불러오기
 const fetchMenuList = async (id) => {
   try {
+    loading.value = true;
     const res = await api.get(`/menu/${id}`);
     menus.value = res.data;
   } catch (error) {
     console.error("메뉴 목록 불러오기 실패:", error);
+  } finally {
+    loading.value = false;
   }
 };
 
 // 리뷰 목록 불러오기
 const fetchReviews = async (id) => {
   try {
+    loading.value = true;
     const res = await api.get("/review", {
       params: {
         boothId: id,
@@ -122,6 +131,8 @@ const fetchReviews = async (id) => {
     reviews.value = res.data;
   } catch (error) {
     console.error("리뷰 목록 불러오기 실패:", error);
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -133,23 +144,21 @@ const averageRating = computed(() => {
 
 const reviewCount = computed(() => reviews.value.length);
 
-// 수정 페이지로 이동: boothId를 params로 넘겨 수정 페이지(merchantModify)로 이동
+// 수정 페이지로 이동 함수 수정
 const goToModify = () => {
-  router.push({ name: "modify", params: { id: storeInfo.value.id } });
+  router.push(`/${festivalId}/merchant/modify/${boothId}`);
 };
 
-// 리뷰 페이지 이동 (예시)
+// 리뷰 페이지 이동 함수 수정
 const goToReview = () => {
-  router.push({
-    path: "/user/food/review",
-    query: { boothId: storeInfo.value.id },
-  });
+  router.push(`/${festivalId}/food/review?boothId=${boothId}`);
 };
 
 onMounted(() => {
-  // 초기 boothId는 URL 파라미터에서 가져온 값 사용
-  cartStore.setBoothId(initialBoothId);
-  fetchBoothDetail();
+  if (boothId) {
+    cartStore.setBoothId(boothId);
+    fetchBoothDetail();
+  }
 });
 </script>
 
@@ -175,7 +184,7 @@ onMounted(() => {
 }
 .header {
   width: 100%;
-  margin-bottom: 8px;
+  margin: 10px 0;
 }
 .content {
   width: 100%;
@@ -187,13 +196,22 @@ onMounted(() => {
   width: 100%;
   border-radius: 4px;
   overflow: hidden;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+.main-image-container-img {
+  width: 450px;
+  overflow: hidden;
 }
 .main-image-container img {
   width: 100%;
   display: block;
-  object-fit: cover;
+  object-fit: fill;
   max-height: 300px;
+  border-radius: 8px;
 }
 /* Wrench 버튼: 대표 이미지의 오른쪽 상단 */
 .edit-button {
@@ -201,28 +219,31 @@ onMounted(() => {
   top: 10px;
   right: 10px;
   background-color: rgba(0, 0, 0, 0.5);
-  padding: 5px;
-  border-radius: 5px;
+  padding: 6px;
+  border-radius: 8px;
   cursor: pointer;
   color: #fff;
+  width: 30px;
+  height: 30px;
 }
 .store-info {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 .store-name {
-  font-size: 1.2rem;
+  font-size: 24px;
   font-weight: bold;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 .store-details {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin: 12px 0;
   color: #333;
+  font-size: 18px;
 }
 .store-location {
-  font-size: 0.9rem;
+  font-size: 16px;
   color: #666;
 }
 .store-rating {
@@ -250,12 +271,6 @@ onMounted(() => {
   line-height: 1.4;
 }
 .menu-list {
-  margin-top: 12px;
-}
-.loading {
-  text-align: center;
-  padding: 20px;
-  font-size: 1rem;
-  color: #555;
+  margin: 18px 0;
 }
 </style>

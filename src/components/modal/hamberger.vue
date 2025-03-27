@@ -1,11 +1,10 @@
 <script setup>
 import { useUserStore } from "@/stores/userStore";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 
 const userStore = useUserStore();
 const router = useRouter();
-const route = useRoute();
-const festivalId = route.params.festivalId;
+const festivalId = router.currentRoute.value.params.festivalId;
 
 // 로컬 메서드: 로그아웃 후 "/user" 페이지로 이동
 function handleLogout() {
