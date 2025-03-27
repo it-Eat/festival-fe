@@ -45,7 +45,7 @@ onMounted(async () => {
         if (userRole === "SELLER") {
           // user 정보에서 boothId를 가져온다고 가정
           const booth = await api.get(`/booth/my-booth/${festivalId}`);
-          console.log(booth);
+          localStorage.setItem("boothId", booth.data.id);
           const boothId = booth.data.id; // 실제 응답에서 받는 필드명으로 수정 필요
           router.replace(`/${festivalId}/merchant/merchantHome/${boothId}`);
         } else {

@@ -47,15 +47,30 @@
             :menu="menu"
             :showButton="true"
             class="menu-item"
+            @updateSelectedMenu="handleMenuUpdate"
+            :ref="
+              (el) => {
+                if (el) menuRefs[menu.id] = el;
+              }
+            "
           />
         </div>
       </div>
 
-      <!-- 로딩 화면 -->
-      <div v-else class="loading">
-        <loadingComponent />
+      <!--장바구니 담기 버튼 -->
+      <div class="cart-button">
+        <button @click="handleAddToCart">장바구니 담기</button>
       </div>
     </div>
+    <!-- 로딩 화면 -->
+    <loadingComponent v-if="loading" />
+    <checkModal
+      v-if="isModalOpen"
+      :title="modalConfig.title"
+      :message="modalConfig.message"
+      :confirmText="modalConfig.confirmText"
+      @cancel="handleCancel"
+    />
   </div>
 </template>
 
@@ -68,6 +83,10 @@ import MenuItem from "@/components/common/menuItem.vue";
 import { useCartStore } from "@/stores/cartStores";
 import noImage from "@/assets/noimage.png";
 import loadingComponent from "@/components/common/loadingComponent.vue";
+import { createWishlist } from "@/api/user";
+import checkModal from "@/components/common/checkModal.vue";
+
+const loading = ref(false);
 
 const route = useRoute();
 const router = useRouter();
@@ -80,9 +99,21 @@ const storeInfo = ref(null);
 const menus = ref([]);
 const reviews = ref([]);
 
+// 선택된 메뉴들을 저장할 배열
+const selectedMenus = ref([]);
+const isModalOpen = ref(false);
+const modalConfig = ref({
+  title: "",
+  message: "",
+  confirmText: "",
+});
+
+const menuRefs = ref({});
+
 // 부스 상세 정보 API 호출 및 storeName 업데이트
 const fetchBoothDetail = async () => {
   try {
+    loading.value = true;
     const res = await api.get(`/booth/${boothId}/${festivalId}`);
     storeInfo.value = res.data;
     // 상점명 저장 (cartStore에 저장)
@@ -91,22 +122,28 @@ const fetchBoothDetail = async () => {
     }
   } catch (error) {
     console.error("부스 상세 정보 불러오기 실패:", error);
+  } finally {
+    loading.value = false;
   }
 };
 
 // 메뉴 목록 API 호출
 const fetchMenuList = async () => {
   try {
+    loading.value = true;
     const res = await api.get(`/menu/${boothId}`);
     menus.value = res.data;
   } catch (error) {
     console.error("메뉴 목록 불러오기 실패:", error);
+  } finally {
+    loading.value = false;
   }
 };
 
 // 리뷰 목록 API 호출
 const fetchReviews = async () => {
   try {
+    loading.value = true;
     const res = await api.get("/review", {
       params: {
         boothId: boothId,
@@ -118,6 +155,8 @@ const fetchReviews = async () => {
     reviews.value = res.data;
   } catch (error) {
     console.error("리뷰 목록 불러오기 실패:", error);
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -133,6 +172,74 @@ const goToReview = () => {
   router.push({
     path: "/user/food/review",
     query: { boothId },
+  });
+};
+
+// 메뉴 수량 업데이트 처리
+const handleMenuUpdate = (menuData) => {
+  const index = selectedMenus.value.findIndex(
+    (item) => item.menuId === menuData.menuId
+  );
+
+  if (menuData.cnt > 0) {
+    if (index === -1) {
+      // 새로운 메뉴 추가
+      selectedMenus.value.push(menuData);
+    } else {
+      // 기존 메뉴 수량 업데이트
+      selectedMenus.value[index] = menuData;
+    }
+  } else {
+    // 수량이 0이면 메뉴 제거
+    if (index !== -1) {
+      selectedMenus.value.splice(index, 1);
+    }
+  }
+};
+
+// 장바구니 담기 처리
+const handleAddToCart = async () => {
+  if (selectedMenus.value.length === 0) {
+    alert("메뉴를 선택해주세요");
+    return;
+  }
+
+  const cartData = {
+    items: selectedMenus.value.map((menu) => ({
+      menuId: menu.menuId,
+      cnt: menu.cnt,
+      price: menu.price,
+    })),
+  };
+
+  try {
+    loading.value = true;
+    await createWishlist(boothId, festivalId, cartData);
+    isModalOpen.value = true;
+    modalConfig.value = {
+      title: "장바구니 담기 성공",
+      message: "장바구니에 담았습니다",
+      confirmText: "",
+    };
+  } catch (error) {
+    console.error("장바구니 담기 실패:", error);
+    isModalOpen.value = true;
+    modalConfig.value = {
+      title: "장바구니 담기 실패",
+      message: "장바구니 담기에 실패했습니다",
+      confirmText: "",
+    };
+  } finally {
+    loading.value = false;
+  }
+};
+
+const handleCancel = () => {
+  isModalOpen.value = false;
+  selectedMenus.value = [];
+  // 모든 MenuItem 컴포넌트의 수량 초기화
+  Object.values(menuRefs.value).forEach((menuItem) => {
+    menuItem.resetQuantity();
   });
 };
 
@@ -238,11 +345,30 @@ onMounted(() => {
   padding: 12px 0;
   border-bottom: 1px solid #eee;
 }
-.loading {
-  text-align: center;
-  padding: 20px;
+
+.cart-button {
+  width: 100%;
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.cart-button button {
+  width: 350px;
+  background-color: #ff6f61;
+  color: #fff;
+  border: none;
+  padding: 12px 0;
+  border-radius: 4px;
   font-size: 1rem;
-  color: #555;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.cart-button button:hover {
+  background-color: #ef5b4c;
+  transform: scale(1.02);
+  transition: transform 0.3s ease;
 }
 
 @media (max-width: 600px) {

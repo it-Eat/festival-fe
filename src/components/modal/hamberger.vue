@@ -4,8 +4,10 @@ import { useRouter } from "vue-router";
 
 const userStore = useUserStore();
 const router = useRouter();
-const festivalId = router.currentRoute.value.params.festivalId;
-const boothId = router.currentRoute.value.params.boothId;
+const festivalId =
+  localStorage.getItem("festivalId") ||
+  router.currentRoute.value.params.festivalId;
+const boothId = localStorage.getItem("boothId");
 // 로컬 메서드: 로그아웃 후 "/user" 페이지로 이동
 function handleLogout() {
   userStore.logout();

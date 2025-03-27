@@ -1,69 +1,69 @@
 <template>
-  <div class="quantity-control">
-    <button @click="decrement">-</button>
-    <span>{{ quantity }}</span>
-    <button @click="increment">+</button>
+  <div class="counter">
+    <button @click="decrease" :disabled="count <= 0">-</button>
+    <span>{{ count }}</span>
+    <button @click="increase">+</button>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref } from "vue";
 
 const props = defineProps({
-  initialValue: { type: Number, default: 0 },
+  initialValue: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
+const count = ref(props.initialValue);
 
-const quantity = ref(props.initialValue);
-
-// initialValue가 변경될 때 quantity를 업데이트
-watch(
-  () => props.initialValue,
-  (newValue) => {
-    quantity.value = newValue;
-  }
-);
-
-const increment = () => {
-  quantity.value++;
-  emit("update:modelValue", quantity.value);
+const increase = () => {
+  count.value++;
+  emit("update:modelValue", count.value);
 };
 
-const decrement = () => {
-  if (quantity.value > 0) {
-    quantity.value--;
-    emit("update:modelValue", quantity.value);
+const decrease = () => {
+  if (count.value > 0) {
+    count.value--;
+    emit("update:modelValue", count.value);
   }
 };
 
-defineExpose({ quantity });
+const reset = () => {
+  count.value = 0;
+  emit("update:modelValue", 0);
+};
+
+defineExpose({ reset });
 </script>
 
 <style scoped>
-/* updownButton.vue 스타일 */
-.quantity-control {
-  display: inline-flex;
+.counter {
+  display: flex;
   align-items: center;
-  border: none;
-  padding: 5px;
-  border-radius: 5px;
+  gap: 10px;
 }
-.quantity-control button {
-  padding: 5px 10px;
-  margin: 0 5px;
-  border: 1px solid #ff6f61;
-  background-color: #fff;
-  color: #ff6f61;
-  cursor: pointer;
-  border-radius: 3px;
-}
-.quantity-control button:hover {
-  background-color: #ff6f61;
-  color: #fff;
-}
-.quantity-control span {
+
+button {
   width: 30px;
+  height: 30px;
+  border: 1px solid #ff6f61;
+  background-color: white;
+  color: #ff6f61;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:disabled {
+  border-color: #ccc;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+span {
+  min-width: 20px;
   text-align: center;
 }
 </style>

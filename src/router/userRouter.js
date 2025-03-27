@@ -32,7 +32,7 @@ import FoodSearch from "@/views/user/food/foodSearch.vue";
 import SalesList from "@/views/merchant/salesList.vue";
 import BasicMessage from "@/views/merchant/basicMessage.vue";
 import MerchantHome from "@/views/merchant/merchantHome.vue";
-import Modify from "@/views/merchant/modify.vue";
+import Modify from "@/views/merchant/merchantModify.vue";
 import MenuManage from "@/views/merchant/menuManage.vue";
 import OrderCheck from "@/components/modal/orderCheck.vue";
 import OrderComplete from "@/components/modal/orderComplete.vue";
@@ -41,7 +41,7 @@ import FoodReview from "@/views/user/food/foodReview.vue";
 import FoodCart from "@/views/user/food/foodCart.vue";
 import FoodOrder from "@/views/user/food/foodOrder.vue";
 import LoginCallback from "@/views/user/my/loginCallback.vue";
-import Notice from "@/views/common/notice.vue";
+import Notice from "@/views/common/noticePage.vue";
 import MyLostItemList from "@/views/user/my/myLostItemList.vue";
 import MyBoardList from "@/views/user/my/myBoardList.vue";
 
