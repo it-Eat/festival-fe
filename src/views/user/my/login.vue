@@ -3,7 +3,7 @@
     <div class="home">
       <!-- 상단 헤더 영역: 뒤로가기 버튼 + '소셜 로그인' 텍스트 표시 -->
       <div class="header">
-        <BackHeader :title="'소셜 로그인'"/>
+        <BackHeader :title="'소셜 로그인'" />
       </div>
 
       <!-- 로그인 영역 -->
@@ -16,19 +16,31 @@
 
         <!-- 구글 로그인 버튼 -->
         <button class="google-button" @click="loginWithGoogle">
-          <img src="/src/assets/google_logo.png" alt="Google Logo" class="social-icon" />
+          <img
+            src="/src/assets/google_logo.png"
+            alt="Google Logo"
+            class="social-icon"
+          />
           Google로 시작하기
         </button>
 
         <!-- 카카오 로그인 버튼 -->
         <button class="kakao-button" @click="loginWithKakao">
-          <img src="/src/assets/kakao_logo.png" alt="Kakao Logo" class="social-icon" />
+          <img
+            src="/src/assets/kakao_logo.png"
+            alt="Kakao Logo"
+            class="social-icon"
+          />
           카카오로 시작하기
         </button>
 
         <!-- 네이버 로그인 버튼 -->
         <button class="naver-button" @click="loginWithNaver">
-          <img src="/src/assets/naver_logo.png" alt="Naver Logo" class="social-icon" />
+          <img
+            src="/src/assets/naver_logo.png"
+            alt="Naver Logo"
+            class="social-icon"
+          />
           네이버로 시작하기
         </button>
       </div>
@@ -37,7 +49,12 @@
 </template>
 
 <script setup>
-import BackHeader from '@/components/common/backHeader.vue';
+import BackHeader from "@/components/common/backHeader.vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const festivalId = router.currentRoute.value.params.festivalId;
+localStorage.setItem("festivalId", festivalId);
 
 const loginWithGoogle = () => {
   console.log("Google Login");
@@ -46,6 +63,7 @@ const loginWithGoogle = () => {
 
 const loginWithKakao = () => {
   const loginURL = import.meta.env.VITE_LOGIN_URL;
+
   window.location.href = loginURL;
 };
 

@@ -14,12 +14,13 @@ import { onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import axios from "axios";
 import { useUserStore } from "@/stores/userStore";
-
+import api from "@/api/axiosInstance";
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
 const API_URL = import.meta.env.VITE_VUE_API_URL; // 환경변수 불러오기
-const festivalId = route.params.festivalId;
+const festivalId = localStorage.getItem("festivalId");
+
 onMounted(async () => {
   const code = route.query.code;
   if (code) {
@@ -39,10 +40,14 @@ onMounted(async () => {
       // role 체크
       const userRole = user.role;
 
-      setTimeout(() => {
-        // role이 SELLER면 merchantHome, 아니면 일반 홈("/")으로 이동
+      setTimeout(async () => {
+        // role이 SELLER면 merchantHome으로 이동할 때 boothId도 함께 전달
         if (userRole === "SELLER") {
-          router.replace(`/${festivalId}/merchant/merchantHome`);
+          // user 정보에서 boothId를 가져온다고 가정
+          const booth = await api.get(`/booth/my-booth/${festivalId}`);
+          console.log(booth);
+          const boothId = booth.data.id; // 실제 응답에서 받는 필드명으로 수정 필요
+          router.replace(`/${festivalId}/merchant/merchantHome/${boothId}`);
         } else {
           router.replace(`/`);
         }

@@ -18,9 +18,9 @@
           <div class="menu-image">
             <input
               type="file"
-              :ref="el => imageInputs[index] = el"
+              :ref="(el) => (imageInputs[index] = el)"
               accept="image/*"
-              style="display: none;"
+              style="display: none"
               @change="handleImageUpload(index, $event)"
             />
             <div class="image-preview" @click="triggerFileInput(index)">
@@ -30,11 +30,7 @@
                 alt="메뉴 이미지"
               />
               <div v-else class="image-placeholder">
-                <img
-                  :src=noimage
-                  alt="image placeholder"
-                  style="width: 50px; height: 50px;"
-                />
+                <img :src="noimage" alt="image placeholder" />
               </div>
             </div>
           </div>
@@ -42,18 +38,12 @@
           <!-- 메뉴 정보 입력 영역 -->
           <div class="menu-details">
             <label>메뉴명</label>
-            <input
-              type="text"
-              v-model="menu.name"
-              placeholder="메뉴명 입력"
-            />
+            <input type="text" v-model="menu.name" placeholder="메뉴명 입력" />
 
-            <label>가격</label>
-            <input
-              type="number"
-              v-model="menu.price"
-              placeholder="가격 입력"
-            />
+            <label
+              >가격 <span style="font-size: 12px">(숫자만 입력)</span></label
+            >
+            <input type="text" v-model="menu.price" placeholder="가격 입력" />
 
             <label>소개글</label>
             <input
@@ -64,20 +54,17 @@
           </div>
 
           <!-- 삭제 버튼 -->
-          <button class="remove-button" @click="removeMenu(index)">
-            X
-          </button>
+          <button class="remove-button" @click="removeMenu(index)">X</button>
         </div>
 
         <!-- 메뉴 추가 버튼 -->
         <button class="add-button" @click="addMenu">+</button>
 
         <!-- 수정 완료 버튼 -->
-        <button class="submit-button" @click="saveMenus">
-          수정 완료
-        </button>
+        <button class="submit-button" @click="saveMenus">수정 완료</button>
       </div>
     </div>
+    <loadingComponent v-if="loading" />
   </div>
 </template>
 
@@ -87,6 +74,7 @@ import { useRoute, useRouter } from "vue-router";
 import BackHeader from "@/components/common/backHeader.vue";
 import api from "@/api/axiosInstance";
 import noimage from "@/assets/noimage.png";
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -99,7 +87,7 @@ const menus = ref([]);
 
 // 각 파일 input 요소를 저장할 배열
 const imageInputs = ref([]);
-
+const loading = ref(false);
 // 페이지 로드 시 메뉴 목록 불러오기
 onMounted(async () => {
   imageInputs.value = [];
@@ -109,6 +97,7 @@ onMounted(async () => {
 // 메뉴 목록 조회 (GET /menu/{boothId})
 const fetchMenus = async () => {
   try {
+    loading.value = true;
     const res = await api.get(`/menu/${boothId}`);
     // 백엔드 데이터 예시: [{id, name, price, content, image, soldOut}, ...]
     menus.value = res.data.map((m) => ({
@@ -118,6 +107,8 @@ const fetchMenus = async () => {
     }));
   } catch (error) {
     console.error("메뉴 불러오기 실패:", error);
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -142,10 +133,13 @@ const removeMenu = async (index) => {
   const menu = menus.value[index];
   if (menu.id) {
     try {
+      loading.value = true;
       await api.delete(`/menu/${menu.id}`);
       console.log(`메뉴 ${menu.id} 삭제 성공`);
     } catch (error) {
       console.error("메뉴 삭제 실패:", error);
+    } finally {
+      loading.value = false;
     }
   }
   menus.value.splice(index, 1);
@@ -173,6 +167,7 @@ const handleImageUpload = (index, event) => {
 // { name: "이름", price: "1000", content: "맛있는 치킨!", image: "이미지 url" }
 const saveMenus = async () => {
   try {
+    loading.value = true;
     for (const menu of menus.value) {
       const formData = new FormData();
       formData.append("name", menu.name);
@@ -205,6 +200,8 @@ const saveMenus = async () => {
     router.back();
   } catch (error) {
     console.error("메뉴 저장 실패:", error);
+  } finally {
+    loading.value = false;
   }
 };
 </script>
@@ -227,8 +224,7 @@ const saveMenus = async () => {
 
 .header {
   width: 100%;
-  margin-bottom: 20px;
-  text-align: center;
+  margin: 10px 0;
 }
 
 .content {
@@ -246,21 +242,20 @@ const saveMenus = async () => {
   position: relative;
   width: 100%;
   align-items: flex-start;
-  border: 1px solid #ddd;
-  padding: 15px;
+  border: 1px solid #ff6f61;
+  padding: 16px;
   border-radius: 8px;
-  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   box-sizing: border-box;
   background-color: #fff;
 }
 
 .menu-image {
-  width: 80px;
-  height: 80px;
-  margin-right: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  width: 85px;
+  height: 85px;
+  margin-right: 20px;
+  border: 1px solid #eee;
+  border-radius: 8px;
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -277,9 +272,9 @@ const saveMenus = async () => {
 }
 
 .menu-image img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: cover;
+  width: 85px;
+  height: 85px;
+  object-fit: fill;
 }
 
 .image-placeholder {
@@ -294,38 +289,41 @@ const saveMenus = async () => {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .menu-details label {
-  font-weight: 500;
-  margin-bottom: 3px;
+  font-size: 16px;
 }
 
-.menu-details input[type="text"],
-.menu-details input[type="number"] {
+.menu-details input {
   padding: 8px;
   box-sizing: border-box;
   border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 0.9rem;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.menu-details input:focus {
+  outline: none;
 }
 
 /* 삭제 버튼 */
 .remove-button {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #e74c3c;
+  top: 8px;
+  right: 8px;
+  background-color: #ff6f61;
   color: white;
   border: none;
-  padding: 5px 8px;
+  padding: 4px 8px;
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: 5px;
   transition: background-color 0.3s ease;
 }
 .remove-button:hover {
-  background-color: #c0392b;
+  background-color: #ef5b4c;
 }
 
 /* + 버튼 */
@@ -336,37 +334,31 @@ const saveMenus = async () => {
   border-radius: 8px;
   cursor: pointer;
   font-size: 1rem;
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-  margin-top: 10px;
+  transition: background-color 0.5s ease, transform 0.5s ease;
+  margin-top: 18px;
 }
 
 .add-button {
-  background-color: #2ecc71;
+  background-color: #ff6f61;
   color: white;
 }
 
 .add-button:hover {
-  background-color: #27ae60;
-  box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.3);
-}
-
-.add-button:active {
-  background-color: #219d56;
-  transform: translateY(1px);
-  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.2);
+  transform: scale(1.08);
+  transition: transform 0.5s ease;
 }
 
 /* 수정 완료 버튼 */
 .submit-button {
-  background-color: #3498db;
-  color: white;
+  background-color: white;
+  color: #ff6f61;
   width: 100%;
   margin-bottom: 20px;
+  border: 1px solid #ff6f61;
 }
 
 .submit-button:hover {
-  background-color: #2980b9;
-  box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.2);
+  background-color: #ff6f61;
+  color: white;
 }
 </style>

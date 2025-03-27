@@ -11,19 +11,21 @@
       <div class="content">
         <!-- 대표 이미지 영역 (클릭 시 파일 선택) -->
         <div class="main-image-container">
-          <img
-            :src="imageUrl || noimage"
-            alt="대표 이미지"
-            class="mainImg"
-            @click="onImageClick"
-          />
-          <input
-            type="file"
-            id="image-upload-input"
-            accept="image/*"
-            class="image-upload-input"
-            @change="onFileChange"
-          />
+          <div class="main-image-container-img">
+            <img
+              :src="imageUrl || noimage"
+              alt="대표 이미지"
+              class="mainImg"
+              @click="onImageClick"
+            />
+            <input
+              type="file"
+              id="image-upload-input"
+              accept="image/*"
+              class="image-upload-input"
+              @change="onFileChange"
+            />
+          </div>
         </div>
 
         <!-- 부스 정보 입력 폼 -->
@@ -38,6 +40,8 @@
           <!-- 위치/카테고리 (필요 시) -->
           <input
             type="text"
+            readonly
+            disabled
             v-model="location"
             placeholder="A-12 : 먹거리"
             class="info-input"
@@ -60,27 +64,27 @@
             메뉴 관리 &gt;
           </router-link>
           <!-- 수정 완료 버튼 -->
-          <button class="save-button" @click="saveChanges">
-            수정 완료
-          </button>
+          <button class="save-button" @click="saveChanges">수정 완료</button>
         </div>
       </div>
     </div>
+    <loadingComponent v-if="loading" />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import BackHeader from "@/components/common/backHeader.vue";
 import api from "@/api/axiosInstance";
 import { useMerchantStore } from "@/stores/merchant";
 import noimage from "@/assets/noimage.png";
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
-const route = useRoute();
 const router = useRouter();
 // merchantHome에서 boothId를 params로 넘겨줬다고 가정
-const boothId = route.params.id;
+const boothId = router.currentRoute.value.params.boothId;
+const loading = ref(false);
 
 const storeName = ref("");
 const location = ref("");
@@ -107,6 +111,7 @@ const onFileChange = (event) => {
 // 수정 완료: 이미지 파일이 있다면 FormData로 보내고, 그 외 정보는 함께 PATCH 요청
 const saveChanges = async () => {
   try {
+    loading.value = true;
     const formData = new FormData();
     formData.append("name", storeName.value);
     formData.append("content", description.value);
@@ -127,12 +132,15 @@ const saveChanges = async () => {
     router.back();
   } catch (error) {
     console.error("부스 수정 실패:", error);
+  } finally {
+    loading.value = false;
   }
 };
 
 // 부스 정보 불러오기 (수정 전 기본값 세팅)
 const fetchBoothInfo = async () => {
   try {
+    loading.value = true;
     const res = await api.get(`/booth/${boothId}/1`);
     storeName.value = res.data.name || "";
     description.value = res.data.content || "";
@@ -140,6 +148,8 @@ const fetchBoothInfo = async () => {
     location.value = res.data.location || "";
   } catch (error) {
     console.error("부스 정보 불러오기 실패:", error);
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -170,7 +180,7 @@ onMounted(() => {
 }
 .header {
   width: 100%;
-  margin-bottom: 20px;
+  margin: 10px 0;
 }
 .content {
   width: 100%;
@@ -182,64 +192,85 @@ onMounted(() => {
   width: 100%;
   margin-bottom: 16px;
 }
-.mainImg {
+.main-image-container-img {
   width: 100%;
-  height: 250px;
-  object-fit: cover;
+  height: 300px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.mainImg {
+  width: 450px;
+  object-fit: fill;
   display: block;
   cursor: pointer;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 8px;
+  max-height: 300px;
 }
 .image-upload-input {
   display: none;
 }
 .info-container {
   width: 100%;
-  padding: 10px;
   box-sizing: border-box;
+  margin-bottom: 14px;
 }
 .info-input,
 .description-input {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
+  padding: 12px;
+  margin-bottom: 14px;
   box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border: 1px solid #ff6f61;
+  border-radius: 8px;
+  font-size: 16px;
+}
+.info-input:focus,
+.description-input:focus {
+  outline: none;
+}
+.info-input:disabled {
+  background-color: #f0f0f0;
 }
 .description-input {
   height: 100px;
-  resize: vertical;
+  resize: none;
 }
 .button-container {
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 10px;
   box-sizing: border-box;
   align-items: center;
+  gap: 18px;
 }
 .menu-button,
 .save-button {
-  width: 80%;
+  width: 100%;
   max-width: 300px;
-  padding: 8px 16px;
-  margin-bottom: 5px;
+  padding: 12px 16px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 16px;
   box-sizing: border-box;
   text-align: center;
 }
 .menu-button {
-  background-color: #eee;
-  color: #333;
+  background-color: white;
+  color: #ff6f61;
   text-decoration: none;
+  border: 1px solid #ff6f61;
 }
 .save-button {
-  background-color: #007bff;
+  background-color: #ff6f61;
   color: white;
+}
+
+.save-button:hover,
+.menu-button:hover {
+  transform: scale(1.02);
+  transition: transform 0.3s ease;
 }
 </style>

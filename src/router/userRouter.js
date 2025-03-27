@@ -236,24 +236,24 @@ export default [
   // 상인
 
   {
-    path: "/:festivalId/merchant/merchantHome",
+    path: "/:festivalId/merchant/merchantHome/:boothId",
     name: "merchantHome",
     component: MerchantHome,
   },
   {
-    path: "/:festivalId/merchant/salesList",
+    path: "/:festivalId/merchant/salesList/:boothId",
     name: "salesList",
     component: SalesList,
     meta: { title: "매출 확인" },
   },
   {
-    path: "/:festivalId/merchant/basicMessage",
+    path: "/:festivalId/merchant/basicMessage/:boothId",
     name: "basicMessage",
     component: BasicMessage,
     meta: { title: "기본 메시지 지정하기" },
   },
   {
-    path: "/:festivalId/merchant/modify/:id",
+    path: "/:festivalId/merchant/modify/:boothId",
     name: "modify",
     component: Modify,
   },
