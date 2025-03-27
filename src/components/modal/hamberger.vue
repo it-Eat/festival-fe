@@ -5,7 +5,7 @@ import { useRouter } from "vue-router";
 const userStore = useUserStore();
 const router = useRouter();
 const festivalId = router.currentRoute.value.params.festivalId;
-
+const boothId = router.currentRoute.value.params.boothId;
 // 로컬 메서드: 로그아웃 후 "/user" 페이지로 이동
 function handleLogout() {
   userStore.logout();
@@ -84,14 +84,20 @@ function handleLogout() {
           </router-link>
         </li>
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'SELLER'">
-          <router-link to="/merchant/salesList">
-            <span class="home-icon">🏠</span>
+          <router-link :to="`/${festivalId}/merchant/merchantHome/${boothId}`">
+            <span class="home-icon">🛒</span>
+            상점 관리
+          </router-link>
+        </li>
+        <li v-if="userStore.isAuthenticated && userStore.userRole === 'SELLER'">
+          <router-link :to="`/${festivalId}/merchant/salesList/${boothId}`">
+            <span class="home-icon">💰</span>
             매출 확인
           </router-link>
         </li>
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'SELLER'">
-          <router-link to="/merchant/basicMessage">
-            <span class="plane-icon">✈</span>
+          <router-link :to="`/${festivalId}/merchant/basicMessage/${boothId}`">
+            <span class="plane-icon">💬</span>
             기본 메시지 지정하기
           </router-link>
         </li>

@@ -59,6 +59,7 @@
         </div>
       </div>
     </div>
+    <loadingComponent v-if="loading" />
   </div>
 </template>
 
@@ -67,20 +68,25 @@ import { ref, onMounted } from "vue";
 import BackHeader from "@/components/common/backHeader.vue";
 import { getNotice } from "@/api/user";
 import { useRoute } from "vue-router";
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
 const route = useRoute();
 const festivalId = route.params.festivalId;
 const notices = ref([]);
 const expandedItems = ref([]);
+const loading = ref(false);
 
 onMounted(async () => {
   try {
+    loading.value = true;
     const query = {};
     const data = await getNotice(festivalId, query);
     notices.value = data.data;
     expandedItems.value = new Array(data.length).fill(false);
   } catch (error) {
     console.error("공지사항 불러오기 실패:", error);
+  } finally {
+    loading.value = false;
   }
 });
 
