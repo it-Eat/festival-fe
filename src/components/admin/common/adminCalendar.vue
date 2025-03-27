@@ -29,8 +29,6 @@ const dataChange = (e) => {
 
     // 여기서 날짜를 YYYYMMDD로 포맷팅
     if (startDate.value && endDate.value) {
-      console.log("시작일자 선택: ", startDate.value);
-      console.log("종료료일자 선택: ", endDate.value);
       emit("date-selected", {
         page: 1,
         pageSize: 4,
@@ -91,5 +89,4 @@ input[type="date"] {
   background-color: #fff;
   cursor: pointer;
 }
-
 </style>

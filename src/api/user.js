@@ -74,10 +74,24 @@ async function createWishlist(boothId, festivalId, data) {
     throw error;
   }
 }
+
+async function getCart(boothId, festivalId) {
+  try {
+    const response = await api.get(`/wishlist/${boothId}/${festivalId}`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("장바구니 조회 API 호출 실패:", error);
+    throw error;
+  }
+}
+
 export {
   kakaoLogin,
   processKakaoCallback,
   getNotice,
   getBoothDetail,
   createWishlist,
+  getCart,
 };

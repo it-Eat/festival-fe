@@ -2,10 +2,14 @@
   <div class="check-modal">
     <div class="check-modal-content">
       <h3>{{ title }}</h3>
-      <p>{{ message }}</p>
+      <p v-for="(line, index) in messageLines" :key="index">
+        {{ line }}
+      </p>
       <div class="button-container">
         <button v-if="confirmText" @click="confirm">{{ confirmText }}</button>
-        <button v-if="confirmText" @click="cancel">취소</button>
+        <button v-if="title !== '결제 완료' && confirmText" @click="cancel">
+          취소
+        </button>
         <button v-if="!confirmText" @click="cancel">닫기</button>
       </div>
     </div>
@@ -13,7 +17,9 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from "vue";
+
+const props = defineProps({
   title: {
     type: String,
     required: true,
@@ -35,6 +41,10 @@ const confirm = () => {
 const cancel = () => {
   emit("cancel");
 };
+
+const messageLines = computed(() => {
+  return props.message.split("\n");
+});
 </script>
 
 <style scoped>
@@ -59,7 +69,7 @@ const cancel = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
   width: 300px;
 }
 
@@ -84,5 +94,9 @@ const cancel = () => {
 .button-container button:hover {
   background-color: #ff6b6b;
   color: #fff;
+}
+
+p {
+  text-align: center;
 }
 </style>

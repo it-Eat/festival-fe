@@ -10,7 +10,7 @@ const images = ref([]);
 
 const route = useRoute();
 const festivalId = route.params.festivalId;
-
+const baseUrl = import.meta.env.VITE_VUE_API_URL;
 const submitPost = async () => {
   const formData = new FormData();
   formData.append("title", title.value);
@@ -23,16 +23,12 @@ const submitPost = async () => {
   });
 
   try {
-    await axios.post(
-      `https://festival-be.onrender.com/board/${festivalId}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true,
-      }
-    );
+    await axios.post(`${baseUrl}/board/${festivalId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true,
+    });
     alert("게시글이 등록되었습니다.");
   } catch (error) {
     console.error(error);

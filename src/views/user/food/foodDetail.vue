@@ -200,7 +200,12 @@ const handleMenuUpdate = (menuData) => {
 // 장바구니 담기 처리
 const handleAddToCart = async () => {
   if (selectedMenus.value.length === 0) {
-    alert("메뉴를 선택해주세요");
+    isModalOpen.value = true;
+    modalConfig.value = {
+      title: "장바구니 담기 실패",
+      message: "메뉴를 선택해주세요",
+      confirmText: "",
+    };
     return;
   }
 
