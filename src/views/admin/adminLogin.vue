@@ -63,7 +63,7 @@ const handleLogin = async () => {
   try {
     loadingType.value = "loading";
     const response = await axios.post(
-      "https://festival-be.onrender.com/user/admin",
+      import.meta.env.VITE_VUE_API_URL + "/user/admin",
       loginUser,
       {
         headers: { "Content-Type": "application/json" },

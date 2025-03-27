@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import api from "@/api/axiosInstance.js";
 
+const baseUrl = import.meta.env.VITE_VUE_API_URL;
+
 export const useCommentStore = defineStore(
   "comment",
   () => {
@@ -10,7 +12,7 @@ export const useCommentStore = defineStore(
     const fetchComments = async (currentId, festivalId = 1) => {
       try {
         const response = await api.get(
-          `https://festival-be.onrender.com/comment/${currentId}/${festivalId}`
+          `${baseUrl}/comment/${currentId}/${festivalId}`
         );
 
         commentList.value = response.data.map((comment) => ({
@@ -28,10 +30,9 @@ export const useCommentStore = defineStore(
 
     const createComment = async (currentId, content, festivalId = 1) => {
       try {
-        await api.post(
-          `https://festival-be.onrender.com/comment/${currentId}/${festivalId}`,
-          { content }
-        );
+        await api.post(`${baseUrl}/comment/${currentId}/${festivalId}`, {
+          content,
+        });
         await fetchComments(currentId, festivalId);
       } catch (error) {
         console.error("댓글 작성 실패:", error);
@@ -45,12 +46,9 @@ export const useCommentStore = defineStore(
       festivalId = 1
     ) => {
       try {
-        await api.put(
-          `https://festival-be.onrender.com/comments/${commentId}`,
-          {
-            content,
-          }
-        );
+        await api.put(`${baseUrl}/comments/${commentId}`, {
+          content,
+        });
         await fetchComments(currentId, festivalId);
       } catch (error) {
         console.error("댓글 수정 실패:", error);
@@ -59,9 +57,7 @@ export const useCommentStore = defineStore(
 
     const deleteComment = async (commentId, currentId, festivalId = 1) => {
       try {
-        await api.delete(
-          `https://festival-be.onrender.com/comment/${commentId}/${festivalId}`
-        );
+        await api.delete(`${baseUrl}/comment/${commentId}/${festivalId}`);
         await fetchComments(currentId, festivalId);
       } catch (error) {
         console.error("댓글 삭제 실패:", error);

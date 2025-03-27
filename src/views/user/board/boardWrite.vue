@@ -9,6 +9,7 @@ const content = ref("");
 const images = ref([]); // 업로드할 이미지 파일들
 const previewImages = ref([]); // 미리보기용 이미지 URL들
 const router = useRouter();
+const baseUrl = import.meta.env.VITE_VUE_API_URL;
 
 // 이미지 추가 함수
 const handleImageUpload = (event) => {
@@ -48,16 +49,12 @@ const submitPost = async () => {
   });
 
   try {
-    await axios.post(
-      `https://festival-be.onrender.com/board/${festivalId}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true,
-      }
-    );
+    await axios.post(`${baseUrl}/board/${festivalId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true,
+    });
     alert("게시글이 등록되었습니다.");
     router.push(`/${festivalId}/board/list`);
   } catch (error) {

@@ -141,7 +141,7 @@ export default [
     component: FoodReview,
   },
   {
-    path: "/:festivalId/food/foodCart",
+    path: "/:festivalId/food/foodCart/:boothId",
     name: "foodCart",
     component: FoodCart,
   },

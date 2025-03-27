@@ -21,6 +21,8 @@ const cartTotalCount = computed(() => cartStore.totalCount);
 
 const router = useRouter();
 const route = useRoute();
+const festivalId = router.currentRoute.value.params.festivalId;
+const boothId = route.params.id;
 
 const goBack = () => {
   router.back();
@@ -50,7 +52,7 @@ const toggleMenu = () => {
 
 // 장바구니 이동
 const goShoppingList = () => {
-  router.push("/user/food/foodCart");
+  router.push(`/${festivalId}/food/foodCart/${boothId}`);
 };
 
 // 오버레이 클릭 시 닫기 (메뉴 내부 클릭은 무시)

@@ -26,7 +26,7 @@
 
           <!-- 결제 수단 -->
           <div class="payment-methods">
-            <label>결제 수단</label>
+            <label class="payment-label">결제 수단</label>
             <div class="payment-options">
               <!-- 토스페이 -->
               <div class="option">
@@ -38,8 +38,12 @@
                   v-model="paymentMethod"
                 />
                 <label for="tossPay">
-                  <img src="@/assets/toss-pay.png" alt="토스페이" class="pay-icon" />
-                  <span>토스페이</span>
+                  <img
+                    src="@/assets/toss-pay.png"
+                    alt="토스페이"
+                    class="pay-icon"
+                  />
+                  <span class="payment-text">토스페이</span>
                 </label>
               </div>
 
@@ -53,8 +57,12 @@
                   v-model="paymentMethod"
                 />
                 <label for="kakaoPay">
-                  <img src="@/assets/kakao-pay.png" alt="카카오페이" class="pay-icon" />
-                  <span>카카오페이</span>
+                  <img
+                    src="@/assets/kakao-pay.png"
+                    alt="카카오페이"
+                    class="pay-icon"
+                  />
+                  <span class="payment-text">카카오페이</span>
                 </label>
               </div>
 
@@ -68,8 +76,12 @@
                   v-model="paymentMethod"
                 />
                 <label for="naverPay">
-                  <img src="@/assets/naver-pay.png" alt="네이버페이" class="pay-icon" />
-                  <span>네이버페이</span>
+                  <img
+                    src="@/assets/naver-pay.png"
+                    alt="네이버페이"
+                    class="pay-icon"
+                  />
+                  <span class="payment-text">네이버페이</span>
                 </label>
               </div>
             </div>
@@ -84,10 +96,17 @@
         </div>
       </div>
     </div>
+    <loadingComponent v-if="isLoading" />
+    <checkModal
+      v-if="isModalOpen"
+      :title="modalConfig.title"
+      :message="modalConfig.message"
+      :confirmText="modalConfig.confirmText"
+      @confirm="handleConfirm"
+      @cancel="handleCancel"
+    />
   </div>
 </template>
-
-
 
 <script setup>
 import { computed, ref } from "vue";
@@ -95,75 +114,115 @@ import BackHeader from "@/components/common/backHeader.vue";
 import { useCartStore } from "@/stores/cartStores";
 import { useRouter } from "vue-router";
 import api from "@/api/axiosInstance";
+import loadingComponent from "@/components/common/loadingComponent.vue";
+import checkModal from "@/components/common/checkModal.vue";
 
 // Pinia store (가게명, 장바구니 등)
 const cartStore = useCartStore();
 const storeName = computed(() => cartStore.storeName); // 가게명
 const cartItems = computed(() => cartStore.cartItems);
 const router = useRouter();
+const festivalId = router.currentRoute.value.params.festivalId;
+const isLoading = ref(false);
+const isModalOpen = ref(false);
+const modalConfig = ref({
+  title: "",
+  message: ``,
+  confirmText: "",
+});
 
 // 총 금액 계산
 const totalPrice = computed(() => {
   return cartItems.value.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + item.menu.price * item.cnt,
     0
   );
 });
 
 // 입력 폼
-const contact = ref("");       // 주문 연락처
+const contact = ref(""); // 주문 연락처
 const paymentMethod = ref(""); // 선택한 결제 수단 (tossPay/kakaoPay/naverPay 등)
 
 // 결제 버튼 클릭 시
 async function handlePayment() {
   // 1) 폼 검증
   if (!contact.value) {
-    alert("연락처를 입력해주세요.");
+    modalConfig.value = {
+      title: "결제 오류",
+      message: "연락처를 입력해주세요.",
+      confirmText: "",
+    };
+    isModalOpen.value = true;
     return;
   }
   if (!paymentMethod.value) {
-    alert("결제 수단을 선택해주세요.");
+    modalConfig.value = {
+      title: "결제 오류",
+      message: "결제 수단을 선택해주세요.",
+      confirmText: "",
+    };
+    isModalOpen.value = true;
     return;
   }
 
   // 2) wishlistIds(장바구니 ID 리스트) 만들기
-  const wishlistIds = cartItems.value.map(item => item.id);
+  const wishlistIds = cartItems.value.map((item) => item.id);
 
   // 3) payType 매핑
   //   - BE 요구사항에 맞춰 paymentMethod를 실제 payType으로 변환
   const payTypeMap = {
     tossPay: "TOSSPAY",
     kakaoPay: "KAKAOPAY",
-    naverPay: "NAVERPAY"
+    naverPay: "NAVERPAY",
   };
   const payType = payTypeMap[paymentMethod.value] || "UNKNOWN";
 
   // 4) POST 요청에 사용할 payload
   const payload = {
-    wishlistIds,       // 예: [1, 2, 3]
+    wishlistIds, // 예: [1, 2, 3]
     totalPrice: totalPrice.value, // 예: 60000
-    payType            // 예: "NAVERPAY"
+    payType, // 예: "NAVERPAY"
     // 필요하다면 contact(연락처)도 함께 전송 가능
     // contact: contact.value
   };
+  console.log(payload);
 
   try {
+    isLoading.value = true;
     // 5) 서버로 결제 정보 전송
     const response = await api.post("/pay", payload);
-    // 서버에서 성공 응답을 받았다면
-    console.log("결제 응답:", response.data);
 
     // 6) 결제 완료 후 장바구니 비우기
     cartStore.clearCart();
-    alert("결제가 완료되었습니다. 장바구니를 비웠습니다.");
-
-    // 7) 결제 후 이동할 페이지로 라우팅
-    router.push({ path: "/user" });
+    modalConfig.value = {
+      title: "결제 완료",
+      message: `‼️화면을 캡쳐해주세요‼️\n주문 번호 : ${response.data.pay.waitingNumber}\n픽업 시간 : ${response.data.waitingTime}`,
+      confirmText: "확인",
+    };
+    isModalOpen.value = true;
   } catch (error) {
     console.error("결제 오류:", error);
-    alert("결제 중 오류가 발생했습니다. 다시 시도해주세요.");
+    modalConfig.value = {
+      title: "결제 오류",
+      message: "결제 중 오류가 발생했습니다. 다시 시도해주세요.",
+      confirmText: "",
+    };
+    isModalOpen.value = true;
+  } finally {
+    isLoading.value = false;
   }
 }
+
+const handleConfirm = () => {
+  isModalOpen.value = false;
+  router.push({
+    path: `/${festivalId}/userHome/homeFood`,
+  });
+};
+
+const handleCancel = () => {
+  isModalOpen.value = false;
+};
 </script>
 
 <style scoped>
@@ -182,10 +241,11 @@ async function handlePayment() {
   max-width: 95vw;
   margin: auto;
   box-sizing: border-box;
+  gap: 14px;
 }
 
 .header {
-  margin-bottom: 20px;
+  margin: 10px 0;
 }
 
 /* 중앙 영역 */
@@ -199,7 +259,7 @@ async function handlePayment() {
 
 /* 상단 가게명 */
 .store-name {
-  font-size: 20px;
+  font-size: 28px;
   font-weight: bold;
   margin-bottom: 16px;
 }
@@ -217,31 +277,46 @@ async function handlePayment() {
 
 .contact,
 .payment-methods {
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
-.contact label,
-.payment-methods label {
+.contact label {
   display: block;
-  font-weight: 500;
-  margin-bottom: 8px;
+  font-weight: 700;
   color: #333;
+  font-size: 16px;
+  margin-bottom: 14px;
+}
+.payment-label {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.payment-text {
+  display: block;
+  font-weight: 400;
+  color: #333;
+  font-size: 20px;
 }
 
 .contact input[type="text"] {
   width: 100%;
   padding: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid #ff6f61;
   border-radius: 4px;
   font-size: 16px;
   box-sizing: border-box;
 }
 
+.contact input[type="text"]:focus {
+  outline: none;
+}
 /* 결제 수단 섹션 */
 .payment-options {
   display: flex;
   flex-direction: column;
-  gap: 14px; /* 결제 옵션 사이 간격 */
+  gap: 16px; /* 결제 옵션 사이 간격 */
+  margin-top: 14px;
 }
 
 /* 각 결제 옵션 */
@@ -258,9 +333,14 @@ async function handlePayment() {
   margin-left: 8px; /* 라디오 버튼과 아이콘/텍스트 사이 여백 */
 }
 
+.option input[type="radio"] {
+  width: 18px;
+  height: 18px;
+}
+
 /* 결제 아이콘 크기 조절 */
 .pay-icon {
-  width: 24px;
+  width: 32px;
   height: auto;
   margin-right: 6px;
 }

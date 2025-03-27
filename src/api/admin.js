@@ -119,8 +119,6 @@ async function getBoardDetail(boardId, festivalId) {
       },
     });
 
-    console.log("✅ API 응답 데이터:", response.data); // 응답 데이터 확인
-
     if (!response.data || Object.keys(response.data).length === 0) {
       throw new Error("게시글 데이터를 찾을 수 없습니다.");
     }
@@ -210,8 +208,6 @@ async function getBoothDetail(boothId, festivalId) {
         "Content-Type": "application/json", // JSON 응답 명확히 설정
       },
     });
-
-    console.log("✅ API 응답 데이터:", response.data); // 응답 데이터 확인
 
     if (!response.data || Object.keys(response.data).length === 0) {
       throw new Error("게시글 데이터를 찾을 수 없습니다.");
