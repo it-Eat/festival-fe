@@ -39,7 +39,6 @@ const submitPost = async () => {
 <template>
   <div class="container">
     <backHeader title="게시글 작성" />
-    <h1>게시글 작성 페이지입니다.</h1>
     <div class="form-wrapper">
       <div class="title-lossType-container">
         <input
@@ -76,12 +75,12 @@ const submitPost = async () => {
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
 }
 
 .title-lossType-container {
   display: flex;
-  gap: 10px;
+  gap: 24px;
 }
 
 input,
@@ -92,11 +91,20 @@ textarea {
   width: 100%;
   box-sizing: border-box;
   font-size: 16px;
+  margin: 12px 0;
 }
 
 textarea {
   height: 200px;
   resize: none;
+}
+
+.input-select {
+  width: 120px;
+  height: 40px;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 12px 0;
 }
 
 button {
@@ -108,6 +116,7 @@ button {
   cursor: pointer;
   align-self: flex-end;
   font-weight: bold;
+  margin-top: 20px;
 }
 
 .input-images {

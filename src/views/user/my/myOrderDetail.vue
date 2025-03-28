@@ -69,9 +69,6 @@ onMounted(() => {
   fetchPaymentDetail();
 });
 
-const totalPrice = computed(() =>
-  paymentDetail.value ? paymentDetail.value.price : 0
-);
 const paymentMethod = computed(() =>
   paymentDetail.value ? paymentDetail.value.payType : ""
 );

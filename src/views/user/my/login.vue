@@ -57,8 +57,9 @@ const festivalId = router.currentRoute.value.params.festivalId;
 localStorage.setItem("festivalId", festivalId);
 
 const loginWithGoogle = () => {
-  console.log("Google Login");
-  // 실제 구글 로그인 로직 또는 OAuth URL로 이동
+  const loginURL = import.meta.env.VITE_LOGIN_URL;
+
+  window.location.href = loginURL;
 };
 
 const loginWithKakao = () => {
@@ -68,8 +69,9 @@ const loginWithKakao = () => {
 };
 
 const loginWithNaver = () => {
-  console.log("Naver Login");
-  // 실제 네이버 로그인 로직 또는 OAuth URL로 이동
+  const loginURL = import.meta.env.VITE_LOGIN_URL;
+
+  window.location.href = loginURL;
 };
 </script>
 

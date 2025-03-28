@@ -127,7 +127,6 @@ const saveChanges = async () => {
     await api.patch(`/booth/${boothId}/1`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    console.log("수정 완료:", formData);
     merchantStore.setStoreName(storeName.value);
     router.back();
   } catch (error) {

@@ -66,7 +66,6 @@ const submitPost = async () => {
 <template>
   <div class="container">
     <backHeader title="게시글 작성" />
-    <h1>게시글 작성 페이지입니다.</h1>
     <div class="form-wrapper">
       <input
         v-model="title"
@@ -127,7 +126,7 @@ input,
 textarea {
   border: 1px solid #ccc;
   border-radius: 8px;
-  margin-bottom: 15px;
+  margin: 12px 0;
   padding: 10px;
   width: 100%;
   box-sizing: border-box;
@@ -203,6 +202,5 @@ textarea {
   cursor: pointer;
   align-self: flex-end;
   font-weight: bold;
-  margin-top: 20px;
 }
 </style>

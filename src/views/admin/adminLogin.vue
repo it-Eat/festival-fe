@@ -72,7 +72,6 @@ const handleLogin = async () => {
     );
 
     if (response.status === 200) {
-      console.log("로그인 성공");
       const { id, userName, nickname, role, participation } = response.data;
       const user = { id, userName, nickname, role, participation };
 

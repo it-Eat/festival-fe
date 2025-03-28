@@ -17,8 +17,6 @@ const isLoading = ref(false);
 onMounted(async () => {
   isLoading.value = true;
   await boardStore.fetchItems(festivalId);
-  console.log("불러온 게시글 개수:", boardStore.boards.length); // 🔥 데이터 개수 확인
-  console.log("전체 데이터:", boardStore.boards); // 🔥 전체 데이터 확인
   isLoading.value = false;
 });
 
@@ -26,7 +24,6 @@ onMounted(async () => {
 const allBoards = computed(() =>
   Array.isArray(boardStore.boards) ? [...boardStore.boards] : []
 );
-console.log(boardStore.boards.length);
 // 현재 페이지의 글 목록 필터링
 const paginatedBoards = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;

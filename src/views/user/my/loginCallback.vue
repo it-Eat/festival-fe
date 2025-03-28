@@ -49,16 +49,13 @@ onMounted(async () => {
           const boothId = booth.data.id; // 실제 응답에서 받는 필드명으로 수정 필요
           router.replace(`/${festivalId}/merchant/merchantHome/${boothId}`);
         } else {
-          router.replace(`/`);
+          router.go(-2);
         }
       }, 150);
     } catch (error) {
       console.error("❌ 유저 정보 가져오기 실패:", error);
       router.replace("/user/login");
     }
-  } else {
-    console.warn("⚠ 카카오 로그인 코드가 없음. 로그인 페이지로 이동합니다.");
-    router.replace("/user/login");
   }
 });
 </script>

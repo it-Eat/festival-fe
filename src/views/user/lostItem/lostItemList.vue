@@ -7,9 +7,9 @@ import { useRoute } from "vue-router";
 import loadingComponent from "@/components/common/loadingComponent.vue";
 
 const lostStore = useLostStore();
-const currentPage = ref(1); // 현재 페이지
-const itemsPerPage = 10; // 한 페이지당 분실물 개수
-const totalItems = computed(() => lostStore.losts.length || 50); // 전체 분실물 개수
+const currentPage = ref(1);
+const itemsPerPage = 10;
+const totalItems = computed(() => lostStore.losts.length || 50);
 const route = useRoute();
 const festivalId = route.params.festivalId;
 const isLoading = ref(false);
@@ -17,8 +17,6 @@ const isLoading = ref(false);
 onMounted(async () => {
   isLoading.value = true;
   await lostStore.fetchItems(festivalId);
-  console.log("불러온 분실물 개수:", lostStore.losts.length); // 🔥 데이터 개수 확인
-  console.log("전체 데이터:", lostStore.losts); // 🔥 전체 데이터 확인
   isLoading.value = false;
 });
 

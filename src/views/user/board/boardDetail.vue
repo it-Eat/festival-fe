@@ -14,7 +14,7 @@ const boardStore = useBoardStore();
 const commentStore = useCommentStore();
 const userStore = useUserStore(); // New initialization
 const currentId = Number(route.params.id);
-const festivalId = 1;
+const festivalId = Number(route.params.festivalId);
 const currentItem = ref(null);
 const isLoading = ref(false);
 
@@ -89,7 +89,7 @@ const deleteComment = async (commentId) => {
 
 <template>
   <div v-if="currentItem">
-    <backHeader class="header" />
+    <backHeader class="header" title="게시글 상세" />
     <div class="a">
       <div class="title">
         <span class="title-text">{{ currentItem?.title || "제목 없음" }}</span>

@@ -77,7 +77,13 @@
                 <td class="comment-user-name">
                   {{ comment?.user?.userName || "익명" }}
                 </td>
-                <td class="comment-content">{{ comment?.content || "-" }}</td>
+                <td class="comment-content">
+                  {{
+                    comment.content.length > 12
+                      ? comment.content.slice(0, 12) + "..."
+                      : comment.content
+                  }}
+                </td>
                 <td class="comment-date">
                   {{ dateFormatWithoutTime(comment?.createdAt) || "-" }}
                 </td>
@@ -314,7 +320,7 @@ h1 {
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 10px;
-  padding: 20px;
+  padding: 16px;
 }
 .board-container {
   flex: 1;
@@ -340,7 +346,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   font-size: 16px;
-  gap: 30px;
+  gap: 12px;
 }
 
 /* 이미지 래퍼 */

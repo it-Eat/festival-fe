@@ -115,7 +115,6 @@ const onSearch = async () => {
     loadingType.value = "loading";
     const festivalId = router.currentRoute.value.params.festivalId;
     const response = await getLostBoards(festivalId, query);
-    console.log("API 응답 데이터:", response);
     lost.value = response.data;
     totalItems.value = response.totalPage;
   } catch (error) {

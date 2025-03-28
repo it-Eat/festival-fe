@@ -14,13 +14,11 @@ const route = useRoute();
 const keyword = computed(() => route.query.keyword || "");
 
 onMounted(async () => {
-  console.log("🔍 onMounted - keyword:", keyword.value); // ✅ 로그 추가
   await lostStore.fetchMyItems(1, 50, "createAt", "asc", keyword.value);
 });
 
 // ✅ keyword 변경 시 API 다시 호출
 watch(keyword, async (newKeyword) => {
-  console.log("🔄 keyword 변경됨:", newKeyword); // ✅ 로그 추가
   await lostStore.fetchMyItems(1, 50, "createAt", "asc", newKeyword);
 });
 

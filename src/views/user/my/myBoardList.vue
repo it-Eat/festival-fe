@@ -1,8 +1,7 @@
 <script setup>
 import SmallList from "@/components/common/smallList.vue";
 import { useBoardStore } from "@/stores/board";
-import { watch, onMounted, computed, ref } from "vue";
-import { useRoute } from "vue-router";
+import { onMounted, computed, ref } from "vue";
 import backHeader from "@/components/common/backHeader.vue";
 
 const boardStore = useBoardStore();
@@ -10,7 +9,7 @@ const currentPage = ref(1); // 현재 페이지
 const itemsPerPage = 7; // 한 페이지당 게시글 개수
 const totalItems = computed(() => boardStore.boards.length || 50); // 전체 글 수 (서버 데이터 적용 가능)
 
-const route = useRoute();
+const festivalId = localStorage.getItem("festivalId");
 
 // 데이터 가져오기
 onMounted(async () => {
@@ -22,7 +21,6 @@ const allBoards = computed(() =>
   Array.isArray(boardStore.myBoards) ? [...boardStore.myBoards] : []
 );
 
-console.log(boardStore.myBoards.length);
 // 현재 페이지의 글 목록 필터링
 const paginatedBoards = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;

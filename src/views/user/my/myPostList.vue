@@ -91,50 +91,15 @@ import SmallList from "@/components/common/smallList.vue";
 import { useLostStore } from "@/stores/lost";
 import { useBoardStore } from "@/stores/board";
 import { useUserStore } from "@/stores/userStore";
-// import api from "@/api/axiosInstance";
 
 const lostStore = useLostStore();
 const boardStore = useBoardStore();
 const userStore = useUserStore();
 
-// const festivalId = 1;
-
 onMounted(() => {
   boardStore.fetchMyItems();
   lostStore.fetchMyItems();
 });
-
-// // 게시글 데이터 불러오기 (내 게시물, keyword로 내 닉네임 전달)
-// const fetchBoardList = async () => {
-//   try {
-//     const res = await api.get(`/board/my-board/${festivalId}`);
-//     // boardList를 세팅
-//     if (boardStore.setBoardList) {
-//       boardStore.setBoardList(res.data);
-//     } else {
-//       boardStore.boardList = res.data;
-//     }
-//   } catch (error) {
-//     console.error("Error fetching board list:", error);
-//   }
-// };
-
-// // 분실물 데이터 불러오기 (내 분실물, keyword로 내 닉네임 전달)
-// const fetchLostList = async () => {
-//   try {
-//     const res = await api.get(`/board/my-board/${festivalId}`, {
-//       params: { keyword },
-//     });
-//     // lostList를 세팅
-//     if (lostStore.setLostList) {
-//       lostStore.setLostList(res.data);
-//     } else {
-//       lostStore.lostList = res.data;
-//     }
-//   } catch (error) {
-//     console.error("Error fetching lost list:", error);
-//   }
-// };
 </script>
 
 <style scoped>

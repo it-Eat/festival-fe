@@ -83,18 +83,18 @@ const handleMoreClick = () => {
   padding: 10px;
   box-sizing: border-box;
   gap: 24px;
+  height: 100%;
 }
 
 .content-area {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 600px;
+  max-width: 500px;
   margin: 0 auto;
   padding: 10px;
-  height: auto; /* 높이 자동 조정 */
-  min-height: 60vh; /* 최소 높이 조정 */
-  overflow: hidden; /* 스크롤 제거 */
+  height: 70vh; /* 높이 자동 조정 */
+  overflow-x: hidden; /* 스크롤 제거 */
 }
 
 .section {

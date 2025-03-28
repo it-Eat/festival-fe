@@ -369,6 +369,7 @@ onMounted(() => {
   font-weight: bold;
   border-radius: 12px;
   cursor: pointer;
+  margin-bottom: 24px;
 }
 .cart-button button:hover {
   background-color: #ef5b4c;
