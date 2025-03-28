@@ -28,3 +28,14 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+*storybook.log
+
+# 개인 설정 파일
+.env
+server.crt
+server.csr
+server.key
+y
+y.pub
+localhost.key
