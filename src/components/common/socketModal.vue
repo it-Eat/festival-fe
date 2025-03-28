@@ -43,7 +43,8 @@ const cancel = () => {
   padding: 16px;
   border-radius: 10px;
   width: 400px;
-  height: 200px;
+  min-height: 200px;
+  max-height: 500px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

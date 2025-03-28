@@ -66,7 +66,6 @@ const fetchCart = async () => {
   const cart = await getCart(boothId, festivalId);
   res.value = cart.data;
   cartStore.cartItems = res.value;
-  console.log(cartStore.cartItems);
   isLoading.value = false;
 };
 

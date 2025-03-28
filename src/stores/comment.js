@@ -9,7 +9,7 @@ export const useCommentStore = defineStore(
   () => {
     const commentList = ref([]);
 
-    const fetchComments = async (currentId, festivalId = 1) => {
+    const fetchComments = async (currentId, festivalId) => {
       try {
         const response = await api.get(
           `${baseUrl}/comment/${currentId}/${festivalId}`
@@ -21,14 +21,12 @@ export const useCommentStore = defineStore(
           content: comment.content, // 댓글 내용
           createdAt: comment.createdAt, // 생성 날짜
         }));
-
-        console.log("가공된 댓글 리스트:", commentList.value); // 콘솔에서 확인
       } catch (error) {
-        console.error("댓글 불러오기 실패:", error);
+        .error("댓글 불러오기 실패:", error);
       }
     };
 
-    const createComment = async (currentId, content, festivalId = 1) => {
+    const createComment = async (currentId, content, festivalId) => {
       try {
         await api.post(`${baseUrl}/comment/${currentId}/${festivalId}`, {
           content,
@@ -39,14 +37,9 @@ export const useCommentStore = defineStore(
       }
     };
 
-    const editComment = async (
-      commentId,
-      content,
-      currentId,
-      festivalId = 1
-    ) => {
+    const editComment = async (commentId, content, currentId, festivalId) => {
       try {
-        await api.put(`${baseUrl}/comments/${commentId}`, {
+        await api.put(`${baseUrl}/comment/${commentId}/${festivalId}`, {
           content,
         });
         await fetchComments(currentId, festivalId);

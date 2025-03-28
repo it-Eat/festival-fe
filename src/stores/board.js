@@ -16,27 +16,18 @@ export const useBoardStore = defineStore("board", {
       festivalId,
       page = 1,
       pageSize = 50,
-      orderBy = "createdAt",
       order = "asc",
       keyword = ""
     ) {
       try {
-        console.log(
-          `🔍 API 요청 URL: /board/1?page=${page}&pageSize=${pageSize}&orderBy=${orderBy}&order=${order}&keyword=${keyword}`
-        );
-
         const response = await api.get(`/board/${festivalId}`, {
           params: {
             page: parseInt(page) || 1,
-            pageSize: parseInt(pageSize) || 50, // ✅ 여기가 실제로 50으로 보내지는지 확인
-            // orderBy: orderBy || "createdAt",
+            pageSize: parseInt(pageSize) || 50,
             order: order || "asc",
             keyword: keyword,
           },
         });
-
-        console.log("🔄 서버에서 받아온 데이터 개수:", response.data.length);
-        console.log("📦 받아온 데이터:", response.data);
 
         this.boards = response.data;
       } catch (error) {
@@ -60,25 +51,19 @@ export const useBoardStore = defineStore("board", {
       boardType = "BOARD"
     ) {
       try {
-        console.log(
-          `🔍 API 요청 URL: /board/board/1?page=${page}&pageSize=${pageSize}&orderBy=${orderBy}&boardType=${boardType}`
-        );
+        const festivalId = localStorage.getItem("festivalId");
 
-        const response = await api.get(`/board/my-board/1`, {
+        const response = await api.get(`/board/my-board/${festivalId}`, {
           params: {
             page: parseInt(page) || 1,
-            pageSize: parseInt(pageSize) || 50, // ✅ 50개 요청
-            // orderBy: orderBy || "createAt",
+            pageSize: parseInt(pageSize) || 50,
             orderBy: orderBy || "recent",
             boardType: boardType,
           },
         });
 
         this.myBoards = response.data;
-        this.totalItems = response.data.length; // 전체 개수 업데이트
-
-        console.log("🔄 서버에서 받아온 데이터 개수:", response.data.length);
-        console.log("📦 받아온 데이터:", response.data);
+        this.totalItems = response.data.length;
       } catch (error) {
         console.error("❌ 데이터 가져오기 실패:", error);
       }

@@ -17,7 +17,7 @@ const commentStore = useCommentStore();
 const isLoading = ref(false);
 
 const currentId = Number(route.params.id);
-const festivalId = 1;
+const festivalId = Number(route.params.festivalId);
 const currentItem = ref(null);
 
 const loadLostItemDetail = async () => {
@@ -81,7 +81,7 @@ const formatDate = (dateString) => {
 
 <template>
   <div v-if="currentItem">
-    <backHeader class="header" />
+    <backHeader class="header" title="분실물 상세" />
     <div class="a">
       <div class="title">
         <lostChip

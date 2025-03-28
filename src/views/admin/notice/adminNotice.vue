@@ -125,7 +125,6 @@ const deleteNotices = async () => {
 };
 
 const handleCheck = (event, noticeId) => {
-  console.log(selectedNoticeIds.value);
   event.stopPropagation();
   if (event.target.checked) {
     selectedNoticeIds.value.push(noticeId);

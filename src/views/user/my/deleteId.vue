@@ -1,25 +1,24 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import BackHeader from '@/components/common/backHeader.vue'
-import { Trash2 } from 'lucide-vue-next' // 루시드 아이콘
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import BackHeader from "@/components/common/backHeader.vue";
+import { Trash2 } from "lucide-vue-next"; // 루시드 아이콘
 
-const router = useRouter()
+const router = useRouter();
 
 // 로그인된 사용자 이메일 (예: 토큰 등에서 가져옴)
-const loggedInEmail = 'user@example.com'
-const email = ref('')
+const loggedInEmail = "user@example.com";
+const email = ref("");
 
 // 회원 탈퇴 로직
 const handleDelete = () => {
   if (email.value.trim() === loggedInEmail) {
-    console.log('회원 탈퇴 성공:', email.value)
-    alert('회원 탈퇴가 완료되었습니다.')
-    router.back()
+    alert("회원 탈퇴가 완료되었습니다.");
+    router.back();
   } else {
-    alert('입력한 이메일이 로그인된 이메일과 일치하지 않습니다.')
+    alert("입력한 이메일이 로그인된 이메일과 일치하지 않습니다.");
   }
-}
+};
 </script>
 
 <template>
@@ -60,9 +59,7 @@ const handleDelete = () => {
       />
 
       <!-- 탈퇴 버튼 -->
-      <button class="delete-button" @click="handleDelete">
-        탈퇴하기
-      </button>
+      <button class="delete-button" @click="handleDelete">탈퇴하기</button>
     </div>
   </div>
 </template>

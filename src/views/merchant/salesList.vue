@@ -83,14 +83,11 @@ const calendarEndDate = ref("");
 onMounted(() => {
   if (cartStore.boothId) {
     fetchWishlistData(cartStore.boothId);
-  } else {
-    console.warn("boothId가 설정되지 않았습니다.");
   }
 });
 const handleDateRangeChange = async (range) => {
   calendarStartDate.value = range.startDate;
   calendarEndDate.value = range.endDate;
-  console.log(calendarStartDate.value, calendarEndDate.value);
   try {
     loadingType.value = "loading";
     const response = await api.get(

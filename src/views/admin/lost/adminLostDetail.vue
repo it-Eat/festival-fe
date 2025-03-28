@@ -211,7 +211,6 @@ onMounted(() => {
   if (history.state.item) {
     board.value = JSON.parse(history.state.item);
   } else {
-    console.error("데이터 없음");
     router.push(`/admin/${festivalId}/adminLost`);
   }
   fetchComments();
@@ -280,7 +279,7 @@ h1 {
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 10px;
-  padding: 20px;
+  padding: 16px;
 }
 
 .board-container {
@@ -308,7 +307,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   font-size: 16px;
-  gap: 30px;
+  gap: 12px;
 }
 
 /* 이미지 영역 */

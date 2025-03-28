@@ -179,13 +179,10 @@ async function handlePayment() {
 
   // 4) POST 요청에 사용할 payload
   const payload = {
-    wishlistIds, // 예: [1, 2, 3]
-    totalPrice: totalPrice.value, // 예: 60000
-    payType, // 예: "NAVERPAY"
-    // 필요하다면 contact(연락처)도 함께 전송 가능
-    // contact: contact.value
+    wishlistIds,
+    totalPrice: totalPrice.value,
+    payType,
   };
-  console.log(payload);
 
   try {
     isLoading.value = true;

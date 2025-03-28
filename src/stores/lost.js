@@ -19,30 +19,21 @@ export const useLostStore = defineStore("lost", {
       festivalId,
       page = 1,
       pageSize = 50,
-      orderBy = "createAt",
       order = "asc",
       keyword = ""
     ) {
       try {
-        console.log(
-          `🔍 API 요청 URL: /board/board-loss/${festivalId}?page=${page}&pageSize=${pageSize}&orderBy=${orderBy}&order=${order}&keyword=${keyword}`
-        );
-
         const response = await api.get(`/board/board-loss/${festivalId}`, {
           params: {
             page: parseInt(page) || 1,
-            pageSize: parseInt(pageSize) || 50, // ✅ 50개 요청
-            // orderBy: orderBy || "createAt",
+            pageSize: parseInt(pageSize) || 50,
             order: order || "asc",
             keyword: keyword,
           },
         });
 
         this.losts = response.data;
-        this.totalItems = response.data.length; // 전체 개수 업데이트
-
-        console.log("🔄 서버에서 받아온 데이터 개수:", response.data.length);
-        console.log("📦 받아온 데이터:", response.data);
+        this.totalItems = response.data.length;
       } catch (error) {
         console.error("❌ 데이터 가져오기 실패:", error);
       }
@@ -70,24 +61,17 @@ export const useLostStore = defineStore("lost", {
       boardType = "LOSS"
     ) {
       try {
-        console.log(
-          `🔍 API 요청 URL: /board/my-board/1?page=${page}&pageSize=${pageSize}&orderBy=${orderBy}&boardType=${boardType}`
-        );
-
         const response = await api.get("/board/my-board/1", {
           params: {
             page: parseInt(page) || 1,
-            pageSize: parseInt(pageSize) || 50, // ✅ 50개 요청
+            pageSize: parseInt(pageSize) || 50,
             orderBy: orderBy || "recent",
             boardType: boardType,
           },
         });
 
         this.myLosts = response.data;
-        this.totalItems = response.data.length; // 전체 개수 업데이트
-
-        console.log("🔄 서버에서 받아온 데이터 개수:", response.data.length);
-        console.log("📦 받아온 데이터:", response.data);
+        this.totalItems = response.data.length;
       } catch (error) {
         console.error("❌ 데이터 가져오기 실패:", error);
       }

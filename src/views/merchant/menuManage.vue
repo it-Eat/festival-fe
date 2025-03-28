@@ -135,7 +135,6 @@ const removeMenu = async (index) => {
     try {
       loading.value = true;
       await api.delete(`/menu/${menu.id}`);
-      console.log(`메뉴 ${menu.id} 삭제 성공`);
     } catch (error) {
       console.error("메뉴 삭제 실패:", error);
     } finally {
@@ -187,14 +186,12 @@ const saveMenus = async () => {
         await api.patch(`/menu/${menu.id}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        console.log(`메뉴 ${menu.id} 수정 완료`);
       } else {
         // 신규 메뉴 추가: POST /menu/{boothId}
         const res = await api.post(`/menu/${boothId}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         menu.id = res.data.id;
-        console.log("신규 메뉴 생성 완료:", res.data);
       }
     }
     router.back();
