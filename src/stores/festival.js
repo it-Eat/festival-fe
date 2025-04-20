@@ -1,6 +1,6 @@
 import api from "@/api/axiosInstance";
 
-async function getFestivalList(cursor, limit, keyword) {
+async function getFestivalList(cursor, limit, keyword, selectedMonth) {
   // URL 파라미터를 저장할 배열
   const queryParams = [];
 
@@ -16,6 +16,8 @@ async function getFestivalList(cursor, limit, keyword) {
   if (keyword) {
     queryParams.push(`keyword=${encodeURIComponent(keyword)}`);
   }
+
+  queryParams.push(`month=${selectedMonth}`);
 
   // 쿼리 파라미터 조합
   const queryString = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";

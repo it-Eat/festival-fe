@@ -13,6 +13,7 @@ const hasMoreData = ref(true);
 const cursor = ref(0);
 const limit = ref(9);
 const keyword = ref("");
+const selectedMonth = ref("");
 const festivalItems = ref([]);
 const router = useRouter();
 const loading = ref(false);
@@ -132,7 +133,8 @@ async function searchFestival() {
     const response = await getFestivalList(
       cursor.value,
       limit.value,
-      keyword.value
+      keyword.value,
+      selectedMonth.value
     );
     festivalItems.value = response;
   } finally {
@@ -159,6 +161,12 @@ async function searchFestival() {
           placeholder="검색어를 입력해주세요."
           v-model="keyword"
         />
+        <select class="month-select" v-model="selectedMonth">
+          <option value="">전체</option>
+          <option v-for="month in 12" :key="month" :value="month">
+            {{ month }}월
+          </option>
+        </select>
         <button class="body-header-button" type="submit">검색</button>
       </form>
       <div class="body-content">
