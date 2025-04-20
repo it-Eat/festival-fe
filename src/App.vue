@@ -53,5 +53,7 @@ const closeModal = () => {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #ff6f61 transparent;
 }
 </style>

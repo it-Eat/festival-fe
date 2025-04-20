@@ -1,10 +1,13 @@
 <script setup>
 import { ChevronLeft, AlignJustify, ShoppingCart } from "lucide-vue-next";
 import { useRouter, useRoute } from "vue-router";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import Hamberger from "../modal/hamberger.vue";
 import { useCartStore } from "@/stores/cartStores";
 import { useUserStore } from "@/stores/userStore"; // Pinia 스토어 임포트
+import loadingComponent from "./loadingComponent.vue";
+
+const isLoading = ref(false);
 
 const props = defineProps({
   title: String,
@@ -27,6 +30,15 @@ const boothId = route.params.id;
 const goBack = () => {
   router.back();
 };
+
+// title이 변경될 때 로딩 상태 확인
+watch(
+  () => props.title,
+  (newTitle) => {
+    isLoading.value = newTitle === undefined || newTitle === null;
+  },
+  { immediate: true }
+);
 
 // 페이지 제목: 로그인 상태이면 userStore.user.nickname 사용, 아니면 기본값("손님")
 const pageTitle = computed(() => {
@@ -111,6 +123,7 @@ const closeMenu = (e) => {
       <Hamberger />
     </div>
   </div>
+  <loadingComponent v-if="isLoading" />
 </template>
 
 <style scoped>
@@ -129,7 +142,6 @@ const closeMenu = (e) => {
   min-height: 50px;
   padding: 8px 12px;
   background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
   position: relative;
 }
@@ -188,7 +200,6 @@ const closeMenu = (e) => {
   top: 0;
   left: 0;
   width: 100%;
-  max-height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
   display: flex;

@@ -84,6 +84,7 @@ import loadingComponent from "@/components/common/loadingComponent.vue";
 const router = useRouter();
 // merchantHome에서 boothId를 params로 넘겨줬다고 가정
 const boothId = router.currentRoute.value.params.boothId;
+const festivalId = router.currentRoute.value.params.festivalId;
 const loading = ref(false);
 
 const storeName = ref("");
@@ -124,7 +125,7 @@ const saveChanges = async () => {
       formData.append("image", imageUrl.value);
     }
     // 기존 api 경로 그대로 사용하여 부스 정보를 업데이트 (PATCH)
-    await api.patch(`/booth/${boothId}/1`, formData, {
+    await api.patch(`/booth/${boothId}/${festivalId}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     merchantStore.setStoreName(storeName.value);
@@ -140,7 +141,7 @@ const saveChanges = async () => {
 const fetchBoothInfo = async () => {
   try {
     loading.value = true;
-    const res = await api.get(`/booth/${boothId}/1`);
+    const res = await api.get(`/booth/${boothId}/${festivalId}`);
     storeName.value = res.data.name || "";
     description.value = res.data.content || "";
     imageUrl.value = res.data.image || "";

@@ -22,7 +22,7 @@ export const useCommentStore = defineStore(
           createdAt: comment.createdAt, // 생성 날짜
         }));
       } catch (error) {
-        .error("댓글 불러오기 실패:", error);
+        console.error("댓글 불러오기 실패:", error);
       }
     };
 

@@ -2,24 +2,15 @@
 import SmallList from "@/components/common/smallList.vue";
 import { useLostStore } from "@/stores/lost";
 import backHeader from "@/components/common/backHeader.vue";
-import { watch, onMounted, computed, ref } from "vue";
-import { useRoute } from "vue-router";
+import { onMounted, computed, ref } from "vue";
 
 const lostStore = useLostStore();
 const currentPage = ref(1); // 현재 페이지
 const itemsPerPage = 7; // 한 페이지당 분실물 개수
-const totalItems = computed(() => lostStore.losts.length || 50); // 전체 분실물 개수
-
-const route = useRoute();
-const keyword = computed(() => route.query.keyword || "");
+const totalItems = computed(() => lostStore.totalItems || 50); // 전체 분실물 개수
 
 onMounted(async () => {
-  await lostStore.fetchMyItems(1, 50, "createAt", "asc", keyword.value);
-});
-
-// ✅ keyword 변경 시 API 다시 호출
-watch(keyword, async (newKeyword) => {
-  await lostStore.fetchMyItems(1, 50, "createAt", "asc", newKeyword);
+  await lostStore.fetchMyItems(1, 50, "recent", "LOSS");
 });
 
 // 전체 목록

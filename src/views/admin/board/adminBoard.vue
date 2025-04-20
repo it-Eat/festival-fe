@@ -80,8 +80,6 @@ const getBoardList = async () => {
 
     maxPage.value = response.totalPage;
     boards.value = response.data;
-
-    console.log("API 응답 데이터:", response);
   } catch (error) {
     console.error("API 호출 실패:", error);
   } finally {
