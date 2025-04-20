@@ -142,7 +142,6 @@ const closeMenu = (e) => {
   min-height: 50px;
   padding: 8px 12px;
   background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
   position: relative;
 }
@@ -201,7 +200,6 @@ const closeMenu = (e) => {
   top: 0;
   left: 0;
   width: 100%;
-  max-height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
   display: flex;

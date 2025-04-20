@@ -32,7 +32,6 @@ function handleLogout() {
       <div v-if="userStore.isAuthenticated" class="user-info">
         <span class="nickname">{{ userStore.user.nickname }} 님,</span>
       </div>
-      <hr v-if="userStore.isAuthenticated" />
 
       <!-- 메뉴 목록 -->
       <ul>
@@ -133,6 +132,7 @@ function handleLogout() {
   display: flex; /* 왼쪽 바 + 오른쪽 컨텐츠를 나란히 */
   height: 100vh; /* 화면 전체 높이 */
   background-color: #fff;
+  border-right: 1px solid #ffffff;
 }
 
 /* 오른쪽 흰색 영역 */
@@ -146,7 +146,7 @@ function handleLogout() {
 
 /* 로고 / 브랜드명 */
 .header-logo {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
 }
@@ -163,17 +163,10 @@ function handleLogout() {
 .user-info {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #ddd;
 }
 
-/* 사용자 아이콘 (간단히 원형 배경) */
-.user-icon {
-  width: 36px;
-  height: 36px;
-  background-color: #ff6f61;
-  border-radius: 50%;
-  margin-right: 10px;
-}
 .nickname {
   font-size: 16px;
   font-weight: bold;
