@@ -104,6 +104,12 @@ function handleLogout() {
             기본 메시지 지정하기
           </router-link>
         </li>
+        <li v-if="userStore.isAuthenticated && userStore.userRole === 'SELLER'">
+          <router-link :to="`/${festivalId}/my/myPostList`">
+            <span class="home-icon">📝</span>
+            작성글 보기
+          </router-link>
+        </li>
       </ul>
 
       <!-- 로그인 상태일 때만: 로그아웃 + 회원탈퇴 -->
