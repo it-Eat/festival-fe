@@ -66,6 +66,7 @@ const goToDetail = () => {
   border-radius: 8px;
   transition: transform 0.2s;
   gap: 12px;
+  cursor: pointer;
 }
 
 .photo-card img {
