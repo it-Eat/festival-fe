@@ -2,7 +2,10 @@
 import { useRouter } from "vue-router";
 import photoCard from "@/components/common/photoCard.vue";
 import { useFoodStore } from "@/stores/food";
-import { onMounted, computed } from "vue";
+import { onMounted, computed, ref } from "vue";
+import loadingComponent from "@/components/common/loadingComponent.vue";
+
+const isLoading = ref(false);
 
 const router = useRouter();
 const festivalId = router.currentRoute.value.params.festivalId;
@@ -10,7 +13,9 @@ const festivalId = router.currentRoute.value.params.festivalId;
 const foodStore = useFoodStore();
 
 onMounted(() => {
+  isLoading.value = true;
   foodStore.fetchItems(festivalId);
+  isLoading.value = false;
 });
 
 const allFoods = computed(() => [...foodStore.foods]);
@@ -21,6 +26,7 @@ const goToFoodList = () => {
 </script>
 
 <template>
+  <loadingComponent v-if="isLoading" />
   <div class="home-food">
     <div class="food-list">
       <photoCard

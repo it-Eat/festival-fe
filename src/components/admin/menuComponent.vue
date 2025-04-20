@@ -3,7 +3,7 @@
 import { getFestivalInfo } from "@/api/admin";
 import { useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
-import loading from "@/components/common/loadingComponent.vue";
+import loadingComponent from "../common/loadingComponent.vue";
 const router = useRouter();
 const festivalInfo = ref(null);
 const festivalId = router.currentRoute.value.params.festivalId;
@@ -53,7 +53,7 @@ function goToNotice() {
 </script>
 
 <template>
-  <loading v-if="isLoading" />
+  <loadingComponent v-if="isLoading" />
   <div v-else class="sidebar-menu">
     <div class="admin-info">
       <h2>{{ festivalInfo.festivalName }}</h2>

@@ -1,17 +1,22 @@
 <script setup>
 import photoCard from "@/components/common/photoCard.vue";
 import { usePlayingStore } from "@/stores/playing";
-import { onMounted, computed } from "vue";
+import { onMounted, computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
 const route = useRoute();
 const router = useRouter();
 const festivalId = route.params.festivalId;
 
+const isLoading = ref(false);
+
 const playingStore = usePlayingStore();
 
 onMounted(() => {
+  isLoading.value = true;
   playingStore.fetchItems(festivalId);
+  isLoading.value = false;
 });
 
 // 서버 데이터 + 더미 데이터 합치기
@@ -25,6 +30,7 @@ const goToPlayingList = () => {
 </script>
 
 <template>
+  <loadingComponent v-if="isLoading" />
   <div class="home-playing">
     <div class="playing-list">
       <photoCard

@@ -166,8 +166,8 @@ textarea {
 /* 개별 이미지 프리뷰 */
 .image-preview {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
 }
 
 .preview-img {
@@ -181,16 +181,16 @@ textarea {
 .remove-btn {
   position: absolute;
   background-color: transparent;
-  top: 5px;
-  right: 5px;
-  color: rgb(20, 19, 19);
-  border: none;
-  width: 15px;
-  height: 15px;
+  right: 4px;
+  top: 4px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ff6f61;
+  padding: 4px 8px;
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
   border-radius: 50%;
+  color: #ff6f61;
 }
 
 .submit-button {
@@ -202,5 +202,10 @@ textarea {
   cursor: pointer;
   align-self: flex-end;
   font-weight: bold;
+  font-size: 16px;
+}
+
+.submit-button:hover {
+  background-color: #f4685c;
 }
 </style>

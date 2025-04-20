@@ -46,13 +46,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <backHeader
-    class="header"
-    :title="festivalInfo?.festivalName || '축제'"
-    :useUserName="false"
-    :category="'home'"
-  />
   <div class="home">
+    <backHeader
+      class="header"
+      :title="festivalInfo?.festivalName || '축제'"
+      :useUserName="false"
+      :category="'home'"
+    />
     <!-- 배너 -->
     <div class="banner">
       <h4>축제 기간</h4>
