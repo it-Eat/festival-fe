@@ -175,7 +175,7 @@ const loginWithNaver = () => {
 }
 
 /* 화면 폭이 좁을 때(모바일 대응) */
-@media (max-width: 900px) {
+@media (max-width: 600px) {
   .home {
     width: 100%;
     padding: 10px;
