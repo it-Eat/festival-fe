@@ -122,7 +122,7 @@ const submitReview = async () => {
   background-color: #fff;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 600px) {
   .home {
     width: 100%;
     margin: 0;

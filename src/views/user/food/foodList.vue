@@ -134,7 +134,7 @@ onMounted(() => {
   margin: auto;
   box-sizing: border-box;
 }
-@media (max-width: 900px) {
+@media (max-width: 600px) {
   .home {
     width: 100%;
   }
