@@ -16,8 +16,9 @@ async function getFestivalList(cursor, limit, keyword, selectedMonth) {
   if (keyword) {
     queryParams.push(`keyword=${encodeURIComponent(keyword)}`);
   }
-
-  queryParams.push(`month=${selectedMonth}`);
+  if (selectedMonth) {
+    queryParams.push(`month=${selectedMonth}`);
+  }
 
   // 쿼리 파라미터 조합
   const queryString = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";

@@ -7,7 +7,7 @@ import { useRouter } from "vue-router";
 import festivalDefault from "@/assets/festivalDefault.png";
 import { useFestivalInfoStore } from "@/stores/festivalInfo"; // 새 Pinia 스토어 import
 import loadingComponent from "@/components/common/loadingComponent.vue";
-
+import MapModal from "@/components/modal/map.vue";
 const isLoading = ref(false);
 const hasMoreData = ref(true);
 const cursor = ref(0);
@@ -17,10 +17,21 @@ const selectedMonth = ref("");
 const festivalItems = ref([]);
 const router = useRouter();
 const loading = ref(false);
-
+const showMapModal = ref(false);
+const selectedLocation = ref({ mapx: "", mapy: "" });
+const telNumber = ref("");
+const address = ref("");
 // 스토어 인스턴스 생성
 const festivalInfoStore = useFestivalInfoStore();
-
+const openModal = (mapx, mapy, tel, addr) => {
+  selectedLocation.value = { mapx, mapy };
+  telNumber.value = tel;
+  address.value = addr;
+  showMapModal.value = true;
+};
+const closeModal = () => {
+  showMapModal.value = false;
+};
 function getEventStatus(startDateStr, endDateStr) {
   if (!startDateStr || !endDateStr) return { text: "날짜 미정", color: "gray" };
 
@@ -86,7 +97,6 @@ async function loadMoreData() {
     loading.value = false;
   }
 }
-
 function goDetail(id) {
   // 선택한 축제 ID를 Pinia 스토어에 저장
   festivalInfoStore.setFestivalId(id);
@@ -107,7 +117,8 @@ onMounted(() => {
       const response = await getFestivalList(
         cursor.value,
         limit.value,
-        keyword.value
+        keyword.value,
+        selectedMonth.value
       );
       festivalItems.value = response;
     } finally {
@@ -143,9 +154,16 @@ async function searchFestival() {
   }
 }
 </script>
-
 <template>
   <div class="mainpage">
+    <MapModal
+      v-if="showMapModal"
+      :mapx="selectedLocation.mapx"
+      :mapy="selectedLocation.mapy"
+      :telNumber="telNumber"
+      :address="address"
+      :onClose="closeModal"
+    />
     <div class="body">
       <backHeader
         :title="'축제 둘러보기'"
@@ -171,12 +189,12 @@ async function searchFestival() {
       </form>
       <div class="body-content">
         <div
-          @click="goDetail(item.id)"
           class="body-content-item"
           v-for="item in festivalItems.items"
           :key="item.id"
         >
           <img
+            @click="goDetail(item.id)"
             class="body-content-item-img"
             :src="item.mapImage || festivalDefault"
             alt="img"
@@ -192,20 +210,30 @@ async function searchFestival() {
           >
             {{ getEventStatus(item.eventStartDate, item.eventEndDate).text }}
           </div>
-          <p class="body-content-item-title">
+          <p class="body-content-item-title" @click="goDetail(item.id)">
             {{ item.festivalName || "행사명 정보 없음" }}
           </p>
           <p class="body-content-item-date">
             {{ formatDate(item.eventStartDate) }} ~
             {{ formatDate(item.eventEndDate) }}
           </p>
-          <p class="body-content-item-address">
-            {{
-              item.address
-                ? item.address.split(" ").slice(0, 2).join(" ")
-                : "주소 정보 없음"
-            }}
-          </p>
+          <div class="address-item">
+            <p class="body-content-item-address">
+              {{
+                item.address
+                  ? item.address.split(" ").slice(0, 2).join(" ")
+                  : "주소 정보 없음"
+              }}
+            </p>
+            <button
+              class="map-button"
+              @click="
+                openModal(item.mapx, item.mapy, item.telNumber, item.address)
+              "
+            >
+              지도 보기
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -253,6 +281,16 @@ async function searchFestival() {
   padding: 4px 12px;
   color: black;
 }
+.map-button {
+  border: 1px solid #ff6f61;
+  border-radius: 8px;
+  background-color: white;
+  color: #ff6f61;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
 .body-header-input:focus {
   outline: none;
   border: 1px solid #ff6f61;
@@ -284,16 +322,17 @@ async function searchFestival() {
   justify-content: center;
   width: 100%;
   margin-bottom: 24px;
-  cursor: pointer;
 }
-.body-content-item:hover {
+.body-content-item-img:hover {
   transform: scale(1.05);
   transition: transform 0.3s ease;
+  cursor: pointer;
 }
 
 .body-content-item-img {
   width: 100%;
   height: 230px;
+  cursor: pointer;
 }
 .status-chip {
   position: absolute;
@@ -311,6 +350,7 @@ async function searchFestival() {
   font-weight: bold;
   margin-top: 12px;
   margin-bottom: 4px;
+  cursor: pointer;
 }
 .body-content-item-date {
   font-size: 12px;
@@ -342,6 +382,10 @@ async function searchFestival() {
   margin: 0;
   align-items: center;
   justify-content: center;
+}
+.address-item {
+  display: flex;
+  justify-content: space-between;
 }
 
 @media (max-width: 450px) {
