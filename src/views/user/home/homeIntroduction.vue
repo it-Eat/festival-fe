@@ -26,8 +26,7 @@ const festivalJoin = async () => {
 </script>
 
 <template>
-  <loadingComponent v-if="loadingType === 'loading'" />
-  <div v-else class="introduction-container">
+  <div class="introduction-container">
     <div class="feature-list">
       <div class="feature-item">
         <div class="feature-icon">🔍</div>
@@ -75,6 +74,7 @@ const festivalJoin = async () => {
       @confirm="festivalJoin"
       @cancel="isModalOpen = false"
     />
+    <loadingComponent v-if="loadingType === 'loading'" />
   </div>
 </template>
 

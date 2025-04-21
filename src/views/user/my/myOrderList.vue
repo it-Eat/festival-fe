@@ -20,6 +20,10 @@ const payments = ref([]);
 const currentPage = ref(1);
 const itemsPerPage = 10;
 
+const priceFormat = (price) => {
+  return price.toLocaleString("ko-KR");
+};
+
 const paginatedItems = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   return payments.value.slice(start, start + itemsPerPage);
@@ -32,13 +36,7 @@ const handlePageChange = (page) => {
 const navigateToDetail = (payment) => {
   router.push({
     name: "myOrderDetail",
-    params: { id: String(payment.id) },
-    query: {
-      boothName: payment.boothName || "정보 없음",
-      price: payment.price,
-      payType: payment.payType,
-      waitingNumber: payment.waitingNumber,
-    },
+    params: { payId: String(payment.id) },
   });
 };
 
@@ -94,6 +92,7 @@ onMounted(() => {
           <tr>
             <th>주문상점</th>
             <th>금액</th>
+            <th>리뷰작성</th>
           </tr>
         </thead>
         <tbody>
@@ -104,7 +103,8 @@ onMounted(() => {
             class="order-row"
           >
             <td>{{ payment.boothName || "정보 없음" }}</td>
-            <td>{{ payment.price }}원</td>
+            <td>{{ priceFormat(payment.price) }}원</td>
+            <td>{{ payment.isReviewed ? "✅" : "작성하기" }}</td>
           </tr>
         </tbody>
       </table>
@@ -136,7 +136,7 @@ onMounted(() => {
   margin: auto;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 600px) {
   .home {
     width: 100%;
   }

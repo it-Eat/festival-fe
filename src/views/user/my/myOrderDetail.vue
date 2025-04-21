@@ -1,17 +1,18 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import BackHeader from "@/components/common/backHeader.vue";
 import api from "@/api/axiosInstance";
 import noimage from "@/assets/noimage.png";
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
-const route = useRoute();
 const router = useRouter();
 
-const paymentId = route.params.id;
+const paymentId = router.currentRoute.value.params.payId;
 const paymentDetail = ref(null);
 const menuList = ref([]);
 const enrichedWishList = ref([]);
+const isLoading = ref(false);
 
 // storeName를 헤더에 표시할 부스 이름으로 사용
 const storeName = ref("상점 정보 없음");
@@ -19,6 +20,7 @@ const storeName = ref("상점 정보 없음");
 // 결제 상세 데이터를 받아오는 함수
 const fetchPaymentDetail = async () => {
   try {
+    isLoading.value = true;
     const res = await api.get(`/pay/${paymentId}`, { withCredentials: true });
     paymentDetail.value = res.data;
 
@@ -29,28 +31,36 @@ const fetchPaymentDetail = async () => {
     }
   } catch (error) {
     console.error("결제 상세 데이터 불러오기 실패:", error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
 // boothId를 이용하여 부스 정보를 가져와 storeName 업데이트
 const fetchBoothInfo = async (boothId) => {
   try {
+    isLoading.value = true;
     // URL: /booth/{boothId}/1 (1은 festivalId 혹은 고정값)
     const res = await api.get(`/booth/${boothId}/1`);
     storeName.value = res.data.name;
   } catch (error) {
     console.error("부스 정보 불러오기 실패:", error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
 // 메뉴 데이터를 받아오는 함수
 const fetchMenuList = async (boothId) => {
   try {
+    isLoading.value = true;
     const res = await api.get(`/menu/${boothId}`);
     menuList.value = res.data;
     combineWishListWithMenu();
   } catch (error) {
     console.error("메뉴 데이터 불러오기 실패:", error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -107,10 +117,7 @@ const paymentDate = computed(() =>
               }}
             </h3>
             <div class="menu-meta">
-              <span class="quantity-badge">
-                <i class="fas fa-shopping-basket"></i>
-                {{ item.cnt }}개
-              </span>
+              <span class="quantity-badge"> {{ item.cnt }}개 </span>
             </div>
           </div>
 
@@ -132,17 +139,19 @@ const paymentDate = computed(() =>
         <div>결제일자: {{ paymentDate }}</div>
       </div>
       <button
-        class="review-button"
+        v-if="paymentDetail && !paymentDetail.isReviewed"
+        class="reviewButton"
         @click="
           router.push({
             name: 'writeReview',
-            query: { boothId: paymentDetail?.boothId, boothName: storeName },
+            query: { boothId: paymentDetail?.boothId },
           })
         "
       >
         리뷰 작성하기
       </button>
     </div>
+    <loadingComponent v-if="isLoading" />
   </div>
 </template>
 
@@ -157,7 +166,7 @@ const paymentDate = computed(() =>
   margin: auto;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 600px) {
   .page {
     width: 100%;
   }
@@ -169,24 +178,19 @@ const paymentDate = computed(() =>
 }
 
 .menu-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
-  padding: 16px;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 24px;
 }
 
 .menu-item {
   display: flex;
   background: white;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease;
-}
-
-.menu-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .image-container {
@@ -200,11 +204,6 @@ const paymentDate = computed(() =>
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.menu-item:hover .menu-image {
-  transform: scale(1.05);
 }
 
 .menu-details {
@@ -213,7 +212,7 @@ const paymentDate = computed(() =>
   flex-direction: column;
   justify-content: space-between;
   padding: 16px;
-  background: linear-gradient(to right, #fff, #f8f9fa);
+  background: #f8f8f8;
 }
 
 .menu-info {
@@ -242,12 +241,9 @@ const paymentDate = computed(() =>
   padding: 4px 8px;
   background-color: #ff6f61;
   color: white;
+  font-weight: 600;
   border-radius: 20px;
   font-size: 14px;
-}
-
-.quantity-badge i {
-  font-size: 12px;
 }
 
 .price-tag {
@@ -259,55 +255,33 @@ const paymentDate = computed(() =>
 }
 
 /* 반응형 디자인 */
-@media (max-width: 480px) {
+@media (max-width: 600px) {
+  .menu-list {
+    padding: 0 8px 24px 8px;
+  }
   .menu-item {
     flex-direction: column;
   }
 
+  .menu-name {
+    font-size: 16px;
+  }
+
   .image-container {
     width: 100%;
-    height: 200px;
+    height: 120px;
   }
 
   .menu-details {
     padding: 16px;
   }
+  .quantity-badge {
+    font-size: 12px;
+  }
 
   .price-tag {
-    margin-top: 12px;
+    font-size: 16px;
   }
-}
-
-/* 스켈레톤 로딩 애니메이션 */
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-.menu-item.loading {
-  position: relative;
-  overflow: hidden;
-}
-
-.menu-item.loading::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.5) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  animation: shimmer 1.5s infinite;
-  background-size: 200% 100%;
 }
 
 .payment-info {
@@ -323,23 +297,36 @@ const paymentDate = computed(() =>
 }
 
 .payment-details {
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.5;
 }
 
-.review-button {
+.reviewButton {
   max-width: 150px;
   padding: 10px;
   font-size: 14px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
+  background-color: white;
+  color: #ff6f61;
+  border: 1px solid #ff6f61;
   border-radius: 8px;
   cursor: pointer;
   text-align: center;
 }
 
-.review-button:hover {
-  background-color: #0056b3;
+.reviewButton:hover {
+  background-color: #ff6f61;
+  color: white;
+}
+
+.reviewButtonDone {
+  max-width: 150px;
+  padding: 10px;
+  font-size: 14px;
+  background-color: white;
+  color: #ff6f61;
+  border: 1px solid #ff6f61;
+  border-radius: 8px;
+  cursor: not-allowed;
+  text-align: center;
 }
 </style>

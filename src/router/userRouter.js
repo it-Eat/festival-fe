@@ -130,7 +130,7 @@ export default [
     meta: { title: "결제내역", useUserName: true },
   },
   {
-    path: "/:festivalId/my/myOrderDetail/:id",
+    path: "/:festivalId/my/myOrderDetail/:payId",
     name: "myOrderDetail",
     component: MyOrderDetail,
     meta: { title: "주문 상세" },
@@ -222,7 +222,7 @@ export default [
     component: LostItemWrite,
   },
   {
-    path: "/:festivalId/my/myWriteReview",
+    path: "/:festivalId/my/myWriteReview/:payId",
     name: "writeReview",
     component: MyWriteReview,
     meta: { title: "리뷰 작성하기" },

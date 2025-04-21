@@ -4,10 +4,12 @@ import { useRoute } from "vue-router";
 import api from "@/api/axiosInstance";
 import BackHeader from "@/components/common/backHeader.vue";
 import { dateFormatWithTime } from "@/util/dateFormat"; // 유틸 함수 임포트
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
 const route = useRoute();
 const boothId = route.query.boothId;
 const reviews = ref([]);
+const isLoading = ref(false);
 
 // 기존의 formatDate 함수 대신 dateFormatWithTime 함수를 사용합니다.
 const formatDate = (isoDate) => {
@@ -16,6 +18,7 @@ const formatDate = (isoDate) => {
 
 const fetchReviews = async () => {
   try {
+    isLoading.value = true;
     const response = await api.get(`/review`, {
       params: {
         boothId: boothId,
@@ -31,6 +34,8 @@ const fetchReviews = async () => {
     reviews.value = response.data;
   } catch (error) {
     console.error("리뷰 불러오기 실패:", error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -38,7 +43,6 @@ onMounted(() => {
   fetchReviews();
 });
 </script>
-
 
 <template>
   <div class="page">
@@ -60,7 +64,9 @@ onMounted(() => {
                 </span>
               </div>
               <!-- dateFormatWithTime 함수를 이용해 작성일 포맷 -->
-              <span class="review-date">작성일 : {{ formatDate(review.createdAt) }}</span>
+              <span class="review-date"
+                >작성일 : {{ formatDate(review.createdAt) }}</span
+              >
             </div>
             <div class="review-content">
               {{ review.content }}
@@ -69,9 +75,9 @@ onMounted(() => {
         </div>
       </div>
     </div>
+    <loadingComponent v-if="isLoading" />
   </div>
 </template>
-
 
 <style scoped>
 .page {
@@ -90,7 +96,7 @@ onMounted(() => {
   margin: auto;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 600px) {
   .home {
     width: 100%;
   }
@@ -135,7 +141,7 @@ onMounted(() => {
 }
 
 .review-date {
-  font-size: 14px;
+  font-size: 12px;
   color: #999;
 }
 

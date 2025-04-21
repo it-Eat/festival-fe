@@ -25,14 +25,14 @@
         <textarea
           v-model="reviewText"
           class="review-textarea"
-          placeholder="최대 20자 작성해 주세요."
-          maxlength="20"
+          placeholder="리뷰를 작성해 주세요."
         ></textarea>
 
         <!-- 등록 버튼 -->
         <button class="submit-button" @click="submitReview">등록</button>
       </div>
     </div>
+    <loadingComponent v-if="isLoading" />
   </div>
 </template>
 
@@ -42,13 +42,17 @@ import { useRoute, useRouter } from "vue-router";
 import BackHeader from "@/components/common/backHeader.vue";
 import StarScore from "@/components/common/starScore.vue";
 import api from "@/api/axiosInstance";
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
 const router = useRouter();
 const route = useRoute();
 
+const isLoading = ref(false);
+
 // query로 넘어온 boothId, boothName (안전하게 기본값 지정)
 const boothId = route.query.boothId || null;
 const boothName = route.query.boothName || "상점 이름";
+const payId = router.currentRoute.value.params.payId;
 
 // 기본 storeName은 boothName으로 설정
 const storeName = ref(boothName);
@@ -57,10 +61,13 @@ const festivalId = route.params.festivalId;
 // 부스 정보를 API로 업데이트 (선택 사항)
 const fetchBoothInfo = async () => {
   try {
+    isLoading.value = true;
     const res = await api.get(`/booth/${boothId}/${festivalId}`);
     storeName.value = res.data.name;
   } catch (error) {
     console.error("부스 정보 불러오기 실패:", error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -77,18 +84,22 @@ const reviewText = ref("");
 // 리뷰 등록 함수
 const submitReview = async () => {
   try {
+    isLoading.value = true;
     const scoreValue = parseInt(rating.value, 10);
     if (!boothId) {
       console.error("boothId가 없습니다.");
       return;
     }
-    await api.post(`/review/${boothId}`, {
+    await api.post(`/review/${payId}`, {
       content: reviewText.value,
       score: scoreValue,
+      boothId: boothId,
     });
     router.back();
   } catch (error) {
     console.error("리뷰 작성 실패:", error);
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
@@ -138,7 +149,7 @@ const submitReview = async () => {
 }
 
 .title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
   margin-bottom: 10px;
 }
@@ -156,13 +167,17 @@ const submitReview = async () => {
   resize: none;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 16px;
+}
+.review-textarea:focus {
+  outline: 1px solid #ff6f61;
 }
 
 .submit-button {
   padding: 12px 40px;
-  background-color: #839cf8;
-  border: none;
-  color: white;
+  background-color: white;
+  border: 1px solid #ff6f61;
+  color: #ff6f61;
   text-align: center;
   font-size: 16px;
   cursor: pointer;
@@ -171,6 +186,7 @@ const submitReview = async () => {
 }
 
 .submit-button:hover {
-  background-color: #5c7ff0;
+  background-color: #ff6f61;
+  color: white;
 }
 </style>

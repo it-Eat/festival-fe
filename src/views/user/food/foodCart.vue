@@ -31,7 +31,7 @@
           <div>총 수량 : {{ totalCount }}</div>
         </div>
         <button class="order-button" @click="handleOrder">
-          {{ totalPrice }}원 주문하기
+          {{ priceFormat(totalPrice) }}원 주문하기
         </button>
       </div>
     </div>
@@ -90,7 +90,6 @@ onMounted(() => {
 .page {
   display: flex;
   justify-content: center;
-  font-family: "Arial", sans-serif;
 }
 .home {
   display: flex;
@@ -100,7 +99,7 @@ onMounted(() => {
   max-width: 100vw;
   box-sizing: border-box;
 }
-@media (max-width: 900px) {
+@media (max-width: 600px) {
   .home {
     width: 100%;
   }

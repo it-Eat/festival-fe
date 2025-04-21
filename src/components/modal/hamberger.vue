@@ -76,12 +76,6 @@ function handleLogout() {
             작성글 보기
           </router-link>
         </li>
-        <li v-if="userStore.isAuthenticated && userStore.userRole === 'USER'">
-          <router-link :to="`/${festivalId}/my/myPostList`">
-            <span class="home-icon">✍🏻</span>
-            리뷰 작성하기
-          </router-link>
-        </li>
 
         <!-- 상인(merchant) 메뉴 -->
         <li v-if="userStore.isAuthenticated && userStore.userRole === 'SELLER'">
@@ -184,6 +178,7 @@ ul {
   padding: 0;
   margin: 0;
   margin-top: 20px;
+  text-align: left;
 }
 li {
   margin: 10px 0;
