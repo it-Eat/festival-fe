@@ -7,7 +7,7 @@ import { useRouter } from "vue-router";
 import festivalDefault from "@/assets/festivalDefault.png";
 import { useFestivalInfoStore } from "@/stores/festivalInfo"; // 새 Pinia 스토어 import
 import loadingComponent from "@/components/common/loadingComponent.vue";
-import MapModal from "@/components/modal/map.vue";
+import MapModal from "@/components/modal/mapModal.vue";
 const isLoading = ref(false);
 const hasMoreData = ref(true);
 const cursor = ref(0);

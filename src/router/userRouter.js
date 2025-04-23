@@ -36,7 +36,7 @@ import Modify from "@/views/merchant/merchantModify.vue";
 import MenuManage from "@/views/merchant/menuManage.vue";
 import OrderCheck from "@/components/modal/orderCheck.vue";
 import OrderComplete from "@/components/modal/orderComplete.vue";
-import Login from "@/views/user/my/login.vue";
+import Login from "@/views/user/my/loginPage.vue";
 import FoodReview from "@/views/user/food/foodReview.vue";
 import FoodCart from "@/views/user/food/foodCart.vue";
 import FoodOrder from "@/views/user/food/foodOrder.vue";

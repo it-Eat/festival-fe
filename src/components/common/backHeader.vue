@@ -2,7 +2,7 @@
 import { ChevronLeft, AlignJustify, ShoppingCart } from "lucide-vue-next";
 import { useRouter, useRoute } from "vue-router";
 import { computed, ref, watch } from "vue";
-import Hamberger from "../modal/hamberger.vue";
+import Hamberger from "../modal/hambergerModal.vue";
 import { useCartStore } from "@/stores/cartStores";
 import { useUserStore } from "@/stores/userStore"; // Pinia 스토어 임포트
 import loadingComponent from "./loadingComponent.vue";
