@@ -113,7 +113,7 @@ import { computed, ref } from "vue";
 import BackHeader from "@/components/common/backHeader.vue";
 import { useCartStore } from "@/stores/cartStores";
 import { useRouter } from "vue-router";
-import api from "@/api/axiosInstance";
+// import api from "@/api/axiosInstance";
 import loadingComponent from "@/components/common/loadingComponent.vue";
 import checkModal from "@/components/common/checkModal.vue";
 
@@ -164,51 +164,79 @@ async function handlePayment() {
     isModalOpen.value = true;
     return;
   }
+  IMP.init("store-bad0f66f-2cb8-4cf3-a5aa-6564e1e846b3"); // 상점 아이디 확인
 
-  // 2) wishlistIds(장바구니 ID 리스트) 만들기
-  const wishlistIds = cartItems.value.map((item) => item.id);
-
-  // 3) payType 매핑
-  //   - BE 요구사항에 맞춰 paymentMethod를 실제 payType으로 변환
-  const payTypeMap = {
-    tossPay: "TOSSPAY",
-    kakaoPay: "KAKAOPAY",
-    naverPay: "NAVERPAY",
-  };
-  const payType = payTypeMap[paymentMethod.value] || "UNKNOWN";
-
-  // 4) POST 요청에 사용할 payload
-  const payload = {
-    wishlistIds,
-    totalPrice: totalPrice.value,
-    payType,
-  };
-
-  try {
-    isLoading.value = true;
-    // 5) 서버로 결제 정보 전송
-    const response = await api.post("/pay", payload);
-
-    // 6) 결제 완료 후 장바구니 비우기
-    cartStore.clearCart();
-    modalConfig.value = {
-      title: "결제 완료",
-      message: `‼️화면을 캡쳐해주세요‼️\n주문 번호 : ${response.data.pay.waitingNumber}\n픽업 시간 : ${response.data.waitingTime}`,
-      confirmText: "확인",
-    };
-    isModalOpen.value = true;
-  } catch (error) {
-    console.error("결제 오류:", error);
-    modalConfig.value = {
-      title: "결제 오류",
-      message: "결제 중 오류가 발생했습니다. 다시 시도해주세요.",
-      confirmText: "",
-    };
-    isModalOpen.value = true;
-  } finally {
-    isLoading.value = false;
-  }
+  IMP.request_pay(
+    {
+      pg: "html5.inicis", // PG 코드 확인
+      pay_method: "trans", // 카드 결제
+      merchant_uid: "order_no_001", // 주문번호
+      amount: Number(totalPrice.value), // 결제 금액
+      name: "테스트 상품",
+      buyer_email: "test@gmail.com",
+      buyer_name: "민수",
+      buyer_tel: "010-1234-1234",
+      buyer_addr: "테스트 주소",
+      buyer_postcode: "123-456",
+      m_redirect_url: "http://localhost:5173/60/food/foodOrder", // 모바일 리디렉션
+    },
+    function (rsp) {
+      if (rsp.success) {
+        alert("결제가 성공적으로 완료되었습니다.");
+        console.log("결제 성공:", rsp);
+      } else {
+        alert("결제 실패: " + rsp.error_msg);
+        console.log("결제 실패:", rsp);
+      }
+    }
+  );
 }
+
+//테스트 끝
+
+// // 2) wishlistIds(장바구니 ID 리스트) 만들기
+// const wishlistIds = cartItems.value.map((item) => item.id);
+
+// // 3) payType 매핑
+// //   - BE 요구사항에 맞춰 paymentMethod를 실제 payType으로 변환
+// const payTypeMap = {
+//   tossPay: "TOSSPAY",
+//   kakaoPay: "KAKAOPAY",
+//   naverPay: "NAVERPAY",
+// };
+// const payType = payTypeMap[paymentMethod.value] || "UNKNOWN";
+
+// // 4) POST 요청에 사용할 payload
+// const payload = {
+//   wishlistIds,
+//   totalPrice: totalPrice.value,
+//   payType,
+// };
+
+// try {
+//   isLoading.value = true;
+//   // 5) 서버로 결제 정보 전송
+//   const response = await api.post("/pay", payload);
+
+//   // 6) 결제 완료 후 장바구니 비우기
+//   cartStore.clearCart();
+//   modalConfig.value = {
+//     title: "결제 완료",
+//     message: `‼️화면을 캡쳐해주세요‼️\n주문 번호 : ${response.data.pay.waitingNumber}\n픽업 시간 : ${response.data.waitingTime}`,
+//     confirmText: "확인",
+//   };
+//   isModalOpen.value = true;
+// } catch (error) {
+//   console.error("결제 오류:", error);
+//   modalConfig.value = {
+//     title: "결제 오류",
+//     message: "결제 중 오류가 발생했습니다. 다시 시도해주세요.",
+//     confirmText: "",
+//   };
+//   isModalOpen.value = true;
+// } finally {
+//   isLoading.value = false;
+// }
 
 const handleConfirm = () => {
   isModalOpen.value = false;
