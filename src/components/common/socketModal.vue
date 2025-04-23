@@ -1,7 +1,7 @@
 <template>
   <div class="modal">
     <div class="modal-content">
-      <h1 class="modal-title">공지사항 알림</h1>
+      <h1 class="modal-title">{{ title }}</h1>
       <div class="modal-message">
         <p>{{ message }}</p>
       </div>
@@ -14,6 +14,10 @@
 const emit = defineEmits(["cancel"]);
 defineProps({
   message: {
+    type: String,
+    required: true,
+  },
+  title: {
     type: String,
     required: true,
   },

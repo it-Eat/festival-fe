@@ -8,6 +8,8 @@ import festivalDefault from "@/assets/festivalDefault.png";
 import { useFestivalInfoStore } from "@/stores/festivalInfo"; // 새 Pinia 스토어 import
 import loadingComponent from "@/components/common/loadingComponent.vue";
 import MapModal from "@/components/modal/mapModal.vue";
+import { socket } from "@/main";
+
 const isLoading = ref(false);
 const hasMoreData = ref(true);
 const cursor = ref(0);
@@ -100,6 +102,20 @@ async function loadMoreData() {
 function goDetail(id) {
   // 선택한 축제 ID를 Pinia 스토어에 저장
   festivalInfoStore.setFestivalId(id);
+
+  // 소켓이 연결되어 있지 않은 경우에만 연결 시도
+  if (!socket.connected) {
+    socket.connect();
+  }
+
+  // 축제 방에 조인
+  try {
+    socket.emit("join_festival", String(id));
+    console.log("축제 방에 조인:", id);
+  } catch (error) {
+    console.error("축제 방 조인 실패:", error);
+  }
+
   router.push(`/${id}/userHome/homeFood`);
 }
 
@@ -110,6 +126,17 @@ function formatDate(dateStr) {
 }
 
 onMounted(() => {
+  if (socket.connected && festivalInfoStore.selectedFestivalId) {
+    try {
+      socket.emit(
+        "leave_festival",
+        String(festivalInfoStore.selectedFestivalId)
+      );
+      console.log("축제 방에서 나감");
+    } catch (error) {
+      console.error("축제 방 나가기 실패:", error);
+    }
+  }
   const fetchInitialData = async () => {
     isLoading.value = true;
     loading.value = true;

@@ -1,19 +1,46 @@
 <script setup>
 import { useUserStore } from "@/stores/userStore";
 import { useRouter } from "vue-router";
+import { computed } from "vue";
+import { socket } from "@/main";
 
 const userStore = useUserStore();
 const router = useRouter();
-const festivalId =
-  localStorage.getItem("festivalId") ||
-  router.currentRoute.value.params.festivalId;
+const festivalId = computed(() => {
+  return (
+    router.currentRoute.value.params.festivalId ||
+    localStorage.getItem("festivalId")
+  );
+});
 const boothId = localStorage.getItem("boothId");
 // 로컬 메서드: 로그아웃 후 "/user" 페이지로 이동
 function handleLogout() {
-  sessionStorage.clear();
-  localStorage.clear();
-  userStore.logout();
-  router.push("/"); // 원하는 경로로 이동
+  try {
+    if (socket.connected) {
+      // 축제 방에서 나가기
+      if (festivalId.value) {
+        socket.emit("leave_festival", String(festivalId.value));
+      }
+
+      // 사용자 방에서 나가기
+      if (userStore.user?.id) {
+        socket.emit("leave_user", String(userStore.user.id));
+      }
+
+      // 소켓 연결 해제
+      socket.disconnect();
+    }
+  } catch (error) {
+    console.error("소켓 해제 실패:", error);
+  } finally {
+    // 스토리지 및 스토어 초기화
+    sessionStorage.clear();
+    localStorage.clear();
+    userStore.logout();
+
+    // 페이지 이동
+    router.push("/");
+  }
 }
 </script>
 
