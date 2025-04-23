@@ -15,6 +15,8 @@ import { useRouter, useRoute } from "vue-router";
 import axios from "axios";
 import { useUserStore } from "@/stores/userStore";
 import api from "@/api/axiosInstance";
+import { socket } from "@/main";
+
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
@@ -52,6 +54,12 @@ onMounted(async () => {
           router.go(-2);
         }
       }, 150);
+      try {
+        socket.emit("join_user", user.id);
+        console.log("connect user", user.id);
+      } catch (error) {
+        console.log("join_user error", error);
+      }
     } catch (error) {
       console.error("❌ 유저 정보 가져오기 실패:", error);
       router.replace("/user/login");

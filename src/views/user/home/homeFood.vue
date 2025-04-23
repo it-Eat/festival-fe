@@ -4,6 +4,8 @@ import photoCard from "@/components/common/photoCard.vue";
 import { useFoodStore } from "@/stores/food";
 import { onMounted, computed, ref } from "vue";
 import loadingComponent from "@/components/common/loadingComponent.vue";
+import { socket } from "@/main";
+import { useUserStore } from "@/stores/userStore";
 
 const isLoading = ref(false);
 
@@ -11,6 +13,17 @@ const router = useRouter();
 const festivalId = router.currentRoute.value.params.festivalId;
 
 const foodStore = useFoodStore();
+const userStore = useUserStore();
+
+if (userStore.user !== null) {
+  if (!socket.connected) {
+    socket.connect();
+  }
+
+  // user 방에 조인
+  socket.emit("join_user", String(userStore.user.id));
+  console.log("connect user", userStore.user.id);
+}
 
 onMounted(() => {
   isLoading.value = true;
