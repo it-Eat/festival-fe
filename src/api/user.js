@@ -87,6 +87,16 @@ async function getCart(boothId, festivalId) {
   }
 }
 
+async function delCart(wishlistId, festivalId) {
+  try {
+    await api.delete(`wishlist/${wishlistId}/${festivalId}`, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error("장바구니 삭제 실패", error);
+  }
+}
+
 export {
   kakaoLogin,
   processKakaoCallback,
@@ -94,4 +104,5 @@ export {
   getBoothDetail,
   createWishlist,
   getCart,
+  delCart,
 };
