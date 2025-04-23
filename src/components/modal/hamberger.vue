@@ -10,6 +10,8 @@ const festivalId =
 const boothId = localStorage.getItem("boothId");
 // 로컬 메서드: 로그아웃 후 "/user" 페이지로 이동
 function handleLogout() {
+  sessionStorage.clear();
+  localStorage.clear();
   userStore.logout();
   router.push("/"); // 원하는 경로로 이동
 }

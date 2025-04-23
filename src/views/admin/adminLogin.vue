@@ -37,6 +37,13 @@
       </div>
     </div>
     <loadingComponent v-if="loadingType === 'loading'" />
+    <checkModal
+      v-if="isModalOpen"
+      :title="modalConfig.title"
+      :message="modalConfig.message"
+      :confirmText="modalConfig.confirmText"
+      @cancel="handleCancel"
+    />
   </div>
 </template>
 
@@ -46,6 +53,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 import { useAuthStore } from "@/stores/auth";
 import loadingComponent from "@/components/common/loadingComponent.vue";
+import checkModal from "@/components/common/checkModal.vue";
 
 // 기존 코드와 동일
 const emit = defineEmits(["login"]);
@@ -54,6 +62,15 @@ const password = ref("");
 const router = useRouter();
 const authStore = useAuthStore();
 const loadingType = ref("none");
+
+const isModalOpen = ref(false);
+const modalType = ref("");
+const modalConfig = ref({
+  title: "",
+  message: "",
+  confirmText: "",
+});
+
 const handleLogin = async () => {
   const loginUser = {
     festivalCode: festivalCode.value,
@@ -71,27 +88,33 @@ const handleLogin = async () => {
       }
     );
 
-    if (response.status === 200) {
-      const { id, userName, nickname, role, participation } = response.data;
-      const user = { id, userName, nickname, role, participation };
+    const { id, userName, nickname, role, participation } = response.data;
+    const user = { id, userName, nickname, role, participation };
 
-      // Pinia 사용자 데이터 저장
-      authStore.setUserData(user);
+    // Pinia 사용자 데이터 저장
+    authStore.setUserData(user);
 
-      emit("login");
-      router.push({
-        name: "admin",
-        params: { festivalId: user.participation[0].festivalId },
-      });
-    } else {
-      alert("아이디 또는 비밀번호가 잘못되었습니다.");
-    }
+    emit("login");
+    router.push({
+      name: "admin",
+      params: { festivalId: user.participation[0].festivalId },
+    });
   } catch (error) {
     console.error("API 요청 오류", error);
-    alert("로그인 실패");
+    modalType.value = "login error";
+    modalConfig.value = {
+      title: "로그인 실패",
+      message: "아이디 또는 비밀번호가 잘못되었습니다.",
+      confirmText: "",
+    };
+    isModalOpen.value = true;
   } finally {
     loadingType.value = "none";
   }
+};
+
+const handleCancel = () => {
+  isModalOpen.value = false;
 };
 </script>
 
