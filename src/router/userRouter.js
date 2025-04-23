@@ -36,7 +36,7 @@ import Modify from "@/views/merchant/merchantModify.vue";
 import MenuManage from "@/views/merchant/menuManage.vue";
 import OrderCheck from "@/components/modal/orderCheck.vue";
 import OrderComplete from "@/components/modal/orderComplete.vue";
-import Login from "@/views/user/my/login.vue";
+import Login from "@/views/user/my/loginPage.vue";
 import FoodReview from "@/views/user/food/foodReview.vue";
 import FoodCart from "@/views/user/food/foodCart.vue";
 import FoodOrder from "@/views/user/food/foodOrder.vue";
@@ -44,6 +44,17 @@ import LoginCallback from "@/views/user/my/loginCallback.vue";
 import Notice from "@/views/common/noticePage.vue";
 import MyLostItemList from "@/views/user/my/myLostItemList.vue";
 import MyBoardList from "@/views/user/my/myBoardList.vue";
+
+import { useUserStore } from "@/stores/userStore";
+
+const sellerAuth = (to, from, next) => {
+  const userStore = useUserStore();
+  if (!userStore.isAuthenticated || userStore.userRole !== "SELLER") {
+    alert("상인 권한이 필요합니다.");
+    return next("/:festivalId/user/login");
+  }
+  next();
+};
 
 export default [
   {
@@ -239,38 +250,45 @@ export default [
     path: "/:festivalId/merchant/merchantHome/:boothId",
     name: "merchantHome",
     component: MerchantHome,
+    beforeEnter: sellerAuth,
   },
   {
     path: "/:festivalId/merchant/salesList/:boothId",
     name: "salesList",
     component: SalesList,
     meta: { title: "매출 확인" },
+    beforeEnter: sellerAuth,
   },
   {
     path: "/:festivalId/merchant/basicMessage/:boothId",
     name: "basicMessage",
     component: BasicMessage,
     meta: { title: "기본 메시지 지정하기" },
+    beforeEnter: sellerAuth,
   },
   {
     path: "/:festivalId/merchant/modify/:boothId",
     name: "modify",
     component: Modify,
+    beforeEnter: sellerAuth,
   },
   {
     path: "/:festivalId/merchant/menuManage/:id",
     name: "menuManage",
     component: MenuManage,
     meta: { title: "메뉴 관리" },
+    beforeEnter: sellerAuth,
   },
   {
     path: "/:festivalId/modal/orderCheck",
     name: "orderCheck",
     component: OrderCheck,
+    beforeEnter: sellerAuth,
   },
   {
     path: "/:festivalId/modal/orderComplete",
     name: "orderComplete",
     component: OrderComplete,
+    beforeEnter: sellerAuth,
   },
 ];

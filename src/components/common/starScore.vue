@@ -13,22 +13,15 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref, defineEmits } from "vue";
 
-const props = defineProps({
-  maxRating: {
-    type: Number,
-    default: 5,
-  },
-});
-
-const emit = defineEmits(['update:rating']);
+const emit = defineEmits(["update:rating"]);
 
 const rating = ref(0);
 
 const setRating = (newRating) => {
   rating.value = newRating;
-  emit('update:rating', newRating);
+  emit("update:rating", newRating);
 };
 
 defineExpose({ rating }); // 부모 컴포넌트에서 rating 값 접근 가능하도록 expose
@@ -50,7 +43,7 @@ defineExpose({ rating }); // 부모 컴포넌트에서 rating 값 접근 가능�
 }
 
 .star:hover {
-    transform: scale(1.2); /* 마우스 오버시 확대 효과 */
+  transform: scale(1.2); /* 마우스 오버시 확대 효과 */
 }
 
 .star.active {

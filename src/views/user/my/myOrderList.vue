@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import BackHeader from "@/components/common/backHeader.vue";
-import Pagination from "@/components/common/pagination.vue";
+import Pagination from "@/components/common/paginationComponent.vue";
 import api from "@/api/axiosInstance";
 import { useUserStore } from "@/stores/userStore";
 import Loading from "@/components/common/loadingComponent.vue";

@@ -167,18 +167,14 @@ onMounted(() => {
   text-align: left;
   overflow: hidden;
   font-size: 12px;
-  font-family: "Malgun Gothic", dotum, "돋움", sans-serif;
   line-height: 1.5;
-  background-color: white;
-}
-.info {
-  background-color: white;
+  background-color: transparent;
 }
 
 .wrap .info {
   width: 286px;
   height: 120px;
-  border-radius: 5px;
+  border-radius: 8px;
   border-bottom: 2px solid #ccc;
   border-right: 1px solid #ccc;
   overflow: hidden;

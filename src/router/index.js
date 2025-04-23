@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Common from "@/views/common.vue";
+import Common from "@/views/commonPage.vue";
 import adminLogin from "@/views/admin/adminLogin.vue";
-import User from "@/views/user/home.vue";
+import User from "@/views/user/homePage.vue";
 import userRouter from "./userRouter";
 import adminRouter from "./adminRouter";
 
