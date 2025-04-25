@@ -30,7 +30,7 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { getBoothDetail } from "@/api/admin"; // 위에서 작성한 API 함수
 import backHeader from "@/components/common/backHeader.vue";
-import noImage from "@/assets/noImage.png";
+import noImage from "@/assets/noimage.png";
 import loading from "@/components/common/loadingComponent.vue";
 
 const route = useRoute();
