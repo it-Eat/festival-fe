@@ -14,16 +14,6 @@
         <!-- 안내 문구 -->
         <p class="description">소셜로그인으로 회원가입을 할 수 있습니다.</p>
 
-        <!-- 구글 로그인 버튼 -->
-        <button class="google-button" @click="loginWithGoogle">
-          <img
-            src="/src/assets/google_logo.png"
-            alt="Google Logo"
-            class="social-icon"
-          />
-          Google로 시작하기
-        </button>
-
         <!-- 카카오 로그인 버튼 -->
         <button class="kakao-button" @click="loginWithKakao">
           <img
@@ -32,16 +22,6 @@
             class="social-icon"
           />
           카카오로 시작하기
-        </button>
-
-        <!-- 네이버 로그인 버튼 -->
-        <button class="naver-button" @click="loginWithNaver">
-          <img
-            src="/src/assets/naver_logo.png"
-            alt="Naver Logo"
-            class="social-icon"
-          />
-          네이버로 시작하기
         </button>
       </div>
     </div>
@@ -56,19 +36,7 @@ const router = useRouter();
 const festivalId = router.currentRoute.value.params.festivalId;
 localStorage.setItem("festivalId", festivalId);
 
-const loginWithGoogle = () => {
-  const loginURL = import.meta.env.VITE_LOGIN_URL;
-
-  window.location.href = loginURL;
-};
-
 const loginWithKakao = () => {
-  const loginURL = import.meta.env.VITE_LOGIN_URL;
-
-  window.location.href = loginURL;
-};
-
-const loginWithNaver = () => {
   const loginURL = import.meta.env.VITE_LOGIN_URL;
 
   window.location.href = loginURL;
