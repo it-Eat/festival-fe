@@ -168,7 +168,7 @@ function handleLogout() {
 .menu-content {
   flex: 1; /* 나머지 공간 차지 */
   padding: 20px;
-  width: 400px;
+  width: 250px;
   position: relative; /* 하단 메뉴(absolute) 배치용 */
   box-sizing: border-box;
 }
