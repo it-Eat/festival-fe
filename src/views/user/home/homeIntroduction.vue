@@ -107,6 +107,7 @@ const festivalJoin = async () => {
   display: flex;
   flex-direction: column;
   gap: 18px;
+  overflow-y: auto;
 }
 
 .feature-item {
