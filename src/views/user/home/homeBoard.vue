@@ -4,7 +4,7 @@ import { useLostStore } from "@/stores/lost";
 import { useBoardStore } from "@/stores/board";
 import { onMounted, computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import loading from "@/components/common/loadingComponent.vue";
+import loadingComponent from "@/components/common/loadingComponent.vue";
 
 const route = useRoute();
 const festivalId = route.params.festivalId;
@@ -34,7 +34,7 @@ const handleMoreClick = () => {
 </script>
 
 <template>
-  <loading v-if="loadingType === 'loading'" />
+  <loadingComponent v-if="loadingType === 'loading'" />
   <div class="content-area">
     <div class="container">
       <div class="section">
@@ -89,12 +89,12 @@ const handleMoreClick = () => {
 .content-area {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   width: 100%;
   max-width: 500px;
   margin: 0 auto;
-  padding: 10px;
-  height: 70vh; /* 높이 자동 조정 */
-  overflow-x: hidden; /* 스크롤 제거 */
+  overflow-x: hidden;
 }
 
 .section {
@@ -105,6 +105,7 @@ const handleMoreClick = () => {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: flex-start;
 }
 
 .list-item {
@@ -121,7 +122,7 @@ const handleMoreClick = () => {
 }
 
 .menu {
-  margin-bottom: 8px; /* Reduced margin for spacing */
+  margin-bottom: 12px; /* Reduced margin for spacing */
   font-weight: bold;
   font-size: 18px; /* Reduced font size for consistency */
 }
@@ -137,6 +138,7 @@ const handleMoreClick = () => {
   display: flex;
   justify-content: center;
   margin-top: 8px; /* Reduced margin for spacing */
+  width: 100%;
 }
 
 .more-button {

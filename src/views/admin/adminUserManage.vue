@@ -3,7 +3,7 @@ import searchBar from "@/components/admin/common/searchBar.vue";
 import adminList from "@/components/admin/common/adminList.vue";
 import adminCalendar from "@/components/admin/common/adminCalendar.vue";
 import selectBar from "@/components/admin/common/selectBar.vue";
-import pagination from "@/components/common/pagination.vue";
+import pagination from "@/components/common/paginationComponent.vue";
 import { ref } from "vue";
 
 // 구분 선택옵션

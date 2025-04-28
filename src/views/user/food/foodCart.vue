@@ -22,6 +22,7 @@
               <span class="quantity-label">수량</span>
               <span class="quantity-value">{{ item.cnt }}</span>
             </div>
+            <button class="deleteBtn" @click="handleDel(item.id)">삭제</button>
           </div>
         </div>
       </div>
@@ -31,7 +32,7 @@
           <div>총 수량 : {{ totalCount }}</div>
         </div>
         <button class="order-button" @click="handleOrder">
-          {{ totalPrice }}원 주문하기
+          {{ priceFormat(totalPrice) }}원 주문하기
         </button>
       </div>
     </div>
@@ -43,7 +44,7 @@
 import BackHeader from "@/components/common/backHeader.vue";
 import { onMounted, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { getCart } from "@/api/user";
+import { getCart, delCart } from "@/api/user";
 import noimage from "@/assets/noimage.png";
 import loadingComponent from "@/components/common/loadingComponent.vue";
 import { useCartStore } from "@/stores/cartStores";
@@ -81,6 +82,18 @@ const totalPrice = computed(() => {
   return res.value.reduce((sum, item) => sum + item.menu.price * item.cnt, 0);
 });
 
+const handleDel = async (wishlistId) => {
+  isLoading.value = true;
+  try {
+    await delCart(wishlistId, festivalId);
+    await fetchCart();
+  } catch (error) {
+    console.error("장바구니 삭제 중 오류 발생:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
 onMounted(() => {
   fetchCart();
 });
@@ -90,7 +103,6 @@ onMounted(() => {
 .page {
   display: flex;
   justify-content: center;
-  font-family: "Arial", sans-serif;
 }
 .home {
   display: flex;
@@ -100,7 +112,7 @@ onMounted(() => {
   max-width: 100vw;
   box-sizing: border-box;
 }
-@media (max-width: 900px) {
+@media (max-width: 600px) {
   .home {
     width: 100%;
   }
@@ -202,5 +214,13 @@ onMounted(() => {
   background-color: #f5f5f5;
   padding: 4px 12px;
   border-radius: 12px;
+}
+.deleteBtn {
+  font-size: 16px;
+  border-radius: 50%;
+  border: none;
+  background-color: transparent;
+  color: #ff6f61;
+  cursor: pointer;
 }
 </style>

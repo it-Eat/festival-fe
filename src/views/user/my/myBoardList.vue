@@ -7,7 +7,7 @@ import backHeader from "@/components/common/backHeader.vue";
 const boardStore = useBoardStore();
 const currentPage = ref(1); // 현재 페이지
 const itemsPerPage = 7; // 한 페이지당 게시글 개수
-const totalItems = computed(() => boardStore.boards.length || 50); // 전체 글 수 (서버 데이터 적용 가능)
+const totalItems = computed(() => boardStore.myBoards.length || 50); // 전체 글 수 (서버 데이터 적용 가능)
 
 const festivalId = localStorage.getItem("festivalId");
 

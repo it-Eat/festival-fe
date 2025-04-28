@@ -263,6 +263,19 @@ async function logout() {
   return response.data;
 }
 
+async function passChange(currentPassword, newPassword) {
+  try {
+    const res = await api.patch(`/user/change-password`, {
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    });
+    return res.data;
+  } catch (error) {
+    console.error("비밀 번호 변경 에러", error);
+    throw error;
+  }
+}
+
 export {
   getBoards,
   getLostBoards,
@@ -279,4 +292,5 @@ export {
   logout,
   deleteNotice,
   deleteBoard,
+  passChange,
 };

@@ -88,7 +88,7 @@ const deleteComment = async (commentId) => {
 </script>
 
 <template>
-  <div v-if="currentItem">
+  <div v-if="currentItem" class="top-container">
     <backHeader class="header" title="게시글 상세" />
     <div class="a">
       <div class="title">
@@ -170,8 +170,15 @@ const deleteComment = async (commentId) => {
 </template>
 
 <style scoped>
+.top-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
 .a {
   max-width: 600px;
+  width: 100%;
   margin: 32px auto;
   padding: 18px;
   background-color: #ffffff;
@@ -180,7 +187,8 @@ const deleteComment = async (commentId) => {
 }
 
 .header {
-  max-width: 600px;
+  max-width: 500px;
+  width: 100%;
   margin: 15px auto;
 }
 

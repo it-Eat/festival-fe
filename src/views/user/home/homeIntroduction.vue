@@ -3,7 +3,7 @@ import { useRouter } from "vue-router";
 import { joinFestival } from "@/stores/festival";
 import { useFestivalInfoStore } from "@/stores/festivalInfo";
 import { ref } from "vue";
-import loading from "@/components/common/loadingComponent.vue";
+import loadingComponent from "@/components/common/loadingComponent.vue";
 import checkModal from "@/components/common/checkModal.vue";
 const router = useRouter();
 const festivalId = router.currentRoute.value.params.festivalId;
@@ -26,10 +26,7 @@ const festivalJoin = async () => {
 </script>
 
 <template>
-  <div v-if="loadingType === 'loading'" class="introduction-container">
-    <loading />
-  </div>
-  <div v-else class="introduction-container">
+  <div class="introduction-container">
     <div class="feature-list">
       <div class="feature-item">
         <div class="feature-icon">🔍</div>
@@ -77,44 +74,39 @@ const festivalJoin = async () => {
       @confirm="festivalJoin"
       @cancel="isModalOpen = false"
     />
+    <loadingComponent v-if="loadingType === 'loading'" />
   </div>
 </template>
 
 <style scoped>
 .introduction-container {
-  max-width: 800px;
+  width: 100%;
   margin: 0 auto;
-  padding: 30px 20px;
+  padding: 25px 20px;
   background: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow-x: hidden;
 }
 .join-button {
-  background-color: #ff6e61b0;
-  color: white;
+  background-color: white;
+  color: #ff6e61;
   font-size: 16px;
   font-weight: 600;
-  border: none;
+  border: 1px solid #ff6e61;
   padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   height: 40px;
 }
 .join-button:hover {
   background-color: #ff6e61;
-}
-
-.title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #2c3e50;
-  text-align: center;
-  margin-bottom: 40px;
+  color: white;
 }
 
 .feature-list {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 18px;
 }
 
 .feature-item {
@@ -135,7 +127,7 @@ const festivalJoin = async () => {
 .feature-icon {
   font-size: 24px;
   margin-right: 20px;
-  padding: 12px;
+  padding: 10px 13px;
   background: white;
   border-radius: 50%;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -157,9 +149,9 @@ const festivalJoin = async () => {
 
 .footer {
   text-align: center;
-  margin-top: 40px;
+  margin-top: 20px;
   padding: 20px;
-  font-size: 16px;
+  font-size: 14px;
   color: #666;
   border-top: 1px solid #eee;
 }

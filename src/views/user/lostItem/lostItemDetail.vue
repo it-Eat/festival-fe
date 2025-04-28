@@ -80,7 +80,7 @@ const formatDate = (dateString) => {
 </script>
 
 <template>
-  <div v-if="currentItem">
+  <div v-if="currentItem" class="currentItem">
     <backHeader class="header" title="분실물 상세" />
     <div class="a">
       <div class="title">
@@ -169,6 +169,12 @@ const formatDate = (dateString) => {
 </template>
 
 <style scoped>
+.currentItem {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
 .a {
   max-width: 600px;
   margin: 32px auto;

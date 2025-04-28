@@ -1,8 +1,5 @@
 <script setup>
 import commentItem from "@/components/common/commentItem.vue";
-import { useCommentStore } from "@/stores/comment";
-
-const commentStore = useCommentStore();
 
 const props = defineProps({
   type: {

@@ -46,13 +46,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <backHeader
-    class="header"
-    :title="festivalInfo?.festivalName || '축제'"
-    :useUserName="false"
-    :category="'home'"
-  />
   <div class="home">
+    <backHeader
+      class="header"
+      :title="festivalInfo?.festivalName || '축제'"
+      :useUserName="false"
+      :category="'home'"
+    />
     <!-- 배너 -->
     <div class="banner">
       <h4>축제 기간</h4>
@@ -86,6 +86,7 @@ onMounted(() => {
   max-width: 600px; /* 최대 너비 설정 */
   margin: 0 auto; /* 중앙 정렬 */
   background: #f9f9f9;
+  height: 100vh;
 }
 
 .banner {
@@ -126,9 +127,7 @@ onMounted(() => {
 /* 콘텐츠 영역 */
 .content-area {
   background-color: #f9f9f9; /* 회색 배경 적용 */
-  min-height: calc(
-    100vh - 50px - 180px
-  ); /* 헤더(50px) + 배너(180px) 제외한 높이 설정 */
+  height: 100%;
   padding: 0;
   display: flex;
   flex-direction: column;

@@ -61,7 +61,8 @@ export const useLostStore = defineStore("lost", {
       boardType = "LOSS"
     ) {
       try {
-        const response = await api.get("/board/my-board/1", {
+        const festivalId = localStorage.getItem("festivalId");
+        const response = await api.get(`/board/my-board/${festivalId}`, {
           params: {
             page: parseInt(page) || 1,
             pageSize: parseInt(pageSize) || 50,

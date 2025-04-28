@@ -32,9 +32,9 @@
               <div class="option">
                 <input
                   type="radio"
-                  id="tossPay"
+                  id="tosspay"
                   name="pay"
-                  value="tossPay"
+                  value="tosspay"
                   v-model="paymentMethod"
                 />
                 <label for="tossPay">
@@ -51,9 +51,9 @@
               <div class="option">
                 <input
                   type="radio"
-                  id="kakaoPay"
+                  id="kakaopay"
                   name="pay"
-                  value="kakaoPay"
+                  value="kakaopay"
                   v-model="paymentMethod"
                 />
                 <label for="kakaoPay">
@@ -63,25 +63,6 @@
                     class="pay-icon"
                   />
                   <span class="payment-text">카카오페이</span>
-                </label>
-              </div>
-
-              <!-- 네이버페이 -->
-              <div class="option">
-                <input
-                  type="radio"
-                  id="naverPay"
-                  name="pay"
-                  value="naverPay"
-                  v-model="paymentMethod"
-                />
-                <label for="naverPay">
-                  <img
-                    src="@/assets/naver-pay.png"
-                    alt="네이버페이"
-                    class="pay-icon"
-                  />
-                  <span class="payment-text">네이버페이</span>
                 </label>
               </div>
             </div>
@@ -109,14 +90,17 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import BackHeader from "@/components/common/backHeader.vue";
 import { useCartStore } from "@/stores/cartStores";
 import { useRouter } from "vue-router";
 import api from "@/api/axiosInstance";
 import loadingComponent from "@/components/common/loadingComponent.vue";
 import checkModal from "@/components/common/checkModal.vue";
+import { useUserStore } from "@/stores/userStore";
 
+const user = useUserStore();
+const userName = user.userName;
 // Pinia store (가게명, 장바구니 등)
 const cartStore = useCartStore();
 const storeName = computed(() => cartStore.storeName); // 가게명
@@ -143,6 +127,28 @@ const totalPrice = computed(() => {
 const contact = ref(""); // 주문 연락처
 const paymentMethod = ref(""); // 선택한 결제 수단 (tossPay/kakaoPay/naverPay 등)
 
+// 아임포트 스크립트 로드 함수
+const loadIamport = () => {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "https://cdn.iamport.kr/js/iamport.payment-1.2.0.js";
+    script.onload = () => resolve(window.IMP);
+    script.onerror = () => reject(new Error("아임포트 스크립트 로드 실패"));
+    document.head.appendChild(script);
+  });
+};
+
+// 컴포넌트 마운트 시 아임포트 초기화
+onMounted(async () => {
+  try {
+    const IMP = await loadIamport();
+    // 테스트 모드로 초기화
+    IMP.init("imp10391932"); // 아임포트 가맹점 식별코드
+  } catch (error) {
+    console.error("아임포트 초기화 실패:", error);
+  }
+});
+
 // 결제 버튼 클릭 시
 async function handlePayment() {
   // 1) 폼 검증
@@ -165,43 +171,82 @@ async function handlePayment() {
     return;
   }
 
-  // 2) wishlistIds(장바구니 ID 리스트) 만들기
-  const wishlistIds = cartItems.value.map((item) => item.id);
-
-  // 3) payType 매핑
-  //   - BE 요구사항에 맞춰 paymentMethod를 실제 payType으로 변환
-  const payTypeMap = {
-    tossPay: "TOSSPAY",
-    kakaoPay: "KAKAOPAY",
-    naverPay: "NAVERPAY",
-  };
-  const payType = payTypeMap[paymentMethod.value] || "UNKNOWN";
-
-  // 4) POST 요청에 사용할 payload
-  const payload = {
-    wishlistIds,
-    totalPrice: totalPrice.value,
-    payType,
-  };
-
   try {
+    const IMP = window.IMP;
+    if (!IMP) {
+      throw new Error("아임포트가 초기화되지 않았습니다.");
+    }
     isLoading.value = true;
-    // 5) 서버로 결제 정보 전송
-    const response = await api.post("/pay", payload);
+    const userCode = import.meta.env.VITE_PORTONE_INIT;
+    IMP.init(userCode);
 
-    // 6) 결제 완료 후 장바구니 비우기
-    cartStore.clearCart();
-    modalConfig.value = {
-      title: "결제 완료",
-      message: `‼️화면을 캡쳐해주세요‼️\n주문 번호 : ${response.data.pay.waitingNumber}\n픽업 시간 : ${response.data.waitingTime}`,
-      confirmText: "확인",
+    // 반응형 객체를 일반 값으로 변환
+    const paymentData = {
+      channelKey: import.meta.env.VITE_PORTONE_CHANNEL_ID,
+      merchant_uid: `order_id_${cartItems.value[0].id}`,
+      name: storeName.value,
+      pay_method: paymentMethod.value,
+      escrow: false,
+      amount: totalPrice.value,
+      tax_free: 0,
+      buyer_name: userName,
+      buyer_tel: contact.value,
+      m_redirect_url: "https://helloworld.com/payments/result",
+      notice_url: "https://helloworld.com/api/v1/payments/notice",
+      confirm_url: "https://helloworld.com/api/v1/payments/confirm",
+      currency: "KRW",
+      locale: "ko",
+      custom_data: { userId: user.user.id },
     };
-    isModalOpen.value = true;
+
+    IMP.request_pay(paymentData, async () => {
+      // 2) wishlistIds(장바구니 ID 리스트) 만들기
+      const wishlistIds = cartItems.value.map((item) => item.id);
+
+      // 3) payType 매핑
+      const payTypeMap = {
+        tosspay: "TOSSPAY",
+        kakaopay: "KAKAOPAY",
+      };
+      const payType = payTypeMap[paymentMethod.value] || "UNKNOWN";
+
+      // 4) POST 요청에 사용할 payload
+      const payload = {
+        wishlistIds,
+        totalPrice: totalPrice.value,
+        payType,
+      };
+
+      try {
+        isLoading.value = true;
+        // 5) 서버로 결제 정보 전송
+        const response = await api.post("/pay", payload);
+
+        // 6) 결제 완료 후 장바구니 비우기
+        cartStore.clearCart();
+        modalConfig.value = {
+          title: "결제 완료",
+          message: `‼️화면을 캡쳐해주세요‼️\n주문 번호 : ${response.data.pay.waitingNumber}\n픽업 시간 : ${response.data.waitingTime}`,
+          confirmText: "확인",
+        };
+        isModalOpen.value = true;
+      } catch (error) {
+        console.error("결제 오류:", error);
+        modalConfig.value = {
+          title: "결제 오류",
+          message: "결제 중 오류가 발생했습니다. 다시 시도해주세요.",
+          confirmText: "",
+        };
+        isModalOpen.value = true;
+      } finally {
+        isLoading.value = false;
+      }
+    });
   } catch (error) {
     console.error("결제 오류:", error);
     modalConfig.value = {
       title: "결제 오류",
-      message: "결제 중 오류가 발생했습니다. 다시 시도해주세요.",
+      message: "결제 처리 중 오류가 발생했습니다. 다시 시도해주세요.",
       confirmText: "",
     };
     isModalOpen.value = true;
@@ -312,7 +357,7 @@ const handleCancel = () => {
 .payment-options {
   display: flex;
   flex-direction: column;
-  gap: 16px; /* 결제 옵션 사이 간격 */
+  gap: 16px /* 결제 옵션 사이 간격 */;
   margin-top: 14px;
 }
 
@@ -327,7 +372,7 @@ const handleCancel = () => {
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-left: 8px; /* 라디오 버튼과 아이콘/텍스트 사이 여백 */
+  margin-left: 8px /* 라디오 버튼과 아이콘/텍스트 사이 여백 */;
 }
 
 .option input[type="radio"] {
@@ -350,7 +395,7 @@ const handleCancel = () => {
 }
 
 .order-button {
-  width: 80%; /* 버튼 너비: 80% */
+  width: 80% /* 버튼 너비: 80% */;
   padding: 15px;
   background-color: #ff6b6b; /* 핑크/코랄 계열 */
   color: white;

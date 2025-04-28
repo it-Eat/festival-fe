@@ -60,11 +60,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import BackHeader from "@/components/common/backHeader.vue";
-import Pagination from "@/components/common/pagination.vue";
+import Pagination from "@/components/common/paginationComponent.vue";
 import api from "@/api/axiosInstance";
 import { useCartStore } from "@/stores/cartStores";
 import { dateFormatWithoutTime } from "@/util/dateFormat";
-import Calender from "@/components/modal/calender.vue"; // 위에서 만든 Calender
+import Calender from "@/components/modal/calenderModal.vue"; // 위에서 만든 Calender
 import Loading from "@/components/common/loadingComponent.vue";
 // Pinia store
 const cartStore = useCartStore();
@@ -138,7 +138,7 @@ async function fetchWishlistData(boothId) {
   margin: auto;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 600px) {
   .home {
     width: 100%;
   }

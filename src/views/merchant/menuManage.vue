@@ -14,24 +14,32 @@
           v-for="(menu, index) in menus"
           :key="menu.id ?? index"
         >
-          <!-- 이미지 영역 -->
-          <div class="menu-image">
-            <input
-              type="file"
-              :ref="(el) => (imageInputs[index] = el)"
-              accept="image/*"
-              style="display: none"
-              @change="handleImageUpload(index, $event)"
-            />
-            <div class="image-preview" @click="triggerFileInput(index)">
-              <img
-                v-if="menu.imagePreview"
-                :src="menu.imagePreview"
-                alt="메뉴 이미지"
+          <!-- button-->
+          <div class="soldOut-btn-container">
+            <!-- 이미지 영역 -->
+            <div class="menu-image">
+              <input
+                type="file"
+                :ref="(el) => (imageInputs[index] = el)"
+                accept="image/*"
+                style="display: none"
+                @change="handleImageUpload(index, $event)"
               />
-              <div v-else class="image-placeholder">
-                <img :src="noimage" alt="image placeholder" />
+              <div class="image-preview" @click="triggerFileInput(index)">
+                <img
+                  v-if="menu.imagePreview"
+                  :src="menu.imagePreview"
+                  alt="메뉴 이미지"
+                />
+                <div v-else class="image-placeholder">
+                  <img :src="noimage" alt="image placeholder" />
+                </div>
               </div>
+            </div>
+            <div>
+              <button class="soldOut-btn" @click="toggleSoldOut(menu.id)">
+                {{ menu.soldOut ? "품절" : "판매중" }}
+              </button>
             </div>
           </div>
 
@@ -173,6 +181,7 @@ const saveMenus = async () => {
       // price를 문자열로 변환하여 전송 (백엔드에서 int로 변경)
       formData.append("price", menu.price ? menu.price.toString() : "0");
       formData.append("content", menu.content);
+      formData.append("soldOut", menu.soldOut);
 
       // 이미지: 파일 객체가 존재하면 해당 파일을 전송, 없으면 기존 이미지 URL을 전송
       if (menu.selectedFile) {
@@ -199,6 +208,14 @@ const saveMenus = async () => {
     console.error("메뉴 저장 실패:", error);
   } finally {
     loading.value = false;
+  }
+};
+
+const toggleSoldOut = (id) => {
+  for (const menu of menus.value) {
+    if (menu.id == id) {
+      menu.soldOut = menu.soldOut ? false : true;
+    }
   }
 };
 </script>
@@ -356,6 +373,33 @@ const saveMenus = async () => {
 
 .submit-button:hover {
   background-color: #ff6f61;
+  color: white;
+}
+
+.soldOut-btn-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.soldOut-btn {
+  width: 80px;
+  padding: 8px 12px;
+  background-color: white;
+  border: 1px solid #ff6f61;
+  border-radius: 8px;
+  color: #ff6f61;
+  cursor: pointer;
+}
+
+.soldOut-btn:hover {
+  background-color: #ff6f61;
+  color: white;
+}
+
+/* 품절 상태에 따른 버튼 스타일 변경 (선택사항) */
+.soldOut-btn.active {
+  background-color: #ff6b6b;
   color: white;
 }
 </style>
