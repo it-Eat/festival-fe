@@ -1,4 +1,4 @@
 [[redirects]]
-  from = "/user/auth/kakao/callback"
+  from = "/*"
   to = "/index.html"
   status = 200
