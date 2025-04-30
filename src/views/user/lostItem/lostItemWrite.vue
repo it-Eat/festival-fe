@@ -1,8 +1,8 @@
 <script setup>
 import backHeader from "@/components/common/backHeader.vue";
 import { ref } from "vue";
-import axios from "axios";
 import { useRoute } from "vue-router";
+import api from "@/api/axiosInstance";
 const title = ref("");
 const content = ref([]);
 const lossType = ref("");
@@ -11,7 +11,6 @@ const previewImages = ref([]); // 미리보기용 이미지 URL들
 
 const route = useRoute();
 const festivalId = route.params.festivalId;
-const baseUrl = import.meta.env.VITE_VUE_API_URL;
 
 // 이미지 추가 함수
 const handleImageUpload = (event) => {
@@ -48,7 +47,7 @@ const submitPost = async () => {
   });
 
   try {
-    await axios.post(`${baseUrl}/board/${festivalId}`, formData, {
+    await api.post(`board/${festivalId}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

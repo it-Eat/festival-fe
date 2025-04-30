@@ -95,7 +95,7 @@ import { useRouter } from "vue-router";
 import searchBar from "@/components/admin/common/searchBar.vue";
 import selectBar from "@/components/admin/common/selectBar.vue";
 import { getBooths, patchBooth } from "@/api/admin";
-import axios from "axios"; // 추가: /user/change-type 호출을 위해
+import api from "@/api/axiosInstance";
 import acceptModal from "@/components/admin/acceptModal.vue";
 import loading from "@/components/common/loadingComponent.vue";
 
@@ -175,8 +175,8 @@ const handleAccept = async (location) => {
     });
 
     // 2. 사용자 타입 변경 요청
-    await axios.patch(
-      "/user/change-type",
+    await api.patch(
+      "user/change-type",
       {
         type: "ACCEPT",
         boothId: selectedBooth.value.id,
