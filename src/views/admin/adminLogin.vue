@@ -50,7 +50,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import axios from "axios";
+import api from "@/api/axiosInstance";
 import { useAuthStore } from "@/stores/auth";
 import loadingComponent from "@/components/common/loadingComponent.vue";
 import checkModal from "@/components/common/checkModal.vue";
@@ -79,14 +79,10 @@ const handleLogin = async () => {
 
   try {
     loadingType.value = "loading";
-    const response = await axios.post(
-      import.meta.env.VITE_VUE_API_URL + "/user/admin",
-      loginUser,
-      {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true, // 쿠키 전송 허용
-      }
-    );
+    const response = await api.post("user/admin", loginUser, {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true, // 쿠키 전송 허용
+    });
 
     const { id, userName, nickname, role, participation } = response.data;
     const user = { id, userName, nickname, role, participation };
