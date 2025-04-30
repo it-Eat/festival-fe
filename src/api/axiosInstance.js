@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_VUE_API_URL,
+  baseURL: "/api", // 프록시 설정에 맞게 수정
   withCredentials: true, // 모든 요청에 쿠키 포함
 });
 
@@ -10,7 +10,7 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     // 401 에러 발생 시 토큰 갱신 시도 (단, 이미 재시도한 경우는 피함)
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
         // refreshToken API 호출

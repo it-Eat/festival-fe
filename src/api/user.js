@@ -18,7 +18,7 @@ async function kakaoLogin() {
 
 async function processKakaoCallback(code) {
   try {
-    const response = await api.get(`/user/auth/kakao/callback?code=${code}`, {
+    const response = await api.get(`user/auth/kakao/callback?code=${code}`, {
       withCredentials: true,
       headers: { "Content-Type": "application/json" },
     });
@@ -77,7 +77,7 @@ async function createWishlist(boothId, festivalId, data) {
 
 async function getCart(boothId, festivalId) {
   try {
-    const response = await api.get(`/wishlist/${boothId}/${festivalId}`, {
+    const response = await api.get(`wishlist/${boothId}/${festivalId}`, {
       withCredentials: true,
     });
     return response.data;
