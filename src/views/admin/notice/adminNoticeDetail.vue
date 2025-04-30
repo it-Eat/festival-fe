@@ -42,7 +42,7 @@
 <script setup>
 import { ref, watch } from "vue";
 import { defineProps, defineEmits } from "vue";
-import axios from "axios";
+import api from "@/api/axiosInstance";
 import { useRouter } from "vue-router";
 import checkModal from "@/components/common/checkModal.vue";
 import loadingComponent from "@/components/common/loadingComponent.vue";
@@ -94,7 +94,7 @@ const updateNotice = async () => {
     loadingType.value = "loading";
     const noticeId = props.notice.id;
     const endpoint = `notice/${noticeId}/${festivalId}`;
-    await axios.patch(
+    await api.patch(
       endpoint,
       { content: editedContent.value },
       {

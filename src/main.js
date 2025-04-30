@@ -6,9 +6,6 @@ import axios from "axios";
 import piniaPersist from "pinia-plugin-persistedstate";
 import { io } from "socket.io-client";
 
-// 기본 url설정
-axios.defaults.baseURL = import.meta.env.VITE_VUE_API_URL;
-
 // 소켓 연결 설정
 export const socket = io(import.meta.env.VITE_VUE_API_URL, {
   withCredentials: true,

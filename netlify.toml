@@ -8,4 +8,7 @@
   to = "https://festival-be.onrender.com/:splat"
   status = 200
   force = true
-  headers = {X-From = "Netlify", Access-Control-Allow-Origin = "*"}
+  headers = {
+    X-From = "Netlify",
+    Access-Control-Allow-Origin = "*",
+  }

@@ -12,7 +12,6 @@
 <script setup>
 import { onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import axios from "axios";
 import { useUserStore } from "@/stores/userStore";
 import api from "@/api/axiosInstance";
 import { socket } from "@/main";
@@ -20,20 +19,16 @@ import { socket } from "@/main";
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
-const API_URL = import.meta.env.VITE_VUE_API_URL; // 환경변수 불러오기
 const festivalId = localStorage.getItem("festivalId");
 
 onMounted(async () => {
   const code = route.query.code;
   if (code) {
     try {
-      const response = await axios.get(
-        `${API_URL}/user/auth/kakao/callback?code=${code}`,
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await api.get(`user/auth/kakao/callback?code=${code}`, {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+      });
 
       // 서버 응답에서 user 정보 추출
       const { user } = response.data;
@@ -46,7 +41,7 @@ onMounted(async () => {
         // role이 SELLER면 merchantHome으로 이동할 때 boothId도 함께 전달
         if (userRole === "SELLER") {
           // user 정보에서 boothId를 가져온다고 가정
-          const booth = await api.get(`/booth/my-booth/${festivalId}`);
+          const booth = await api.get(`booth/my-booth/${festivalId}`);
           localStorage.setItem("boothId", booth.data.id);
           const boothId = booth.data.id; // 실제 응답에서 받는 필드명으로 수정 필요
           router.replace(`/${festivalId}/merchant/merchantHome/${boothId}`);

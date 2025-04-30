@@ -29,7 +29,7 @@
 <script setup>
 import { ref, watch } from "vue";
 import { defineProps, defineEmits } from "vue";
-import axios from "axios";
+import api from "@/api/axiosInstance";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -73,7 +73,7 @@ const submitNotice = async () => {
 
     const endpoint = `notice/${festivalId}`;
 
-    await axios.post(
+    await api.post(
       endpoint,
       { content: content.value },
       {
