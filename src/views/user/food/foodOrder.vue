@@ -155,20 +155,38 @@ onMounted(async () => {
   const impUid = route.query.imp_uid;
 
   if (impSuccess === "true" && merchantUid && impUid) {
-    // 1. (선택) 서버에 결제 검증 요청
-    // const verifyRes = await api.get(`/pay/verify?imp_uid=${impUid}&merchant_uid=${merchantUid}`);
-    // if (verifyRes.data.success) { ... }
-
-    // 2. 장바구니 비우기
-    cartStore.clearCart();
-
-    // 3. 모달 띄우기
-    modalConfig.value = {
-      title: "결제 완료",
-      message: `결제가 정상적으로 완료되었습니다.\n주문번호: ${merchantUid}`,
-      confirmText: "확인",
-    };
-    isModalOpen.value = true;
+    // 1. 서버에 결제 검증 요청 (프론트엔드에서 직접 아임포트 REST API 호출 X)
+    try {
+      const verifyRes = await api.get(
+        `/pay/verify?imp_uid=${impUid}&merchant_uid=${merchantUid}`
+      );
+      if (verifyRes.data.success) {
+        // 결제 성공 후처리
+        cartStore.clearCart();
+        modalConfig.value = {
+          title: "결제 완료",
+          message: `결제가 정상적으로 완료되었습니다.\n주문번호: ${merchantUid}`,
+          confirmText: "확인",
+        };
+        isModalOpen.value = true;
+      } else {
+        // 결제 실패 처리
+        modalConfig.value = {
+          title: "결제 실패",
+          message: "결제 정보 검증에 실패했습니다. 관리자에게 문의하세요.",
+          confirmText: "확인",
+        };
+        isModalOpen.value = true;
+      }
+    } catch (error) {
+      console.error("결제 검증 중 오류:", error);
+      modalConfig.value = {
+        title: "결제 오류",
+        message: "결제 검증 중 오류가 발생했습니다.",
+        confirmText: "확인",
+      };
+      isModalOpen.value = true;
+    }
   } else if (impSuccess === "false") {
     // 결제 실패 처리
     modalConfig.value = {
