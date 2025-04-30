@@ -22,7 +22,7 @@ export const useUserStore = defineStore(
 
     const logout = async () => {
       try {
-        await api.post("/user/logout");
+        await api.post("user/logout");
       } catch (err) {
         console.error("Logout API 호출 실패:", err);
       } finally {

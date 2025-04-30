@@ -2,8 +2,6 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import api from "@/api/axiosInstance.js";
 
-const baseUrl = import.meta.env.VITE_VUE_API_URL;
-
 export const useCommentStore = defineStore(
   "comment",
   () => {
@@ -11,9 +9,7 @@ export const useCommentStore = defineStore(
 
     const fetchComments = async (currentId, festivalId) => {
       try {
-        const response = await api.get(
-          `${baseUrl}/comment/${currentId}/${festivalId}`
-        );
+        const response = await api.get(`comment/${currentId}/${festivalId}`);
 
         commentList.value = response.data.map((comment) => ({
           id: comment.id, // 댓글 아이디
@@ -28,7 +24,7 @@ export const useCommentStore = defineStore(
 
     const createComment = async (currentId, content, festivalId) => {
       try {
-        await api.post(`${baseUrl}/comment/${currentId}/${festivalId}`, {
+        await api.post(`comment/${currentId}/${festivalId}`, {
           content,
         });
         await fetchComments(currentId, festivalId);
@@ -39,7 +35,7 @@ export const useCommentStore = defineStore(
 
     const editComment = async (commentId, content, currentId, festivalId) => {
       try {
-        await api.put(`${baseUrl}/comment/${commentId}/${festivalId}`, {
+        await api.put(`comment/${commentId}/${festivalId}`, {
           content,
         });
         await fetchComments(currentId, festivalId);
@@ -50,7 +46,7 @@ export const useCommentStore = defineStore(
 
     const deleteComment = async (commentId, currentId, festivalId = 1) => {
       try {
-        await api.delete(`${baseUrl}/comment/${commentId}/${festivalId}`);
+        await api.delete(`comment/${commentId}/${festivalId}`);
         await fetchComments(currentId, festivalId);
       } catch (error) {
         console.error("댓글 삭제 실패:", error);

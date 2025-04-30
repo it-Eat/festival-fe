@@ -23,17 +23,17 @@ async function getFestivalList(cursor, limit, keyword, selectedMonth) {
   // 쿼리 파라미터 조합
   const queryString = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
 
-  const response = await api.get(`/festival${queryString}`);
+  const response = await api.get(`festival${queryString}`);
   return response.data;
 }
 
 async function getFestivalDetail(festivalId) {
-  const response = await api.get(`/festival/${festivalId}`);
+  const response = await api.get(`festival/${festivalId}`);
   return response.data;
 }
 
 async function joinFestival(festivalId) {
-  const response = await api.post(`/participation/${festivalId}`);
+  const response = await api.post(`participation/${festivalId}`);
   return response.data;
 }
 
