@@ -20,7 +20,7 @@ export const useBoardStore = defineStore("board", {
       keyword = ""
     ) {
       try {
-        const response = await api.get(`/board/${festivalId}`, {
+        const response = await api.get(`board/${festivalId}`, {
           params: {
             page: parseInt(page) || 1,
             pageSize: parseInt(pageSize) || 50,
@@ -37,7 +37,7 @@ export const useBoardStore = defineStore("board", {
 
     async fetchDetailItems(boardId, festivalId) {
       try {
-        const response = await api.get(`/board/${boardId}/${festivalId}`);
+        const response = await api.get(`board/${boardId}/${festivalId}`);
         this.boardDetail = response.data;
       } catch (error) {
         console.error("데이터 가져오기 실패:", error);
@@ -53,7 +53,7 @@ export const useBoardStore = defineStore("board", {
       try {
         const festivalId = localStorage.getItem("festivalId");
 
-        const response = await api.get(`/board/my-board/${festivalId}`, {
+        const response = await api.get(`board/my-board/${festivalId}`, {
           params: {
             page: parseInt(page) || 1,
             pageSize: parseInt(pageSize) || 50,
