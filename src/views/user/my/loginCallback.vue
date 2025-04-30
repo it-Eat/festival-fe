@@ -46,7 +46,7 @@ onMounted(async () => {
           const boothId = booth.data.id; // 실제 응답에서 받는 필드명으로 수정 필요
           router.replace(`/${festivalId}/merchant/merchantHome/${boothId}`);
         } else {
-          router.go(-2);
+          router.replace(`/${festivalId}/userHome/homeIntroduction`);
         }
       }, 150);
       try {
