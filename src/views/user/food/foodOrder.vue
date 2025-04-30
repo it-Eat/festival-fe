@@ -151,6 +151,8 @@ onMounted(async () => {
 
 // 결제 버튼 클릭 시
 async function handlePayment() {
+  const timestamp = Date.now(); // 현재 시간 (밀리초)
+  const random = Math.floor(Math.random() * 100000); // 0~99999 난수
   // 1) 폼 검증
   if (!contact.value) {
     modalConfig.value = {
@@ -183,7 +185,7 @@ async function handlePayment() {
     // 반응형 객체를 일반 값으로 변환
     const paymentData = {
       channelKey: import.meta.env.VITE_PORTONE_CHANNEL_ID,
-      merchant_uid: `order_id_${cartItems.value[0].id}`,
+      merchant_uid: `order_id_${timestamp}_${random}_${cartItems.value[0].id}`,
       name: storeName.value,
       pay_method: paymentMethod.value,
       escrow: false,
