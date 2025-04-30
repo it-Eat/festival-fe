@@ -93,7 +93,7 @@
 import { computed, ref, onMounted } from "vue";
 import BackHeader from "@/components/common/backHeader.vue";
 import { useCartStore } from "@/stores/cartStores";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import api from "@/api/axiosInstance";
 import loadingComponent from "@/components/common/loadingComponent.vue";
 import checkModal from "@/components/common/checkModal.vue";
@@ -146,6 +146,37 @@ onMounted(async () => {
     IMP.init("imp10391932"); // 아임포트 가맹점 식별코드
   } catch (error) {
     console.error("아임포트 초기화 실패:", error);
+  }
+
+  // 결제 리디렉션 후 쿼리 파라미터로 결제 결과 처리
+  const route = useRoute();
+  const impSuccess = route.query.imp_success;
+  const merchantUid = route.query.merchant_uid;
+  const impUid = route.query.imp_uid;
+
+  if (impSuccess === "true" && merchantUid && impUid) {
+    // 1. (선택) 서버에 결제 검증 요청
+    // const verifyRes = await api.get(`/pay/verify?imp_uid=${impUid}&merchant_uid=${merchantUid}`);
+    // if (verifyRes.data.success) { ... }
+
+    // 2. 장바구니 비우기
+    cartStore.clearCart();
+
+    // 3. 모달 띄우기
+    modalConfig.value = {
+      title: "결제 완료",
+      message: `결제가 정상적으로 완료되었습니다.\n주문번호: ${merchantUid}`,
+      confirmText: "확인",
+    };
+    isModalOpen.value = true;
+  } else if (impSuccess === "false") {
+    // 결제 실패 처리
+    modalConfig.value = {
+      title: "결제 실패",
+      message: "결제에 실패하였습니다. 다시 시도해주세요.",
+      confirmText: "확인",
+    };
+    isModalOpen.value = true;
   }
 });
 
