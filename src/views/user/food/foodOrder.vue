@@ -141,54 +141,55 @@ const loadIamport = () => {
 // 컴포넌트 마운트 시 아임포트 초기화
 onMounted(async () => {
   try {
-    const IMP = await loadIamport();
-    // 테스트 모드로 초기화
-    IMP.init("imp10391932"); // 아임포트 가맹점 식별코드
+    await loadIamport();
+    const userCode = import.meta.env.VITE_PORTONE_INIT;
+    window.IMP?.init(userCode);
   } catch (error) {
     console.error("아임포트 초기화 실패:", error);
   }
 
-  // 결제 리디렉션 후 쿼리 파라미터로 결제 결과 처리
+  // 결제 리디렉션 후 쿼리 파라미터로 결제 결과 처리 (api 없이)
   const route = useRoute();
   const impSuccess = route.query.imp_success;
   const merchantUid = route.query.merchant_uid;
   const impUid = route.query.imp_uid;
 
   if (impSuccess === "true" && merchantUid && impUid) {
-    // 1. 서버에 결제 검증 요청 (프론트엔드에서 직접 아임포트 REST API 호출 X)
+    // 1. 서버에 주문 정보 전송
     try {
-      const verifyRes = await api.get(
-        `/pay/verify?imp_uid=${impUid}&merchant_uid=${merchantUid}`
-      );
-      if (verifyRes.data.success) {
-        // 결제 성공 후처리
-        cartStore.clearCart();
-        modalConfig.value = {
-          title: "결제 완료",
-          message: `결제가 정상적으로 완료되었습니다.\n주문번호: ${merchantUid}`,
-          confirmText: "확인",
-        };
-        isModalOpen.value = true;
-      } else {
-        // 결제 실패 처리
-        modalConfig.value = {
-          title: "결제 실패",
-          message: "결제 정보 검증에 실패했습니다. 관리자에게 문의하세요.",
-          confirmText: "확인",
-        };
-        isModalOpen.value = true;
-      }
-    } catch (error) {
-      console.error("결제 검증 중 오류:", error);
+      const wishlistIds = cartItems.value.map((item) => item.id);
+      const payTypeMap = {
+        tosspay: "TOSSPAY",
+        kakaopay: "KAKAOPAY",
+      };
+      const payType = payTypeMap[paymentMethod.value] || "UNKNOWN";
+      const payload = {
+        wishlistIds,
+        totalPrice: totalPrice.value,
+        payType,
+        impUid,
+        merchantUid,
+      };
+      await api.post("/pay", payload);
+
+      // 2. 장바구니 비우기 및 안내
+      cartStore.clearCart();
       modalConfig.value = {
-        title: "결제 오류",
-        message: "결제 검증 중 오류가 발생했습니다.",
+        title: "결제 완료",
+        message: `결제가 정상적으로 완료되었습니다.\n주문번호: ${merchantUid}`,
+        confirmText: "확인",
+      };
+      isModalOpen.value = true;
+    } catch (error) {
+      modalConfig.value = {
+        title: "주문 저장 오류",
+        message:
+          "주문 정보 저장 중 오류가 발생했습니다. 관리자에게 문의하세요.",
         confirmText: "확인",
       };
       isModalOpen.value = true;
     }
   } else if (impSuccess === "false") {
-    // 결제 실패 처리
     modalConfig.value = {
       title: "결제 실패",
       message: "결제에 실패하였습니다. 다시 시도해주세요.",
@@ -200,6 +201,10 @@ onMounted(async () => {
 
 // 결제 버튼 클릭 시
 async function handlePayment() {
+  const IMP = window.IMP;
+  if (!IMP) {
+    throw new Error("IMP 초기화되지 않았습니다.");
+  }
   const timestamp = Date.now(); // 현재 시간 (밀리초)
   const random = Math.floor(Math.random() * 100000); // 0~99999 난수
   // 1) 폼 검증
@@ -252,46 +257,42 @@ async function handlePayment() {
 
     IMP.request_pay(paymentData, async () => {
       // 2) wishlistIds(장바구니 ID 리스트) 만들기
-      const wishlistIds = cartItems.value.map((item) => item.id);
-
-      // 3) payType 매핑
-      const payTypeMap = {
-        tosspay: "TOSSPAY",
-        kakaopay: "KAKAOPAY",
-      };
-      const payType = payTypeMap[paymentMethod.value] || "UNKNOWN";
-
+      // const wishlistIds = cartItems.value.map((item) => item.id);
+      // // 3) payType 매핑
+      // const payTypeMap = {
+      //   tosspay: "TOSSPAY",
+      //   kakaopay: "KAKAOPAY",
+      // };
+      // const payType = payTypeMap[paymentMethod.value] || "UNKNOWN";
       // 4) POST 요청에 사용할 payload
-      const payload = {
-        wishlistIds,
-        totalPrice: totalPrice.value,
-        payType,
-      };
-
-      try {
-        isLoading.value = true;
-        // 5) 서버로 결제 정보 전송
-        const response = await api.post("/pay", payload);
-
-        // 6) 결제 완료 후 장바구니 비우기
-        cartStore.clearCart();
-        modalConfig.value = {
-          title: "결제 완료",
-          message: `‼️화면을 캡쳐해주세요‼️\n주문 번호 : ${response.data.pay.waitingNumber}\n픽업 시간 : ${response.data.waitingTime}`,
-          confirmText: "확인",
-        };
-        isModalOpen.value = true;
-      } catch (error) {
-        console.error("결제 오류:", error);
-        modalConfig.value = {
-          title: "결제 오류",
-          message: "결제 중 오류가 발생했습니다. 다시 시도해주세요.",
-          confirmText: "",
-        };
-        isModalOpen.value = true;
-      } finally {
-        isLoading.value = false;
-      }
+      // const payload = {
+      //   wishlistIds,
+      //   totalPrice: totalPrice.value,
+      //   payType,
+      // };
+      // try {
+      //   isLoading.value = true;
+      //   // 5) 서버로 결제 정보 전송
+      //   const response = await api.post("/pay", payload);
+      //   // 6) 결제 완료 후 장바구니 비우기
+      //   cartStore.clearCart();
+      //   modalConfig.value = {
+      //     title: "결제 완료",
+      //     message: `‼️화면을 캡쳐해주세요‼️\n주문 번호 : ${response.data.pay.waitingNumber}\n픽업 시간 : ${response.data.waitingTime}`,
+      //     confirmText: "확인",
+      //   };
+      //   isModalOpen.value = true;
+      // } catch (error) {
+      //   console.error("결제 오류:", error);
+      //   modalConfig.value = {
+      //     title: "결제 오류",
+      //     message: "결제 중 오류가 발생했습니다. 다시 시도해주세요.",
+      //     confirmText: "",
+      //   };
+      //   isModalOpen.value = true;
+      // } finally {
+      //   isLoading.value = false;
+      // }
     });
   } catch (error) {
     console.error("결제 오류:", error);
