@@ -210,7 +210,7 @@ async function handlePayment() {
       tax_free: 0,
       buyer_name: userName,
       buyer_tel: contact.value,
-      m_redirect_url: `https://iteat.netlify.app/${festivalId}/food/mobileFoodOrder?${wishlistIds}&${totalPrice.value}&${payType}`,
+      m_redirect_url: `https://iteat.netlify.app/${festivalId}/food/mobileFoodOrder?wishlistIds=${wishlistIds}&totalPrice=${totalPrice.value}&payType=${payType}/&festivalId=${festivalId}`,
       notice_url: "https://helloworld.com/api/v1/payments/notice",
       confirm_url: "https://helloworld.com/api/v1/payments/confirm",
       currency: "KRW",
