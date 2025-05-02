@@ -24,6 +24,7 @@ const wishlistIds = ref(null);
 const totalPrice = ref(0);
 const payType = ref("");
 const isModalOpen = ref(false);
+const mWishlistIds = ref("");
 
 const modalConfig = ref({
   title: "",
@@ -35,15 +36,15 @@ const route = useRoute();
 const router = useRouter();
 
 onMounted(async () => {
-  console.log("route.query:", route.query);
   try {
     wishlistIds.value = route.query.wishlistIds; // "1,2,3" 형태의 문자열
-    totalPrice.value = Number(route.query.totalPrice); // 숫자로 변환
+    totalPrice.value = route.query.totalPrice; // 숫자로 변환
     payType.value = route.query.payType;
     festivalId.value = route.query.festivalId;
+    mWishlistIds.value = wishlistIds.value.split(",").map((id) => Number(id));
 
     const payload = {
-      wishlistIds: wishlistIds.value,
+      wishlistIds: mWishlistIds.value,
       totalPrice: totalPrice.value,
       payType: payType.value,
     };
