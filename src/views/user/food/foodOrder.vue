@@ -109,6 +109,7 @@ const router = useRouter();
 const festivalId = router.currentRoute.value.params.festivalId;
 const isLoading = ref(false);
 const isModalOpen = ref(false);
+const mWishlistIds = ref("");
 const modalConfig = ref({
   title: "",
   message: ``,
@@ -184,7 +185,8 @@ async function handlePayment() {
 
     // 2) wishlistIds(장바구니 ID 리스트) 만들기
     const wishlistIds = cartItems.value.map((item) => item.id);
-
+    mWishlistIds.value = wishlistIds.join(",");
+    // [1,2,3]
     // 3) payType 매핑
     const payTypeMap = {
       tosspay: "TOSSPAY",
@@ -210,7 +212,7 @@ async function handlePayment() {
       tax_free: 0,
       buyer_name: userName,
       buyer_tel: contact.value,
-      m_redirect_url: `https://iteat.netlify.app/${festivalId}/food/mobileFoodOrder?wishlistIds=${wishlistIds}&totalPrice=${totalPrice.value}&payType=${payType}/&festivalId=${festivalId}`,
+      m_redirect_url: `https://iteat.netlify.app/${festivalId}/food/mobileFoodOrder?wishlistIds=${mWishlistIds.value}&totalPrice=${totalPrice.value}&payType=${payType}&festivalId=${festivalId}`,
       notice_url: "https://helloworld.com/api/v1/payments/notice",
       confirm_url: "https://helloworld.com/api/v1/payments/confirm",
       currency: "KRW",
