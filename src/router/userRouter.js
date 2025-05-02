@@ -44,6 +44,7 @@ import LoginCallback from "@/views/user/my/loginCallback.vue";
 import Notice from "@/views/common/noticePage.vue";
 import MyLostItemList from "@/views/user/my/myLostItemList.vue";
 import MyBoardList from "@/views/user/my/myBoardList.vue";
+import mobileFoodOrder from "@/views/user/food/mobileFoodOrder.vue";
 
 import { useUserStore } from "@/stores/userStore";
 
@@ -242,6 +243,11 @@ export default [
     path: "/:festivalId/user/notice",
     name: "notice",
     component: Notice,
+  },
+  {
+    path: "/:festivalId/food/mobileFoodOrder",
+    name: "mobileFoodOrder",
+    component: mobileFoodOrder,
   },
 
   // 상인

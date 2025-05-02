@@ -182,6 +182,23 @@ async function handlePayment() {
     const userCode = import.meta.env.VITE_PORTONE_INIT;
     IMP.init(userCode);
 
+    // 2) wishlistIds(장바구니 ID 리스트) 만들기
+    const wishlistIds = cartItems.value.map((item) => item.id);
+
+    // 3) payType 매핑
+    const payTypeMap = {
+      tosspay: "TOSSPAY",
+      kakaopay: "KAKAOPAY",
+    };
+    const payType = payTypeMap[paymentMethod.value] || "UNKNOWN";
+
+    // 4) POST 요청에 사용할 payload
+    const payload = {
+      wishlistIds,
+      totalPrice: totalPrice.value,
+      payType,
+    };
+
     // 반응형 객체를 일반 값으로 변환
     const paymentData = {
       channelKey: import.meta.env.VITE_PORTONE_CHANNEL_ID,
@@ -193,7 +210,7 @@ async function handlePayment() {
       tax_free: 0,
       buyer_name: userName,
       buyer_tel: contact.value,
-      m_redirect_url: `https://iteat.netlify.app/${festivalId}/food/foodOrder`,
+      m_redirect_url: `https://iteat.netlify.app/${festivalId}/food/mobileFoodOrder?wishlistIds=${wishlistIds}&totalPrice=${totalPrice.value}&payType=${payType}/&festivalId=${festivalId}`,
       notice_url: "https://helloworld.com/api/v1/payments/notice",
       confirm_url: "https://helloworld.com/api/v1/payments/confirm",
       currency: "KRW",
@@ -202,23 +219,6 @@ async function handlePayment() {
     };
 
     IMP.request_pay(paymentData, async () => {
-      // 2) wishlistIds(장바구니 ID 리스트) 만들기
-      const wishlistIds = cartItems.value.map((item) => item.id);
-
-      // 3) payType 매핑
-      const payTypeMap = {
-        tosspay: "TOSSPAY",
-        kakaopay: "KAKAOPAY",
-      };
-      const payType = payTypeMap[paymentMethod.value] || "UNKNOWN";
-
-      // 4) POST 요청에 사용할 payload
-      const payload = {
-        wishlistIds,
-        totalPrice: totalPrice.value,
-        payType,
-      };
-
       try {
         isLoading.value = true;
         // 5) 서버로 결제 정보 전송
