@@ -78,15 +78,12 @@ onMounted(async () => {
 const handleConfirm = () => {
   isModalOpen.value = false;
   router.push({
-    path: `/`,
+    path: `/${festivalId.value}/userHome/homeFood`,
   });
 };
 
 const handleCancel = () => {
   isModalOpen.value = false;
-  router.push({
-    path: `/${festivalId.value}/userHome/homeFood`,
-  });
 };
 </script>
 
