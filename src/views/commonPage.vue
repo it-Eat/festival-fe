@@ -81,7 +81,8 @@ async function loadMoreData() {
     const response = await getFestivalList(
       cursor.value,
       limit.value,
-      keyword.value
+      keyword.value,
+      selectedMonth.value
     );
     if (response.items && response.items.length > 0) {
       festivalItems.value.items = [
