@@ -36,9 +36,9 @@
             <tbody>
               <!-- 데이터 렌더링 -->
               <tr v-for="sale in salesData.payData" :key="sale.orderId">
-                <td>{{ sale.user.nickname }}</td>
-                <td>{{ sale.wishList[0].menu.name }}</td>
-                <td>{{ sale.wishList[0].menu.price || 0 }}원</td>
+                <td>{{ sale.user?.nickname }}</td>
+                <td>{{ sale.wishList[0]?.menu?.name || "-" }}</td>
+                <td>{{ sale.wishList[0]?.menu?.price || "-" }}원</td>
                 <td>{{ dateFormatWithoutTime(sale.createdAt) }}</td>
               </tr>
             </tbody>
@@ -71,7 +71,7 @@ const cartStore = useCartStore();
 const loadingType = ref("none");
 
 // (1) 상태 변수들
-const salesData = ref([]); // 테이블에 뿌릴 전체 데이터
+const salesData = ref({ payData: [], totalPrice: 0 }); // 테이블에 뿌릴 전체 데이터
 const currentPage = ref(1); // 현재 페이지
 const itemsPerPage = 10; // 페이지당 아이템 수
 

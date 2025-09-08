@@ -218,7 +218,7 @@ const handleAddToCart = async () => {
   };
 
   try {
-    loading.value = true;
+    // loading.value = true;
     await createWishlist(boothId, festivalId, cartData);
     isModalOpen.value = true;
     modalConfig.value = {
@@ -228,6 +228,10 @@ const handleAddToCart = async () => {
     };
   } catch (error) {
     console.error("장바구니 담기 실패:", error);
+    if (error.response?.status === 401) {
+      router.push(`/${festivalId}/user/login`);
+      return;
+    }
     isModalOpen.value = true;
     modalConfig.value = {
       title: "장바구니 담기 실패",
