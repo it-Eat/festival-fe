@@ -5,9 +5,9 @@ import { computed, ref, watch } from "vue";
 import Hamberger from "../modal/hambergerModal.vue";
 import { useCartStore } from "@/stores/cartStores";
 import { useUserStore } from "@/stores/userStore"; // Pinia 스토어 임포트
-import loadingComponent from "./loadingComponent.vue";
+// import loadingComponent from "./loadingComponent.vue";
 
-const isLoading = ref(false);
+// const isLoading = ref(false);
 
 const props = defineProps({
   title: String,
@@ -32,13 +32,13 @@ const goBack = () => {
 };
 
 // title이 변경될 때 로딩 상태 확인
-watch(
-  () => props.title,
-  (newTitle) => {
-    isLoading.value = newTitle === undefined || newTitle === null;
-  },
-  { immediate: true }
-);
+// watch(
+//   () => props.title,
+//   (newTitle) => {
+//     isLoading.value = newTitle === undefined || newTitle === null;
+//   },
+//   { immediate: true }
+// );
 
 // 페이지 제목: 로그인 상태이면 userStore.user.nickname 사용, 아니면 기본값("손님")
 const pageTitle = computed(() => {
