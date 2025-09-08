@@ -157,6 +157,7 @@ const confirm = async () => {
     // 서버에 POST 요청
     await api.patch(`/booth/${boothId}/${festivalId}`, formData);
 
+    loading.value = false;
     // 이전 화면으로 돌아가기
     router.back();
   } catch (error) {
