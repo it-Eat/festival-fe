@@ -113,6 +113,7 @@ async function fetchWishlistData(boothId) {
 
     salesData.value = data;
     // salesData 변환
+    loadingType.value = "none";
   } catch (error) {
     console.error("매출 데이터 불러오기 실패:", error);
   } finally {
