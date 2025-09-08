@@ -45,14 +45,19 @@ import Notice from "@/views/common/noticePage.vue";
 import MyLostItemList from "@/views/user/my/myLostItemList.vue";
 import MyBoardList from "@/views/user/my/myBoardList.vue";
 import mobileFoodOrder from "@/views/user/food/mobileFoodOrder.vue";
-
 import { useUserStore } from "@/stores/userStore";
+import { useFestivalInfoStore } from "@/stores/festivalInfo";
 
 const sellerAuth = (to, from, next) => {
   const userStore = useUserStore();
   if (!userStore.isAuthenticated || userStore.userRole !== "SELLER") {
     alert("상인 권한이 필요합니다.");
-    return next("/:festivalId/user/login");
+    const festivalInfoStore = useFestivalInfoStore();
+    const festivalId = festivalInfoStore.selectedFestivalId || "default";
+    if (festivalId === "default") {
+      return next(`${festivalId}/user/login`);
+    }
+    return next(`/${festivalId}/user/login`);
   }
   next();
 };
