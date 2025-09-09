@@ -22,6 +22,7 @@
         <thead>
           <tr>
             <th style="width: 200px">부스명</th>
+            <th style="width: 200px">부스 위치</th>
             <th style="width: 120px">유형</th>
             <th style="width: 200px">신청자ID</th>
             <th style="width: 200px">승인여부</th>
@@ -36,6 +37,7 @@
             @click="goToBoothDetail(booth.id)"
           >
             <td>{{ booth.name }}</td>
+            <td>{{ booth.location }}</td>
             <td>{{ booth.boothType }}</td>
             <td>{{ booth.user?.userName || "-" }}</td>
             <td>
