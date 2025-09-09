@@ -32,6 +32,12 @@ onMounted(() => {
     message.value = data.message;
     isModalOpen.value = true;
   });
+
+  socket.on("new_boothNotification", (data) => {
+    title.value = "주문 알림";
+    message.value = data.message;
+    isModalOpen.value = true;
+  });
 });
 
 onUnmounted(() => {
