@@ -1,10 +1,10 @@
 <template>
   <div class="star-rating">
     <span
-      v-for="n in maxRating"
+      v-for="n in props.maxRating"
       :key="n"
       class="star"
-      :class="{ active: n <= rating }"
+      :class="{ active: n <= props.rating }"
       @click="setRating(n)"
     >
       ★
@@ -13,18 +13,24 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from "vue";
+import { defineEmits, defineProps } from "vue";
+
+const props = defineProps({
+  rating: {
+    type: Number,
+    default: 0,
+  },
+  maxRating: {
+    type: Number,
+    default: 5,
+  },
+});
 
 const emit = defineEmits(["update:rating"]);
 
-const rating = ref(0);
-
 const setRating = (newRating) => {
-  rating.value = newRating;
   emit("update:rating", newRating);
 };
-
-defineExpose({ rating }); // 부모 컴포넌트에서 rating 값 접근 가능하도록 expose
 </script>
 
 <style scoped>
