@@ -221,25 +221,20 @@ async function handlePayment() {
     };
 
     IMP.request_pay(paymentData, async () => {
-      console.log("IMP.request_pay 호출 시작");
       try {
         isLoading.value = true;
         // 5) 서버로 결제 정보 전송
-        console.log("서버로 결제 정보 전송 시작");
+
         const response = await api.post("/pay", payload);
-        console.log("서버 결과", response);
 
         // 6) 결제 완료 후 장바구니 비우기
-        console.log("장바구니 비우기 시작");
         cartStore.clearCart();
-        console.log("장바구니 비우기 완료");
         modalConfig.value = {
           title: "결제 완료",
           message: `‼️화면을 캡쳐해주세요‼️\n주문 번호 : ${response.data.result.waitingNumber}\n픽업 시간 : ${response.data.waitingTime}`,
           confirmText: "확인",
         };
         isModalOpen.value = true;
-        console.log("결과 확인 모달 설정 완료");
       } catch (error) {
         console.error("IMP 콜백 내부 에러:", error);
         modalConfig.value = {
@@ -249,13 +244,11 @@ async function handlePayment() {
         };
         isModalOpen.value = true;
       } finally {
-        console.log("결제 완료 IMP finally 실행");
         isLoading.value = false;
       }
     });
   } catch (error) {
     console.error("결제 오류:", error);
-    console.error("결제 외부 에러:", error.response);
     modalConfig.value = {
       title: "결제 오류",
       message: "결제 처리 중 오류가 발생했습니다. 다시 시도해주세요.",
