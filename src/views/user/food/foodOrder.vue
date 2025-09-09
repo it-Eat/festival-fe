@@ -235,7 +235,7 @@ async function handlePayment() {
         console.log("장바구니 비우기 완료");
         modalConfig.value = {
           title: "결제 완료",
-          message: `‼️화면을 캡쳐해주세요‼️\n주문 번호 : ${response.data.pay.waitingNumber}\n픽업 시간 : ${response.data.waitingTime}`,
+          message: `‼️화면을 캡쳐해주세요‼️\n주문 번호 : ${response.data.result.waitingNumber}\n픽업 시간 : ${response.data.waitingTime}`,
           confirmText: "확인",
         };
         isModalOpen.value = true;
