@@ -33,8 +33,12 @@ async function getFestivalDetail(festivalId) {
 }
 
 async function joinFestival(festivalId) {
-  const response = await api.post(`participation/${festivalId}`);
-  return response.data;
+  try {
+    const response = await api.post(`participation/${festivalId}`);
+    return response.data;
+  } catch (error) {
+    return error.response;
+  }
 }
 
 export { getFestivalList, getFestivalDetail, joinFestival };

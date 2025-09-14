@@ -18,7 +18,18 @@ const modalConfig = ref({
 });
 const festivalJoin = async () => {
   loadingType.value = "loading";
-  await joinFestival(festivalId);
+  const response = await joinFestival(festivalId);
+  if (
+    response.status === 401 ||
+    response.status === 403 ||
+    response.status === 404
+  ) {
+    loadingType.value = "none";
+    isModalOpen.value = false;
+    router.push(`/${festivalId}/user/login`);
+    return;
+  }
+
   festivalInfoStore.setFestivalId(festivalId);
   router.push(`/${festivalId}/userHome/homeFood`);
   loadingType.value = "none";
